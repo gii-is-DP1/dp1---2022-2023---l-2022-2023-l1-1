@@ -7,6 +7,15 @@
 <petclinic:layout pageName="home">
     <h2><fmt:message key="welcome"/></h2>
     <div class="row">
+        <h2> Project ${title}</h2>
+        <p><h2> Group ${gruop}</h2></p>
+        <p><ul>
+            <c:forEach items="${persons}" var="person">
+                <li>${person.firstName} ${person.lastName}</li>
+            </c:forEach>
+        </ul></p>
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <spring:url value="/resources/images/logoUS.png" htmlEscape="true" var="logoImage"/>
             <img class="img-responsive" src="${logoImage}"/>
