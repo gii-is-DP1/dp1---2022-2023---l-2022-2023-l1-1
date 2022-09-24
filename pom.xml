@@ -31,6 +31,22 @@
         <spring-format.version>0.0.19</spring-format.version>
 
     </properties>
+    
+    <developers>
+        <developer>
+            <id>alvgonfri</id>
+            <name>Alvaro Gonzalez</name>
+            <email>alvgonfri@alum.us.es</email>
+            <url>https://github.com/alvgonfri</url>
+            <roles>
+                <role>student</role>
+            </roles>
+            <properties>
+                <picUrl>
+                </picUrl>
+            </properties>
+        </developer>
+    </developers>
 
     <dependencies>
         <!-- Spring and Spring Boot dependencies -->
