@@ -32,6 +32,21 @@
 
     </properties>
 
+        <!-- Developpers -->
+    <developers>
+        <developer>
+            <id>meryknows</id>
+             <name>Maria</name>
+             <email>marbarmar16@alumn.us.es</email>
+            <roles>
+                <role>leader</role>
+            </roles>
+            <properties>
+            </properties>
+        </developer>
+    </developers>    
+
+
     <dependencies>
         <!-- Spring and Spring Boot dependencies -->
         <dependency>
@@ -255,7 +270,5 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
-
 
 </project>
