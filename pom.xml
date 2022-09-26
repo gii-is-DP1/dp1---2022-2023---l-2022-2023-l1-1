@@ -31,8 +31,44 @@
         <spring-format.version>0.0.19</spring-format.version>
 
     </properties>
-    
+    <!-- Developpers -->
     <developers>
+        <developer>
+            <id>migmanalv</id>
+            <name>Miguel</name>
+            <email>migmanalv@alum.us.es</email>
+            <url></url>
+            <roles>
+                <role>Member</role>
+            </roles>
+            <properties>
+                <picUrl>
+                </picUrl>
+            </properties>
+        </developer>
+         <developer>
+            <id>alvgonfri</id>
+            <name>Alvaro Gonzalez</name>
+            <email>alvgonfri@alum.us.es</email>
+            <url>https://github.com/alvgonfri</url>
+            <roles>
+                <role>Member</role>
+            </roles>
+            <properties>
+                <picUrl>
+                </picUrl>
+            </properties>
+        </developer>
+        <developer>
+            <id>meryknows</id>
+             <name>Maria</name>
+             <email>marbarmar16@alumn.us.es</email>
+            <roles>
+                <role>leader</role>
+            </roles>
+            <properties>
+            </properties>
+        </developer>
         <developer>
             <id>davgonher1</id>
             <name>David</name>
@@ -271,7 +307,5 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
-
 
 </project>
