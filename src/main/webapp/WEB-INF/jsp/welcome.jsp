@@ -2,16 +2,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %-->  
 
 <petclinic:layout pageName="home">
     <h2><fmt:message key="welcome"/></h2>
     <div class="row">
-        <h2> Project ${title}</h2>
-        <p><h2> Group ${gruop}</h2></p>
+        <h2> Project: ${title}</h2>
+        <p><h2> Group: ${group}</h2></p>
         <p><ul>
             <c:forEach items="${persons}" var="person">
-                <li>${person.firstName} ${person.lastName}</li>
+                <li>${person.firstName}&nbsp${person.lastName}</li>
             </c:forEach>
         </ul></p>
     </div>
