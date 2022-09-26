@@ -31,6 +31,22 @@
         <spring-format.version>0.0.19</spring-format.version>
 
     </properties>
+    
+    <developers>
+        <developer>
+            <id>davgonher1</id>
+            <name>David</name>
+            <email>davgonher1@alum.us.es</email>
+            <url></url>
+            <roles>
+                <role>Member</role>
+            </roles>
+            <properties>
+                <picUrl>
+                </picUrl>
+            </properties>
+        </developer>
+    </developers>
 
     <dependencies>
         <!-- Spring and Spring Boot dependencies -->
