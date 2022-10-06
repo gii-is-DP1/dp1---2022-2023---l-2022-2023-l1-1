@@ -6,12 +6,11 @@ INSERT INTO users(username,password,enabled) VALUES ('owner1','0wn3r',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (2,'owner1','owner');
 INSERT INTO users(username,password,enabled) VALUES ('alvgonfri','p4ssw0rd',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (4,'alvgonfri','owner');
+INSERT INTO users(username,password,enabled) VALUES ('davgonher1','ado',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (5,'davgonher1','owner');
 -- One vet user, named vet1 with passwor v3t
 INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (3,'vet1','veterinarian');
--- davgonher1 owner user
-INSERT INTO users(username,password,enabled) VALUES ('davgonher1','ado',TRUE);
-INSERT INTO authorities(id,username,authority) VALUES (5,'davgonher1','owner');
 
 INSERT INTO vets(id, first_name,last_name) VALUES (1, 'James', 'Carter');
 INSERT INTO vets(id, first_name,last_name) VALUES (2, 'Helen', 'Leary');
