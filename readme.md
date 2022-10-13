@@ -1,4 +1,4 @@
-# Project Idus Martii
+# Proyecto Idus Martii
 
 - Vídeo de explicación del juego: https://youtu.be/UNKE-bouT0E
 - Carpeta con las normas y material del juego: https://drive.google.com/drive/folders/124Rk-WeoEuBtyETGUdDXwFyCgm8nv7lW?usp=sharing
