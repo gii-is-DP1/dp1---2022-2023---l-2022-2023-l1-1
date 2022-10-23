@@ -70,3 +70,8 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (1, 7, '2013-01-01',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02', 'rabies shot');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
+
+INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) VALUES
+(1,'Mi primera partida', 1, 'STARTING', null, null, null, null),
+(2,'Partida rapida', 0, 'STARTING', null, null, null, null);
+
