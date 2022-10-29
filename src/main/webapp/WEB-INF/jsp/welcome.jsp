@@ -6,6 +6,7 @@
 <!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %-->  
 
 <petclinic:layout pageName="home">
+    <a href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
     <h2><fmt:message key="welcome"/></h2>
     <div class="row">
         <h2> Project: ${title}</h2>

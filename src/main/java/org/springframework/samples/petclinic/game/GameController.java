@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class GameController {
 
     private static final String GAMES_LIST = "/games/gamesList";
+    private static final String CREATE_GAMES = "/games/createGame";
     
     private GameService service;
 
@@ -25,6 +26,15 @@ public class GameController {
     public ModelAndView showGames() {
         ModelAndView res = new ModelAndView(GAMES_LIST);
         res.addObject("games", service.getGames());
+        return res;
+    }
+
+    @Transactional
+    @GetMapping("/create")
+    public ModelAndView createGame() {
+        ModelAndView res = new ModelAndView(CREATE_GAMES);
+        Game game =new Game();         
+        res.addObject("game", game);                                  
         return res;
     }
 }

@@ -9,6 +9,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Range;
+import org.springframework.samples.petclinic.enums.Faction;
+import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.model.NamedEntity;
 
 import lombok.Getter;
@@ -33,5 +35,4 @@ public class Game extends NamedEntity {
     private Duration duration;
 
     private Faction winners;
-
 }
