@@ -34,5 +34,6 @@ public class Game extends NamedEntity {
     
     private Duration duration;
 
+    @Enumerated(EnumType.STRING)
     private Faction winners;
 }

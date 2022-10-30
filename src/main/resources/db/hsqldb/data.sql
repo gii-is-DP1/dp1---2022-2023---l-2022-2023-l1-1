@@ -74,5 +74,6 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04',
 
 INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) VALUES
 (1,'Mi primera partida', 1, 'STARTING', null, null, null, null),
-(2,'Partida rapida', 0, 'STARTING', null, null, null, null);
+(2,'Partida rapida', 0, 'IN_PROCESS', null, null, null, null),
+(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS');
 

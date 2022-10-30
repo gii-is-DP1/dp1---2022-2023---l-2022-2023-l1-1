@@ -1,8 +1,10 @@
 package org.springframework.samples.petclinic.game;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.enums.State;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<Game> getGames() {
-        return repo.findAll();
+    public List<Game> getGames(State s) {
+        return repo.findAll().stream().filter(g -> g.getState() == s).collect(Collectors.toList());
     }
 }
