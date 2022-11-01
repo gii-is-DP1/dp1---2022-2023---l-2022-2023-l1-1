@@ -6,13 +6,11 @@
 
 <petclinic:layout pageName="games">
     <h2>Games</h2>
-
     <table id="gamesTable" class="table table-striped">
         <thead>
         <tr>
             <th>Name</th>
             <th>Public</th>
-            <th>State</th>
             <th>Number of players</th>
             <th>Date</th>
             <th>Duration</th>
@@ -27,9 +25,6 @@
                 </td>
                 <td>
                     <c:out value="${game.publicGame}"/>
-                </td>
-                <td>
-                    <c:out value="${game.state}"/>
                 </td>
                 <td>
                     <c:out value="${game.numPlayers}"/>
