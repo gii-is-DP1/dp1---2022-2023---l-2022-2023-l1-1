@@ -1,7 +1,9 @@
 package org.springframework.samples.petclinic.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class PlayerController {
     private PlayerService playerService;
 
