@@ -8,11 +8,11 @@
 <petclinic:layout pageName="home">
     <sec:authorize access="hasAuthority('player')">
         <a href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
-        <a href="/games/starting"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
+        <a href="/games/starting/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
     </sec:authorize>
     <sec:authorize access="hasAuthority('admin')">
-        <a href="/games/history"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games history</a>
-        <a href="/games/inProcess"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games in process</a>
+        <a href="/games/history/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games history</a>
+        <a href="/games/inProcess/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games in process</a>
     </sec:authorize>
     <h2><fmt:message key="welcome"/></h2>
     <div class="row">
