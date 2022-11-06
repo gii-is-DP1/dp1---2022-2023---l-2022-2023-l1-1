@@ -67,3 +67,18 @@ INSERT INTO achievements(id,name,description,threshold,completed,completed_perce
                 VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0,true,5.0),
                         (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0,false,9.0),
                         (3,'Jugador Experto','Has Jugado mas de <THRESHOLD> partidas',100.00,false,4.0); 
+
+INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
+INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
+
+INSERT INTO decks(id, role_cards) VALUES (1, 'EDIL');
+
+INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
+        (1, 'LOYAL'),
+        (1,'MERCHANT'),
+        (1,'TRAITOR');
+
+INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
+        (1,'GREEN'),
+        (1,'RED'),
+        (1,'YELLOW');

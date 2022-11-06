@@ -1,6 +1,10 @@
 package org.springframework.samples.petclinic.deck;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.springframework.samples.petclinic.model.BaseEntity;
 
@@ -10,11 +14,14 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class VoteCard extends BaseEntity {
+@Table(name="vote_cards")
+public class VoteCard {
     
-    private CardType cardType;
+    @Id
+    @Enumerated(EnumType.STRING)
+    private Type type;
     
-    private enum CardType {
+    private enum Type {
         GREEN, RED, YELLOW;
     }
 }
