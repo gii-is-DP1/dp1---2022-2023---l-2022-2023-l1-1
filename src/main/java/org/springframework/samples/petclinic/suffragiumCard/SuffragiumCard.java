@@ -1,4 +1,4 @@
-package org.springframework.suffragiumCard;
+package org.springframework.samples.petclinic.suffragiumCard;
 
 import org.springframework.samples.petclinic.model.BaseEntity;
 

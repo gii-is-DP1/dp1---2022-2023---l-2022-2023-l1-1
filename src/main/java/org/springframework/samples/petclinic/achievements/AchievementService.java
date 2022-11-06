@@ -15,7 +15,7 @@ public class AchievementService {
         this.rep= rep;
     }
 
-    List<Achievement> getAchievements() {
+    public List<Achievement> getAchievements() {
         return rep.findAll();
     }
 

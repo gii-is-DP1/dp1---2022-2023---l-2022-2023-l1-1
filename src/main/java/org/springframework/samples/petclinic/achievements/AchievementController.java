@@ -6,7 +6,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,19 +18,19 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/achievements")
 public class AchievementController {
 
-    private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/AchievementsListing";
+    private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/achievementsListing";
     private final String ACHIEVEMENTS_FORM="/achievements/createOrUpdateAchievementForm";
-    private AchievementService Acheivementservice;
+    private AchievementService achievementService;
 
     @Autowired
-    public AchievementController(AchievementService service){
-        this.Acheivementservice=service;
+    public AchievementController(AchievementService achievementService){
+        this.achievementService = achievementService;
     }
     
     @GetMapping
     public ModelAndView showAchievements(){
         ModelAndView result=new ModelAndView(ACHIEVEMENTS_LISTING_VIEW);
-        result.addObject("achievements", Acheivementservice.getAchievements());
+        result.addObject("achievements", achievementService.getAchievements());
         return result;
     }
 
@@ -39,7 +38,7 @@ public class AchievementController {
     public ModelAndView deleteAchievement(@PathVariable int id, ModelMap model){
         String message;
         try{
-            Acheivementservice.deleteAchievementById(id);  
+            achievementService.deleteAchievementById(id);  
             message = "Removed successfully";      
         } catch(EmptyResultDataAccessException e) {
             message = "Achievement " + id + " does not exist";
@@ -52,7 +51,7 @@ public class AchievementController {
 
     @GetMapping("/{id}/edit")
     public ModelAndView editAchievement(@PathVariable int id, ModelMap model){
-        Achievement achievement=Acheivementservice.getById(id);        
+        Achievement achievement=achievementService.getById(id);        
         ModelAndView result=new ModelAndView(ACHIEVEMENTS_FORM);
             result.addObject("achievement", achievement);
             return result;
@@ -65,9 +64,9 @@ public class AchievementController {
         if (br.hasErrors()) {
             return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
         }
-        Achievement achievementToBeUpdated=Acheivementservice.getById(id);
+        Achievement achievementToBeUpdated=achievementService.getById(id);
         BeanUtils.copyProperties(achievement,achievementToBeUpdated,"id");
-        Acheivementservice.saveAchievement(achievementToBeUpdated);
+        achievementService.saveAchievement(achievementToBeUpdated);
         result.addObject("message", "Achievement edited succesfully!");
         return result;
     }
@@ -86,7 +85,7 @@ public class AchievementController {
        if (br.hasErrors()) {
         return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
        } else {
-        Acheivementservice.saveAchievement(achievement);
+        achievementService.saveAchievement(achievement);
         result = showAchievements();
         result.addObject("message", "Achievement saved succesfully!");
        }
