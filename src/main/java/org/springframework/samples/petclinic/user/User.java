@@ -20,7 +20,7 @@ public class User{
 	String username;
 	
 	String password;
-	
+
 	boolean enabled;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
