@@ -63,12 +63,6 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
-
-INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) VALUES
-(1,'Mi primera partida', 1, 'STARTING', null, null, null, null),
-(2,'Partida rapida', 0, 'IN_PROCESS', null, null, null, null),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS');
-
 INSERT INTO achievements(id,name,description,threshold,completed,completed_percentage) 
                 VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0,true,5.0),
                         (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0,false,9.0),
