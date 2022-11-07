@@ -71,14 +71,23 @@ INSERT INTO achievements(id,name,description,threshold,completed,completed_perce
 INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
 INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
 
-INSERT INTO decks(id, role_cards) VALUES (1, 'EDIL');
+-- MAZOS DE PRUEBA SIMULANDO LA RONDA 1
+INSERT INTO decks(id, role_cards) VALUES 
+        (1, 'CONSUL'),
+        (2, 'PRETOR'),
+        (3, 'EDIL'),
+        (4, 'EDIL'),
+        (5, null),
+        (6, null);
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
-        (1, 'LOYAL'),
-        (1,'MERCHANT'),
-        (1,'TRAITOR');
+        (3, 'LOYAL'),
+        (3,'MERCHANT'),
+        (4,'TRAITOR'),  
+        (4,'LOYAL');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
-        (1,'GREEN'),
-        (1,'RED'),
-        (1,'YELLOW');
+        (3,'GREEN'),
+        (3,'RED'),
+        (4,'GREEN'),
+        (4,'RED');

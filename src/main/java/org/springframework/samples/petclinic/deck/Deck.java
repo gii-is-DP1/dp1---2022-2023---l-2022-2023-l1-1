@@ -2,13 +2,11 @@ package org.springframework.samples.petclinic.deck;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -29,11 +27,11 @@ public class Deck extends BaseEntity {
     @Column(name = "role_cards")
     private RoleCard roleCards;
 
-    @OneToMany(targetEntity = FactionCard.class)
+    @ManyToMany(targetEntity = FactionCard.class)
     @Column(name = "faction_card")
     private List<FactionCard> factionCards;
 
-    @OneToMany(targetEntity = VoteCard.class)
+    @ManyToMany(targetEntity = VoteCard.class)
     @Column(name = "vote_card")
     private List<VoteCard> voteCards;
 
