@@ -78,6 +78,7 @@ INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) V
 (3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS');
 
 
+
 INSERT INTO achievements(id,name,description,threshold,completed,completed_percentage) 
                 VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0,true,5.0),
                         (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0,false,9.0),
