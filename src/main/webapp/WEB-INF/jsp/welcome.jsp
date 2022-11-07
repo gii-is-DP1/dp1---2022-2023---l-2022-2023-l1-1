@@ -2,10 +2,28 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
-<!-- %@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %-->  
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <petclinic:layout pageName="home">
+    <sec:authorize access="hasAuthority('player')">
+        <a href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
+        <a href="/games/starting/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
+    </sec:authorize>
+    <sec:authorize access="hasAuthority('admin')">
+        <a href="/games/history/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games history</a>
+        <a href="/games/inProcess/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games in process</a>
+    </sec:authorize>
     <h2><fmt:message key="welcome"/></h2>
+    <div class="row">
+        <h2> Project: ${title}</h2>
+        <p><h2> Group: ${group}</h2></p>
+        <p><ul>
+            <c:forEach items="${persons}" var="person">
+                <li>${person.firstName}&nbsp${person.lastName}</li>
+            </c:forEach>
+        </ul></p>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <spring:url value="/resources/images/logoUS.png" htmlEscape="true" var="logoImage"/>

@@ -1,3 +1,8 @@
+# Proyecto Idus Martii
+
+- Vídeo de explicación del juego: https://youtu.be/UNKE-bouT0E
+- Carpeta con las normas y material del juego: https://drive.google.com/drive/folders/124Rk-WeoEuBtyETGUdDXwFyCgm8nv7lW?usp=sharing
+
 # Spring PetClinic Sample Application 
 
 This is a fork of https://github.com/spring-projects/spring-petclinic to be used for the DP1 course. The main changes that have been performed were:
