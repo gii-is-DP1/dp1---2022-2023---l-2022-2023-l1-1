@@ -84,3 +84,31 @@ INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) V
 INSERT INTO games_players(games_id, players_id) VALUES
 (1, 1), (1, 2);
 
+INSERT INTO achievements(id,name,description,threshold,completed,completed_percentage) 
+                VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0,true,5.0),
+                        (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0,false,9.0),
+                        (3,'Jugador Experto','Has Jugado mas de <THRESHOLD> partidas',100.00,false,4.0); 
+
+INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
+INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
+
+-- MAZOS DE PRUEBA SIMULANDO LA RONDA 1
+INSERT INTO decks(id, role_cards) VALUES 
+        (1, 'CONSUL'),
+        (2, 'PRETOR'),
+        (3, 'EDIL'),
+        (4, 'EDIL'),
+        (5, null),
+        (6, null);
+
+INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
+        (3, 'LOYAL'),
+        (3,'MERCHANT'),
+        (4,'TRAITOR'),  
+        (4,'LOYAL');
+
+INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
+        (3,'GREEN'),
+        (3,'RED'),
+        (4,'GREEN'),
+        (4,'RED');
