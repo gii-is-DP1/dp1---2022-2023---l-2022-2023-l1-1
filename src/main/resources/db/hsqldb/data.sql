@@ -9,6 +9,8 @@ INSERT INTO users(username,password,enabled) VALUES ('alvgonfri','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (4,'alvgonfri','player');
 INSERT INTO users(username,password,enabled) VALUES ('davgonher1','ado',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (5,'davgonher1','owner');
+INSERT INTO users(username,password,enabled) VALUES ('migmanalv','miguel1',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (6,'migmanalv','player');
 -- One vet user, named vet1 with passwor v3t
 INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (3,'vet1','veterinarian');
@@ -79,10 +81,10 @@ INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) V
 
 
 
-INSERT INTO achievements(id,name,description,threshold,completed,completed_percentage) 
-                VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0,true,5.0),
-                        (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0,false,9.0),
-                        (3,'Jugador Experto','Has Jugado mas de <THRESHOLD> partidas',100.00,false,4.0); 
+INSERT INTO achievements(id,name,description,threshold) 
+                VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0),
+                        (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0),
+                        (3,'Jugador Experto','Has Jugado mas de <THRESHOLD> partidas',100.00); 
 
 INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
 INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
@@ -107,3 +109,16 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
         (3,'RED'),
         (4,'GREEN'),
         (4,'RED');
+
+INSERT INTO players(id,spectator,username) VALUES
+        (1, false, 'migmanalv'),
+        (2, false, 'alvgonfri');
+
+INSERT INTO progress(id, completed, completed_percentage, achievements_id, players_id) VALUES
+        (1, false, 0, 1, 1),
+        (2, false, 0, 2, 1),
+        (3, false, 0, 3, 1),
+        (4, false, 0, 1, 2),
+        (5, false, 0, 2, 2),
+        (6, false, 0, 3, 2);
+
