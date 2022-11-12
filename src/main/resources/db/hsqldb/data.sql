@@ -112,3 +112,7 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
         (3,'RED'),
         (4,'GREEN'),
         (4,'RED');
+
+INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 2),
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 2, 1);
