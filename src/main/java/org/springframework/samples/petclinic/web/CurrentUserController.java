@@ -17,7 +17,7 @@ public class CurrentUserController {
         this.currentUserService = cUS;
     }
     
-    @GetMapping("/")
+    @GetMapping("/currentuser")
     public String getCurrentUser() {
         return currentUserService.getCurrentUser();
     }

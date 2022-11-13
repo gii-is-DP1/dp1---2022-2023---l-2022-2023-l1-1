@@ -47,11 +47,11 @@ public class InvitationController {
     public ModelAndView showInvitations(){
         ModelAndView result = new ModelAndView(INVITATIONS_LIST);
 
-        //User user = userService.findUser(currentUserController.getCurrentUser()).get();
-
+        User user = userService.findUser(currentUserController.getCurrentUser()).get();
+/* 
         UserDetails ud = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findUser(ud.getUsername()).get();
-        Player recipient = playerService.getPlayerByUsername(user.getUsername());
+ */     Player recipient = playerService.getPlayerByUsername(user.getUsername());
 
         result.addObject("invitations", invitationService.getInvitationsByUser(recipient));
         return result;

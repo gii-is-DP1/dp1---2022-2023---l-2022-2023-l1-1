@@ -16,6 +16,6 @@ public class CurrentUserService {
                 return currentUser.getUsername();
             } 
         }
-        return "anonymus";
+        return "welcome";
     }
 }

@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface PlayerRepository extends CrudRepository<Player, Integer> {
     List<Player> findAll(); 
 
-    @Query("SELECT p FROM Player p WHERE p.username LIKE :username%")
+    @Query("SELECT p FROM Player p WHERE p.user.username LIKE :username%")
     public Player getPlayerByUsername(@Param("username") String username);
 }
