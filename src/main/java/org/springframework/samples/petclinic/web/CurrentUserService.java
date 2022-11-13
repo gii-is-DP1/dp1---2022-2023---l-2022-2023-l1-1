@@ -8,15 +8,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class CurrentUserService {
     
-    public String showCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() == "anonymousUser") {
-        	return "anonymous";
-        } else {
-        	 User currentUser = (User) authentication.getPrincipal();
-             String username = currentUser.getUsername();
-             
-             return username;
+    public String getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null) {
+            if(auth.isAuthenticated() && auth.getPrincipal() instanceof User){
+                User currentUser = (User) auth.getPrincipal();
+                return currentUser.getUsername();
+            } 
         }
+        return "anonymus";
     }
 }

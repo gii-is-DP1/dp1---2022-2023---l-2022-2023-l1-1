@@ -17,7 +17,7 @@
         <c:forEach items="${invitations}" var="invitation">
             <tr>
                 <td>
-                    <c:out value="${invitation.accepted}"/>
+                    <c:out value="${invitation.sender}"/>
                 </td>
                 <td>
                     <c:out value="${invitation.message}"/>
