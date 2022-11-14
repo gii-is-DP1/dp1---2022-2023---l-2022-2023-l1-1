@@ -1,21 +1,15 @@
 package org.springframework.samples.petclinic.achievements;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
-import org.springframework.samples.petclinic.progress.Progress;
-import org.springframework.samples.petclinic.progress.ProgressController;
 import org.springframework.samples.petclinic.progress.ProgressService;
-import org.springframework.samples.petclinic.user.User;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -31,7 +25,7 @@ public class AchievementController {
 
     private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/achievementsListing";
     private final String ACHIEVEMENTS_FORM="/achievements/createOrUpdateAchievementForm";
-    private final String USER_ACHIEVEMENTS_VIEW="/achievements/userAchievements";
+    private final String USER_ACHIEVEMENTS_VIEW="/achievements/playerAchievements";
     private AchievementService achievementService;
     private ProgressService progressService;
     private PlayerService playerService;
@@ -50,10 +44,10 @@ public class AchievementController {
         return result;
     }
 
-    @GetMapping("/user/{playerId}")
-    public ModelAndView showUserAchievements(@PathVariable Integer playerId) {
+    @GetMapping("/player")
+    public ModelAndView showUserAchievements(@AuthenticationPrincipal UserDetails user) {
         ModelAndView result=new ModelAndView(USER_ACHIEVEMENTS_VIEW);
-        Player pl = playerService.getPlayerById(playerId);
+        Player pl = playerService.getPlayerByUsername(user.getUsername());
         result.addObject("progress", progressService.getUserProgress(pl));
         return result;
     }

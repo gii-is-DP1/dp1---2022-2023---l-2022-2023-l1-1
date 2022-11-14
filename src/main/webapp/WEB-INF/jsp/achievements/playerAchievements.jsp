@@ -4,8 +4,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="achievements/prueb">
-    <h2>Progress</h2>
+<petclinic:layout pageName="achievements/player">
+    <h2>Achievements</h2>
     <table id="progressTable" class="table table-striped">
         <thead>
         <tr>
@@ -28,8 +28,8 @@
                     <c:out value="${progress.completedPercentage}%"/>
                 </td>
                 <td>
-                    <c:if test="${progress.completed}"> <c:out value="Completed"/> </c:if>
-                    <c:if test="${progress.completed == false}"> <c:out value="In progress"/> </c:if>
+                    <c:if test="${progress.completed}"> <span style="color:rgb(0, 165, 33);font-weight:bold"><c:out value="Completed"/> </span></c:if>
+                    <c:if test="${progress.completed == false}"> <span style="color:rgb(227, 166, 0);font-weight:bold"><c:out value="In progress"/> </span></c:if>
                 </td>
             </tr>
         </c:forEach>

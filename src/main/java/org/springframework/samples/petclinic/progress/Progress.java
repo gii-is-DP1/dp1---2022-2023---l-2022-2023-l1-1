@@ -19,7 +19,7 @@ import lombok.Setter;
 @Table(name="progress")
 public class Progress extends BaseEntity {
 
-    private boolean completed;
+    
     @Column (name = "completed_percentage")
     private double completedPercentage;
 
@@ -30,4 +30,13 @@ public class Progress extends BaseEntity {
     @ManyToOne
     @JoinColumn (name = "player_id")    
     private Player player;
+
+    public boolean getCompleted() {
+        if (completedPercentage == 100.00) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

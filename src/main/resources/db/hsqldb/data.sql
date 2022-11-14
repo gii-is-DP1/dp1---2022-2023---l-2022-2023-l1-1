@@ -117,16 +117,16 @@ INSERT INTO players(id,spectator,username) VALUES
         (1, false, 'migmanalv'),
         (2, false, 'alvgonfri');
 
-INSERT INTO progress(id, completed, completed_percentage, achievement_id, player_id) VALUES
-        (1, true, 100.0, 1, 1),
-        (2, false, 0.0, 2, 1),
-        (3, false, 0.0, 3, 1),
-        (4, false, 1.0, 1, 2),
-        (5, false, 2.0, 2, 2),
-        (6, false, 3.0, 3, 2),
-        (7, false, 6.0, 4, 1),
-        (8, false, 7.0, 5, 1),
-        (9, false, 8.0, 6, 1),
-        (10, false, 0.0, 4, 2),
-        (11, false, 0.0, 5, 2),
-        (12, false, 0.0, 6, 2);
+INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
+        (1, 100.0, 1, 1),
+        (2, 20.0, 2, 1),
+        (3, 10.0, 3, 1),
+        (4, 100.0, 1, 2),
+        (5, 100.0, 2, 2),
+        (6, 50.0, 3, 2),
+        (7, 100.0, 4, 1),
+        (8, 25.0, 5, 1),
+        (9, 50.0, 6, 1),
+        (10, 100.0, 4, 2),
+        (11, 80.0, 5, 2),
+        (12, 20.0, 6, 2);
