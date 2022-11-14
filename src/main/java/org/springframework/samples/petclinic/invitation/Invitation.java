@@ -6,6 +6,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.samples.petclinic.enums.InvitationType;
 import org.springframework.samples.petclinic.model.BaseEntity;
@@ -24,8 +26,10 @@ public class Invitation extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private InvitationType invitationType;
 
+    @Size(min=3, max=50)
     private String message;
 
+    @NotNull
     private Boolean accepted;
 
     @ManyToOne(optional = false)

@@ -18,11 +18,6 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Invitation> getInvitations() {
-        return repo.findAll();
-    }
-
-    @Transactional(readOnly = true)
     public List<Invitation> getInvitationsByPlayer(Player recipient) {
         return repo.findInvitationsByPlayer(recipient);
     }
