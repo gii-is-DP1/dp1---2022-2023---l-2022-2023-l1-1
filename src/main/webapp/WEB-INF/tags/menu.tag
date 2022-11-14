@@ -34,6 +34,12 @@
 					<span>Find owners</span>
 				</petclinic:menuItem>
 
+				<petclinic:menuItem active="${name eq 'invitations'}" url="/invitations"
+					title="invitations">
+					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+					<span>Invitations</span>
+				</petclinic:menuItem>
+
 				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
 					title="Achievements" dropdown="${true}">										
 						<ul class="dropdown-menu">

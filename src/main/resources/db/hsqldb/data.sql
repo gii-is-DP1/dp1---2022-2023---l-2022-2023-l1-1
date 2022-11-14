@@ -8,7 +8,7 @@ INSERT INTO authorities(id,username,authority) VALUES (2,'owner1','owner');
 INSERT INTO users(username,password,enabled) VALUES ('alvgonfri','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (4,'alvgonfri','player');
 INSERT INTO users(username,password,enabled) VALUES ('davgonher1','ado',TRUE);
-INSERT INTO authorities(id,username,authority) VALUES (5,'davgonher1','owner');
+INSERT INTO authorities(id,username,authority) VALUES (5,'davgonher1','player');
 -- One vet user, named vet1 with passwor v3t
 INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (3,'vet1','veterinarian');
@@ -112,3 +112,7 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
         (3,'RED'),
         (4,'GREEN'),
         (4,'RED');
+
+INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 2),
+('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1);
