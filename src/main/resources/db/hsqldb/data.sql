@@ -82,9 +82,12 @@ INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) V
 
 
 INSERT INTO achievements(id,name,description,threshold) 
-                VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0),
-                        (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0),
-                        (3,'Jugador Experto','Has Jugado mas de <THRESHOLD> partidas',100.00); 
+                VALUES (1,'Jugador Novato','Has jugado mas de <THRESHOLD> partidas',10.0),
+                        (2,'Jugador Avanzado','Has jugado mas de <THRESHOLD> partidas',50.0),
+                        (3,'Jugador Experto','Has jugado mas de <THRESHOLD> partidas',100.00),
+                        (4,'Ganador Novato','Has ganado mas de <THRESHOLD> partidas',5.0),
+                        (5,'Ganador Avanzado','Has Jugado mas de <THRESHOLD> partidas',25.0),
+                        (6,'Ganador Experto','Has Jugado mas de <THRESHOLD> partidas',50.00); ; 
 
 INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
 INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
@@ -114,11 +117,16 @@ INSERT INTO players(id,spectator,username) VALUES
         (1, false, 'migmanalv'),
         (2, false, 'alvgonfri');
 
-INSERT INTO progress(id, completed, completed_percentage, achievements_id, players_id) VALUES
-        (1, false, 0, 1, 1),
-        (2, false, 0, 2, 1),
-        (3, false, 0, 3, 1),
-        (4, false, 0, 1, 2),
-        (5, false, 0, 2, 2),
-        (6, false, 0, 3, 2);
-
+INSERT INTO progress(id, completed, completed_percentage, achievement_id, player_id) VALUES
+        (1, true, 100.0, 1, 1),
+        (2, false, 0.0, 2, 1),
+        (3, false, 0.0, 3, 1),
+        (4, false, 1.0, 1, 2),
+        (5, false, 2.0, 2, 2),
+        (6, false, 3.0, 3, 2),
+        (7, false, 6.0, 4, 1),
+        (8, false, 7.0, 5, 1),
+        (9, false, 8.0, 6, 1),
+        (10, false, 0.0, 4, 2),
+        (11, false, 0.0, 5, 2),
+        (12, false, 0.0, 6, 2);

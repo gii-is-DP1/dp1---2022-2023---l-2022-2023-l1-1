@@ -29,6 +29,10 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
+	public Player getPlayerById(Integer id) {
+		return playerRepository.findById(id).get();
+	}
+
     @Transactional
 	public void savePlayer(Player p) throws DataAccessException {
 		//creating player

@@ -1,11 +1,15 @@
 package org.springframework.samples.petclinic.achievements;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import org.springframework.samples.petclinic.model.NamedEntity;
+import org.springframework.samples.petclinic.progress.Progress;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,12 +22,15 @@ public class Achievement extends NamedEntity {
     
     @NotEmpty
     private String description;
-    private boolean completed;
+    
     @Min(0)
     private double threshold;
-    @Column(name = "completed_percentage")
-    private double completedPercentage;
+
+    @OneToMany(mappedBy = "achievement")
+    private List<Progress> progress;
+
     public String getActualDescription() {
         return description.replace("<THRESHOLD>", String.valueOf(threshold));
     }
+    
 }

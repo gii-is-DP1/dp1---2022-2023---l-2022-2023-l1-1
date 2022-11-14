@@ -54,7 +54,7 @@
 				
 				<sec:authorize access="hasAnyAuthority('player')">
 
-				<petclinic:menuItem active="${name eq 'achievements'}" url="/"
+				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements/user/1" 
 					title="achievements">										
 					<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 					<span>Achievements</span>	
