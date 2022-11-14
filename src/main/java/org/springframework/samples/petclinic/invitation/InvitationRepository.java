@@ -11,8 +11,6 @@ import org.springframework.samples.petclinic.player.Player;
 
 @Repository
 public interface InvitationRepository extends CrudRepository<Invitation, Integer> {
-
-    public List<Invitation> findAll();
     
     @Query("SELECT i FROM Invitation i WHERE i.recipient=:recipient")
     public List<Invitation> findInvitationsByPlayer(@Param("recipient") Player recipient);
