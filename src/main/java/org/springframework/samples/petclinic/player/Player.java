@@ -23,11 +23,11 @@ public class Player extends BaseEntity {
 
     private boolean spectator;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
 
     @ManyToMany(mappedBy = "players")
     private List<Game> games;
-    
+
 }
