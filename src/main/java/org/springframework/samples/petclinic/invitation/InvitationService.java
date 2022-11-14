@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +23,8 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Invitation> getInvitationsByUser(Player recipient) {
-        return repo.findInvitationsByUser(recipient);
+    public List<Invitation> getInvitationsByPlayer(Player recipient) {
+        return repo.findInvitationsByPlayer(recipient);
     }
     
 }
