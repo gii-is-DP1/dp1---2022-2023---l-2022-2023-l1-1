@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 import org.springframework.samples.petclinic.achievements.Achievement;
 import org.springframework.samples.petclinic.model.BaseEntity;
@@ -18,9 +21,10 @@ import lombok.Setter;
 @Setter
 @Table(name="progress")
 public class Progress extends BaseEntity {
-
     
     @Column (name = "completed_percentage")
+    @Min(0)
+    @Max(100)
     private double completedPercentage;
 
     @ManyToOne
@@ -38,5 +42,15 @@ public class Progress extends BaseEntity {
         else {
             return false;
         }
+    }
+
+    public Progress (Double completedPercentage, Achievement achievement, Player player) {
+        this.completedPercentage = completedPercentage;
+        this.achievement = achievement;
+        this.player = player;
+    }
+
+    public Progress() {
+
     }
 }

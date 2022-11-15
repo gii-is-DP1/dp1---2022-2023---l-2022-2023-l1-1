@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.progress.Progress;
 import org.springframework.samples.petclinic.progress.ProgressService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -104,6 +105,9 @@ public class AchievementController {
         return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
        } else {
         achievementService.saveAchievement(achievement);
+        for (Progress progress : progressService.addNewAchievement(achievement)) {
+            progressService.saveProgress(progress);
+        }
         result = showAchievements();
         result.addObject("message", "Achievement saved succesfully!");
        }

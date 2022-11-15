@@ -8,27 +8,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class AchievementService {
     
-    AchievementRepository rep;
+    AchievementRepository achievementRepository;
 
     @Autowired
-    public AchievementService(AchievementRepository rep) {
-        this.rep= rep;
+    public AchievementService(AchievementRepository achievementRepository) {
+        this.achievementRepository= achievementRepository;
     }
 
     public List<Achievement> getAchievements() {
-        return rep.findAll();
+        return achievementRepository.findAll();
     }
 
     public Achievement getById (int id) {
-        return rep.findById(id).get();
+        return achievementRepository.findById(id).get();
     }
 
     public void deleteAchievementById (int id) {
-        rep.deleteById(id);
+        achievementRepository.deleteById(id);
     }
 
     public void saveAchievement (Achievement achievement) { 
-        rep.save(achievement);
+        achievementRepository.save(achievement);
     }
 
 }
