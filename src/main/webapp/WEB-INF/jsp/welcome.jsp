@@ -15,6 +15,7 @@
         <a href="/games/inProcess/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games in process</a>
         <a href="/players"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Manage players</a>
     </sec:authorize>
+    <a href="/users/new"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create User</a>
     <h2><fmt:message key="welcome"/></h2>
     <div class="row">
         <h2> Project: ${title}</h2>
