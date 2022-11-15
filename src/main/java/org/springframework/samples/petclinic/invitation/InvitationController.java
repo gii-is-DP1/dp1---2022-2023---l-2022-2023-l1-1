@@ -1,12 +1,23 @@
 package org.springframework.samples.petclinic.invitation;
 
+import java.util.List;
+
+import javax.transaction.TransactionScoped;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.user.User;
+import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,12 +26,16 @@ import org.springframework.web.servlet.ModelAndView;
 public class InvitationController {
     
     private static final String INVITATIONS_LIST = "invitations/invitationsList";
+    private static final String SEND_INVITATION = "invitations/sendInvitation";
 
     @Autowired
     private InvitationService invitationService;
 
     @Autowired
     private PlayerService playerService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     public InvitationController(InvitationService iS) {
@@ -32,6 +47,41 @@ public class InvitationController {
         ModelAndView result = new ModelAndView(INVITATIONS_LIST);
         Player recipient = playerService.getPlayerByUsername(user.getUsername());
         result.addObject("invitations", invitationService.getInvitationsByPlayer(recipient));
+        return result;
+    }
+/* 
+    @Transactional
+    @GetMapping("/send")
+    public ModelAndView sendInvitation() {
+        Invitation i = new Invitation();
+        List<User> users = userService.getAll();
+        ModelAndView result = new ModelAndView(SEND_INVITATION);
+        result.addObject("invitation", i);
+        result.addObject("users", users);
+        return result;
+    }*/
+
+    @Transactional
+    @GetMapping("/send")
+    public String sendInvitation(ModelMap model){
+        List<User> allUsers = userService.getAll();
+        model.put("users", allUsers);
+        model.put("invitation", new Invitation());
+        return SEND_INVITATION;
+    }
+
+    @Transactional
+    @PostMapping("/send")
+    public ModelAndView saveInvitation(@Valid Invitation i, @AuthenticationPrincipal UserDetails user, BindingResult br) {
+        ModelAndView result = null;
+        Player sender = playerService.getPlayerByUsername(user.getUsername());
+        if(br.hasErrors()) {
+            return new ModelAndView(SEND_INVITATION, br.getModel());
+        } else {
+            invitationService.saveInvitation(i, sender);
+            result = showInvitationsByPlayer(user);
+            result.addObject("message", "Invitation sent succesfully!");
+        }
         return result;
     }
 }

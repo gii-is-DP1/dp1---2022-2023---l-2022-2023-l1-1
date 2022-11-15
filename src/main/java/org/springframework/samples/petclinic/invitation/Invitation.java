@@ -22,14 +22,12 @@ import lombok.Setter;
 @Table(name="invitations")
 public class Invitation extends BaseEntity {
 
-    @NotEmpty
     @Enumerated(EnumType.STRING)
     private InvitationType invitationType;
 
     @Size(min=3, max=50)
     private String message;
 
-    @NotNull
     private Boolean accepted;
 
     @ManyToOne(optional = false)
