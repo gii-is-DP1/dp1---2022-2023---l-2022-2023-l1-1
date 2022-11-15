@@ -41,8 +41,9 @@ public class PlayerService {
 		userService.saveUser(p.getUser());
 		//creating authorities
 		authoritiesService.saveAuthorities(p.getUser().getUsername(), "player");
-	}	
-
+	}
+	
+	@Transactional(readOnly = true)
 	public Player getPlayerByUsername(String username) {
 		return playerRepository.getPlayerByUsername(username);
 	}
