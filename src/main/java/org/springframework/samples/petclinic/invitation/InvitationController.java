@@ -49,26 +49,26 @@ public class InvitationController {
         result.addObject("invitations", invitationService.getInvitationsByPlayer(recipient));
         return result;
     }
-/* 
+
     @Transactional
     @GetMapping("/send")
     public ModelAndView sendInvitation() {
         Invitation i = new Invitation();
-        List<User> users = userService.getAll();
+        List<Player> allPlayers = playerService.getAll();
         ModelAndView result = new ModelAndView(SEND_INVITATION);
+        result.addObject("players", allPlayers);
         result.addObject("invitation", i);
-        result.addObject("users", users);
         return result;
-    }*/
-
+    }
+/* 
     @Transactional
     @GetMapping("/send")
     public String sendInvitation(ModelMap model){
-        List<User> allUsers = userService.getAll();
-        model.put("users", allUsers);
+        List<Player> allPlayers = playerService.getAll();
+        model.put("players", allPlayers);
         model.put("invitation", new Invitation());
         return SEND_INVITATION;
-    }
+    }*/
 
     @Transactional
     @PostMapping("/send")

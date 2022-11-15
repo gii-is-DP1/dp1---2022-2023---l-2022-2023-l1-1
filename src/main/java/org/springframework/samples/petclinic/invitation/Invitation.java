@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.invitation;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -25,7 +26,7 @@ public class Invitation extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private InvitationType invitationType;
 
-    @Size(min=3, max=50)
+    @Size(min=3, max=100)
     private String message;
 
     private Boolean accepted;
