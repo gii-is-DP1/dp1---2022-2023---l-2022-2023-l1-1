@@ -2,5 +2,5 @@ package org.springframework.samples.petclinic.enums;
 
 
 public enum RoleCard {
-    EDIL, PRETOR, CONSUL;
+    EDIL, PRETOR, CONSUL,NO_ROL;
 }

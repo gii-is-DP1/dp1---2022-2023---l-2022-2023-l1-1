@@ -5,10 +5,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.enums.State;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,12 +23,16 @@ public class GameController {
     private static final String FIND_GAMES_IN_PROCESS = "/games/findGamesInProcess";
     private static final String FIND_GAMES_STARTING = "/games/findGamesStarting";
     private static final String CREATE_GAME = "/games/createGame";
-    
-    private GameService service;
+	private static final String GAME_LOBBY = "/games/gameLobby";
+
+    @Autowired
+    private GameService gameService;
+	@Autowired
+	private PlayerInfoService playerInfoService;
 
     @Autowired
     public GameController(GameService service) {
-        this.service = service;
+        this.gameService = service;
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +52,7 @@ public class GameController {
 		}
 
 		// find games by name
-		List<Game> results = this.service.getGamesByNameAndState(game.getName(), State.FINISHED);
+		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.FINISHED);
 		if (results.isEmpty()) {
 			// no games found
 			result.rejectValue("name", "notFound", "not found");
@@ -74,7 +80,7 @@ public class GameController {
 			game.setName("");
 		}
 
-		List<Game> results = this.service.getGamesByNameAndState(game.getName(), State.IN_PROCESS);
+		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.IN_PROCESS);
 		if (results.isEmpty()) {
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_IN_PROCESS);
@@ -100,7 +106,7 @@ public class GameController {
 			game.setName("");
 		}
 
-		List<Game> results = this.service.getGamesByNameAndState(game.getName(), State.STARTING);
+		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.STARTING);
 		if (results.isEmpty()) {
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_STARTING);
@@ -120,4 +126,13 @@ public class GameController {
         res.addObject("game", game);                                  
         return res;
     }
+
+	@Transactional
+	@GetMapping("/{id}/lobby")
+	public ModelAndView showlobby(@PathVariable("gameId") int gameId){
+		ModelAndView res=new ModelAndView(GAME_LOBBY);
+		Game game=gameService.getGameById(gameId);
+		res.addObject("playerInfos", playerInfoService.getPlayerByGame(game));
+		return res;
+	}
 }

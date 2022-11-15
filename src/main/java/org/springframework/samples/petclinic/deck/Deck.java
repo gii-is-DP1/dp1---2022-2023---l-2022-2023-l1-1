@@ -7,11 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -34,5 +37,11 @@ public class Deck extends BaseEntity {
     @ManyToMany(targetEntity = VoteCard.class)
     @Column(name = "vote_card")
     private List<VoteCard> voteCards;
+
+    @ManyToOne (optional = false)
+    private Player player;
+
+    @ManyToOne (optional = false)
+    private Turn turn;
 
 }
