@@ -12,9 +12,9 @@
         <tr>
             <th>Name</th>
             <th>Description</th>
-            <th>Status</th>
             <th>Edit</th>
             <th>Remove</th>
+            
         </tr>
         </thead>
         <tbody>
@@ -25,10 +25,6 @@
                 </td>
                 <td>                    
                       <c:out value="${achievement.actualDescription} "/>                                        
-                </td>
-                <td> 
-                    <c:if test="${achievement.completed}"> <c:out value="Completed"/> </c:if>
-                    <c:if test="${achievement.completed == false}"> <c:out value="Not Completed"/> </c:if>
                 </td>
                 <td> 
                     <a href="/achievements/${achievement.id}/edit"> 
