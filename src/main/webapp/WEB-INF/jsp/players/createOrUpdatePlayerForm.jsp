@@ -13,7 +13,6 @@
                    class="form-horizontal">
             <input type="hidden" name="id" value="${player.id}"/>
             <div class="form-group has-feedback">
-                <petclinic:inputField label="Spectator" name="spectator"/>
                 <%--
                     <petclinic:inputField label="Username" name="username"/>
                 --%>
