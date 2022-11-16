@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.stereotype.Repository;
-//PRUEBA GITHUB
+//PRUEBA GITHUB1
 @Repository
 public interface PlayerInfoRepository extends CrudRepository<PlayerInfo,Long>{
 
