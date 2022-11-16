@@ -30,7 +30,7 @@ public class Player extends BaseEntity {
     @NotNull
     private Boolean playing;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
 
@@ -38,4 +38,3 @@ public class Player extends BaseEntity {
     @OneToMany (mappedBy = "player")
     private List<Progress> progress;
     
-}

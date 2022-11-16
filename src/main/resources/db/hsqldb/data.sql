@@ -86,57 +86,6 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
-INSERT INTO players(id,online,playing,username) VALUES
-(1, TRUE, FALSE , 'alvgonfri'),
-(2, TRUE, FALSE , 'davgonher1'),
-(8, TRUE, FALSE, 'migmanalv'),
-(3, TRUE, FALSE , 'player1'),
-(4, TRUE, FALSE , 'player2'),
-(5, TRUE, FALSE , 'player3'),
-(6, TRUE, FALSE , 'player4'),
-(7, TRUE, FALSE , 'player5');
-
-INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
-(1,2,3,8),
-(2,5,3,12),
-(3,6,6,13);
-
-
-INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners,suffragium_card_id) VALUES
-(1,'Mi primera partida', 1, 'STARTING', null, null, null, null,1),
-(2,'Partida rapida', 0, 'IN_PROCESS', null, null, null, null,2),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS',3);
-
-INSERT INTO rounds(id,current_round,game_id) VALUES 
-(1,'FIRST',1),
-(2,'FIRST',2),
-(3,'SECOND',3);
-
-INSERT INTO turns(id,current_turn,round_id) VALUES 
-(1, 5,1),
-(2, 6,2),
-(3, 8,3);
-
-INSERT INTO stages(id,current_stage,turn_id) VALUES 
-(1,'VOTING',1),
-(2,'SCORING',2),
-(3,'ENDOFTURN',3);
-
-INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 
-(1,true,false,2,1),
-(2,false,false,2,2),
-(3,false,false,2,3),
-(5,false,false,2,5),
-(6,false,true,2,6);
-
-
-INSERT INTO achievements(id,name,description,threshold) 
-                VALUES (1,'Jugador Novato','Has jugado mas de <THRESHOLD> partidas',10.0),
-                        (2,'Jugador Avanzado','Has jugado mas de <THRESHOLD> partidas',50.0),
-                        (3,'Jugador Experto','Has jugado mas de <THRESHOLD> partidas',100.00),
-                        (4,'Ganador Novato','Has ganado mas de <THRESHOLD> partidas',5.0),
-                        (5,'Ganador Avanzado','Has Jugado mas de <THRESHOLD> partidas',25.0),
-                        (6,'Ganador Experto','Has Jugado mas de <THRESHOLD> partidas',50.00); ; 
 
 INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
 INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
