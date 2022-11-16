@@ -37,4 +37,4 @@ public class Player extends BaseEntity {
 
     @OneToMany (mappedBy = "player")
     private List<Progress> progress;
-    
+}
