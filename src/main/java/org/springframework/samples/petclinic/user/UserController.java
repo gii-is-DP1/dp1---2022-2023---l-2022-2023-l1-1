@@ -23,6 +23,8 @@ import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -43,14 +45,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/users")
 public class UserController {
 
-	private static final String CREATE_PLAYER = "/users/createOrUpdateUserForm";
+	private static final String CREATE_PLAYER = "/users/createPlayer";
 	private static final String VIEWS_USER_LIST = "/users/usersList";
 
-	private final UserService service;
+	private final PlayerService service;
+
+    private UserService userService;
 
 	@Autowired
-	public UserController(UserService uS) {
-		this.service = uS;
+	public UserController(PlayerService pS) {
+		this.service = pS;
 	}
 
 	@InitBinder
@@ -60,7 +64,7 @@ public class UserController {
 
 	@GetMapping
     public String listAllUsers(ModelMap model){
-        List<User> allUsers = service.getAll();
+        List<User> allUsers = userService.getAll();
         model.put("users", allUsers);
         return VIEWS_USER_LIST;
     }
@@ -80,9 +84,28 @@ public class UserController {
 		else {
 			User newUser = new User();
         	BeanUtils.copyProperties(user, newUser);
-        	User createdUser = service.saveUser(newUser);
+        	User createdUser = userService.saveUser(newUser);
         	model.put("message", "User " + createdUser.getUsername() + " successfully created" );
        		return "redirect:/users/";
+		}
+	}
+
+    @GetMapping(value = "/new")
+	public String initCreationForm(Map<String, Object> model) {
+		Player player = new Player();
+		model.put("player", player);
+		return CREATE_PLAYER;
+	}
+
+    @PostMapping(value = "/new")
+	public String processCreationForm(@Valid Player player, BindingResult result) {
+		if (result.hasErrors()) {
+			return CREATE_PLAYER;
+		}
+		else {
+			//creating player, user, and authority
+			this.service.savePlayer(player);
+			return "redirect:/";
 		}
 	}
 
@@ -91,7 +114,7 @@ public class UserController {
         String message;
 
         try{
-            service.removeUser(username);
+            userService.removeUser(username);
             message = "Player " + username + " successfully deleted";   
         } catch (EmptyResultDataAccessException e){
             message = "Player " + username + " doesn't exist";
@@ -114,7 +137,7 @@ public class UserController {
             return listAllUsers(model);
         }
 		 */
-		User user = service.getUser(username);
+		User user = userService.getUser(username);
 		model.put("user", user);
 		return CREATE_PLAYER;
     }
@@ -125,11 +148,11 @@ public class UserController {
             return CREATE_PLAYER;
         }
         else {
-            User userToUpdate = service.getUser(username);
+            User userToUpdate = userService.getUser(username);
             if(userToUpdate != null){
                 BeanUtils.copyProperties(user, userToUpdate, "username");
                 model.put("message", "Player " + username + " successfully updated");
-                service.saveUser(userToUpdate);
+                userService.saveUser(userToUpdate);
                 return listAllUsers(model);
             }
             else{
