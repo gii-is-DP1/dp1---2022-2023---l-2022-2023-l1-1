@@ -69,4 +69,6 @@ public class UserService {
 		Optional<User> user = this.userRepository.findById(username);
 		return user.isPresent()? user.get() : null;
 	}
-}
+	public List<User> getAll() {
+		return userRepository.findAll();
+	}

@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.EnumType;
 import javax.persistence.Table;
 
@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Range;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.model.NamedEntity;
-import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -40,6 +40,6 @@ public class Game extends NamedEntity {
     @Enumerated(EnumType.STRING)
     private Faction winners;
 
-    @ManyToMany
-    private List<Player> players;
+    @OneToOne (optional=false)
+    private SuffragiumCard suffragiumCard;
 }

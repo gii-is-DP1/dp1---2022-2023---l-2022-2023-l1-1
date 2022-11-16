@@ -33,6 +33,9 @@ public class PlayerService {
 	@Transactional
 	public void removePlayer(Integer id){
 		this.playerRepository.deleteById(id);
+    
+	public Player getPlayerById(Integer id) {
+		return playerRepository.findById(id).get();
 	}
 
     @Transactional
@@ -41,6 +44,7 @@ public class PlayerService {
 		userService.saveUser(p.getUser());
 		//creating authorities
 		authoritiesService.saveAuthorities(p.getUser().getUsername(), "player");
+
 		//creating player
 		return playerRepository.save(p);	
 	}
@@ -49,5 +53,12 @@ public class PlayerService {
 	public Player getPlayer(Integer id){
 		Optional<Player> player = this.playerRepository.findById(id);
 		return player.isPresent()? player.get() : null;
+
+	}
+	
+	@Transactional(readOnly = true)
+	public Player getPlayerByUsername(String username) {
+		return playerRepository.getPlayerByUsername(username);
+
 	}
 }
