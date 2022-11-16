@@ -154,5 +154,3 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
         (3,'RED'),
         (4,'GREEN'),
         (4,'RED');
-
-/*PRUEBA GITHUB1*/
