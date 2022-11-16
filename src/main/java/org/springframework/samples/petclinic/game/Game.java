@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.game;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
