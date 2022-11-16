@@ -33,6 +33,7 @@ public class PlayerService {
 	@Transactional
 	public void removePlayer(Integer id){
 		this.playerRepository.deleteById(id);
+	}
     
 	public Player getPlayerById(Integer id) {
 		return playerRepository.findById(id).get();
