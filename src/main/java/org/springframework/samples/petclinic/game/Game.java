@@ -18,7 +18,7 @@ import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 
 import lombok.Getter;
 import lombok.Setter;
-//PRUEBA GITHUB1
+
 @Entity
 @Getter
 @Setter
