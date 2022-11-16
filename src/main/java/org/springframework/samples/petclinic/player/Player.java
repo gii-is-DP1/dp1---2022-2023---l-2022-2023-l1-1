@@ -15,7 +15,7 @@ import org.springframework.samples.petclinic.user.User;
 
 import lombok.Getter;
 import lombok.Setter;
-//PRUEBA GITHUB1
+
 @Entity
 @Getter
 @Setter
