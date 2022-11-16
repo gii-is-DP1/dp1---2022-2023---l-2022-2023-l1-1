@@ -9,6 +9,8 @@ INSERT INTO users(username,password,enabled) VALUES ('alvgonfri','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (4,'alvgonfri','player');
 INSERT INTO users(username,password,enabled) VALUES ('davgonher1','ado',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (5,'davgonher1','player');
+INSERT INTO users(username,password,enabled) VALUES ('migmanalv','miguel1',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (6,'migmanalv','player');
 INSERT INTO users(username,password,enabled) VALUES ('player1','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (8,'player1','player');
 INSERT INTO users(username,password,enabled) VALUES ('player2','1234',TRUE);
@@ -19,6 +21,8 @@ INSERT INTO users(username,password,enabled) VALUES ('player4','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (11,'player4','player');
 INSERT INTO users(username,password,enabled) VALUES ('player5','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (12,'player5','player');
+
+
 -- One vet user, named vet1 with passwor v3t
 INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (3,'vet1','veterinarian');
@@ -85,6 +89,7 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04',
 INSERT INTO players(id,online,playing,username) VALUES
 (1, TRUE, FALSE , 'alvgonfri'),
 (2, TRUE, FALSE , 'davgonher1'),
+(8, TRUE, FALSE, 'migmanalv'),
 (3, TRUE, FALSE , 'player1'),
 (4, TRUE, FALSE , 'player2'),
 (5, TRUE, FALSE , 'player3'),
@@ -125,10 +130,13 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (6,false,true,2,6);
 
 
-INSERT INTO achievements(id,name,description,threshold,completed,completed_percentage) 
-                VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0,true,5.0),
-                        (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0,false,9.0),
-                        (3,'Jugador Experto','Has Jugado mas de <THRESHOLD> partidas',100.00,false,4.0); 
+INSERT INTO achievements(id,name,description,threshold) 
+                VALUES (1,'Jugador Novato','Has jugado mas de <THRESHOLD> partidas',10.0),
+                        (2,'Jugador Avanzado','Has jugado mas de <THRESHOLD> partidas',50.0),
+                        (3,'Jugador Experto','Has jugado mas de <THRESHOLD> partidas',100.00),
+                        (4,'Ganador Novato','Has ganado mas de <THRESHOLD> partidas',5.0),
+                        (5,'Ganador Avanzado','Has Jugado mas de <THRESHOLD> partidas',25.0),
+                        (6,'Ganador Experto','Has Jugado mas de <THRESHOLD> partidas',50.00); ; 
 
 INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
 INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
@@ -154,3 +162,23 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
         (3,'RED'),
         (4,'GREEN'),
         (4,'RED');
+
+INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
+        (1, 100.0, 1, 3),
+        (2, 20.0, 2, 3),
+        (3, 10.0, 3, 3),
+        (4, 100.0, 1, 2),
+        (5, 100.0, 2, 2),
+        (6, 50.0, 3, 2),
+        (7, 100.0, 4, 3),
+        (8, 25.0, 5, 3),
+        (9, 50.0, 6, 3),
+        (10, 100.0, 4, 2),
+        (11, 80.0, 5, 2),
+        (12, 20.0, 6, 2);
+
+INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 2),
+('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1),
+('FRIENDSHIP', 'I am player1', FALSE, 5, 1);
+

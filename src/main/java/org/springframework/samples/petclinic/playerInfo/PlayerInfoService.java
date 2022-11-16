@@ -23,7 +23,7 @@ public class PlayerInfoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Player> getPlayerByGame(Game game) {
+    public List<PlayerInfo> getPlayerInfosByGame(Game game) {
         return repo.findPlayerInfosByGame(game);
     }
 }

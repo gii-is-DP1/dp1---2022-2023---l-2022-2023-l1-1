@@ -128,11 +128,12 @@ public class GameController {
     }
 
 	@Transactional
-	@GetMapping("/{id}/lobby")
-	public ModelAndView showlobby(@PathVariable("gameId") int gameId){
-		ModelAndView res=new ModelAndView(GAME_LOBBY);
-		Game game=gameService.getGameById(gameId);
-		res.addObject("playerInfos", playerInfoService.getPlayerByGame(game));
-		return res;
-	}
+    @GetMapping("/{gameId}/lobby")
+    public ModelAndView showlobby(@PathVariable("gameId") Integer gameId){
+        ModelAndView res=new ModelAndView(GAME_LOBBY);
+        Game game=gameService.getGameById(gameId);
+        res.addObject("game", game);
+        res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+        return res;
+    }
 }

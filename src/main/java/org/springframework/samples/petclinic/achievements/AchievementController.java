@@ -5,6 +5,12 @@ import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.progress.Progress;
+import org.springframework.samples.petclinic.progress.ProgressService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -20,17 +26,30 @@ public class AchievementController {
 
     private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/achievementsListing";
     private final String ACHIEVEMENTS_FORM="/achievements/createOrUpdateAchievementForm";
+    private final String USER_ACHIEVEMENTS_VIEW="/achievements/playerAchievements";
     private AchievementService achievementService;
+    private ProgressService progressService;
+    private PlayerService playerService;
 
     @Autowired
-    public AchievementController(AchievementService achievementService){
+    public AchievementController(AchievementService achievementService, ProgressService progressService, PlayerService playerService){
         this.achievementService = achievementService;
+        this.progressService = progressService;
+        this.playerService = playerService;
     }
     
     @GetMapping
     public ModelAndView showAchievements(){
         ModelAndView result=new ModelAndView(ACHIEVEMENTS_LISTING_VIEW);
         result.addObject("achievements", achievementService.getAchievements());
+        return result;
+    }
+
+    @GetMapping("/player")
+    public ModelAndView showUserAchievements(@AuthenticationPrincipal UserDetails user) {
+        ModelAndView result=new ModelAndView(USER_ACHIEVEMENTS_VIEW);
+        Player pl = playerService.getPlayerByUsername(user.getUsername());
+        result.addObject("progress", progressService.getUserProgress(pl));
         return result;
     }
 
@@ -86,6 +105,9 @@ public class AchievementController {
         return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
        } else {
         achievementService.saveAchievement(achievement);
+        for (Progress progress : progressService.addNewAchievement(achievement)) {
+            progressService.saveProgress(progress);
+        }
         result = showAchievements();
         result.addObject("message", "Achievement saved succesfully!");
        }

@@ -6,8 +6,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.samples.petclinic.model.BaseEntity;
-
 import lombok.Getter;
 import lombok.Setter;
 
