@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-//PRUEBA GITHUB1
+
 @Service
 public class GameService {
     
