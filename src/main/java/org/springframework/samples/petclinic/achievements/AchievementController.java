@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/achievements")
 public class AchievementController {
 
-    private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/achievementsListing";
+    private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/achievementsList";
     private final String ACHIEVEMENTS_FORM="/achievements/createOrUpdateAchievementForm";
     private final String USER_ACHIEVEMENTS_VIEW="/achievements/playerAchievements";
     private AchievementService achievementService;
