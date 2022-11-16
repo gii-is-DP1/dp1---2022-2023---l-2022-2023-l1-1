@@ -12,7 +12,7 @@ import org.springframework.samples.petclinic.player.Player;
 
 import lombok.Getter;
 import lombok.Setter;
-
+//PRUEBA GITHUB
 @Entity
 @Getter
 @Setter

@@ -7,7 +7,7 @@ import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+//PRUEBA GITHUB
 @Service
 public class PlayerInfoService {
 

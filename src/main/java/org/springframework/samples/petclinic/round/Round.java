@@ -12,7 +12,7 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 
 import lombok.Getter;
 import lombok.Setter;
-
+//PRUEBA GITHUB
 @Entity
 @Getter
 @Setter
