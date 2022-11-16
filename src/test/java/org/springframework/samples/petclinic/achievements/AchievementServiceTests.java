@@ -3,6 +3,9 @@ package org.springframework.samples.petclinic.achievements;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class AchievementServiceTests {
     private AchievementService achievementService;
 
     @Test
-    void shouldFindAchievementWithCorrectId() {
+    void getByIdTest() {
         Achievement achievement3 = this.achievementService.getById(3);
         assertThat(achievement3.getName()).isEqualTo("Jugador Experto");
         assertThat(achievement3.getActualDescription()).startsWith("Has jugado");
@@ -27,12 +30,17 @@ public class AchievementServiceTests {
     }
 
     @Test
-    void shouldFindAllAchievements() {
+    void getAchievementsTest() {
         List<Achievement> achievements = this.achievementService.getAchievements();
+        assertNotNull(achievements);
+        assertFalse(achievements.isEmpty());
+        assertEquals(6, achievements.size());
         Achievement achievement1 = EntityUtils.getById(achievements, Achievement.class, 1);
         assertThat(achievement1.getName()).isEqualTo("Jugador Novato");
         Achievement achievement5 = EntityUtils.getById(achievements, Achievement.class, 5);
         assertThat(achievement5.getName()).isEqualTo("Ganador Avanzado");
+        
+
     }
 
 }
