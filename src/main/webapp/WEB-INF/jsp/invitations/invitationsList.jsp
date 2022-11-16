@@ -6,6 +6,7 @@
 
 <petclinic:layout pageName="invitations">
     <h2>Invitations</h2>
+    <a href="/invitations/send"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Send invitation</a>
     <table id="invitationsTable" class="table table-striped">
         <thead>
         <tr>
