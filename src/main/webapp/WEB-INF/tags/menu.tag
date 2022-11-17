@@ -28,31 +28,45 @@
 					<span>Home</span>
 				</petclinic:menuItem>
 
+				<sec:authorize access="hasAnyAuthority('admin', 'player')">
+				
+				
+				</sec:authorize>
+				
+				<sec:authorize access="hasAnyAuthority('admin')">
+
 				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
 					title="find owners">
 					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 					<span>Find owners</span>
 				</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'invitations'}" url="/invitations"
+				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
+					title="achievements">										
+					<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+					<span>Achievements</span>	
+				</petclinic:menuItem>	
+
+				</sec:authorize>
+
+
+				
+				<sec:authorize access="hasAnyAuthority('player')">
+        
+        <petclinic:menuItem active="${name eq 'invitations'}" url="/invitations"
 					title="invitations">
 					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
 					<span>Invitations</span>
 				</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
-					title="Achievements" dropdown="${true}">										
-						<ul class="dropdown-menu">
-							<li>
-								<a href="<c:url value="/achievements/" />">Achievements listing</a>		
-							</li>
-							<li class="divider"></li>
-							<li>								
-								<a href="<c:url value="/achievements/" />">My Achievements <span class="glyphicon glyphicon-certificate" aria-hidden="true"></span></a>		
+				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements/player" 
+					title="achievements">										
+					<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+					<span>Achievements</span>	
+				</petclinic:menuItem>
 
-							</li>
-						</ul>					
-				</petclinic:menuItem>	
+
+				</sec:authorize>
 
 			</ul>
 

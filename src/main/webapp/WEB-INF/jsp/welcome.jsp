@@ -7,12 +7,13 @@
 
 <petclinic:layout pageName="home">
     <sec:authorize access="hasAuthority('player')">
-        <a href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
-        <a href="/games/starting/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
+        <a class="btn btn-default" href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
+        <a class="btn btn-default" href="/games/starting/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
     </sec:authorize>
     <sec:authorize access="hasAuthority('admin')">
-        <a href="/games/history/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games history</a>
-        <a href="/games/inProcess/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games in process</a>
+        <a class="btn btn-default" href="/games/history/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games history</a>
+        <a class="btn btn-default" href="/games/inProcess/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games in process</a>
+        <a class="btn btn-default" href="/players"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Manage players</a>
     </sec:authorize>
     <h2><fmt:message key="welcome"/></h2>
     <div class="row">

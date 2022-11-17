@@ -9,8 +9,18 @@ INSERT INTO users(username,password,enabled) VALUES ('alvgonfri','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (4,'alvgonfri','player');
 INSERT INTO users(username,password,enabled) VALUES ('davgonher1','ado',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (5,'davgonher1','player');
+INSERT INTO users(username,password,enabled) VALUES ('migmanalv','miguel1',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (6,'migmanalv','player');
 INSERT INTO users(username,password,enabled) VALUES ('player1','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (8,'player1','player');
+INSERT INTO users(username,password,enabled) VALUES ('player2','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (9,'player2','player');
+INSERT INTO users(username,password,enabled) VALUES ('player3','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (10,'player3','player');
+INSERT INTO users(username,password,enabled) VALUES ('player4','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (11,'player4','player');
+INSERT INTO users(username,password,enabled) VALUES ('player5','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (12,'player5','player');
 
 -- One vet user, named vet1 with passwor v3t
 INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
@@ -75,49 +85,104 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
-INSERT INTO players(id,spectator,username) VALUES 
-(1, FALSE , 'alvgonfri'),
-(2, FALSE , 'davgonher1'),
-(5, FALSE , 'player1');
+INSERT INTO players(id,online,playing,username) VALUES
+(1, TRUE, FALSE , 'alvgonfri'),
+(2, TRUE, FALSE , 'davgonher1'),
+(3, TRUE, FALSE, 'migmanalv'),
+(5, TRUE, FALSE , 'player1'),
+(6, TRUE, FALSE , 'player2'),
+(7, TRUE, FALSE , 'player3'),
+(8, TRUE, FALSE , 'player4'),
+(9, TRUE, FALSE , 'player5');
 
-INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners) VALUES
-(1,'Mi primera partida', 1, 'STARTING', null, null, null, null),
-(2,'Partida rapida', 0, 'IN_PROCESS', null, null, null, null),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS');
+INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
+(1,2,3,8),
+(2,5,3,12),
+(3,6,6,13);
 
-INSERT INTO games_players(games_id, players_id) VALUES
-(1, 1), (1, 2);
+INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners,suffragium_card_id) VALUES
+(1,'Mi primera partida', 1, 'STARTING', null, null, null, null,1),
+(2,'Partida rapida', 0, 'IN_PROCESS', null, null, null, null,2),
+(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS',3);
 
-INSERT INTO achievements(id,name,description,threshold,completed,completed_percentage) 
-                VALUES (1,'Jugador Novato','Has Jugado mas de <THRESHOLD> partidas',10.0,true,5.0),
-                        (2,'Jugador Avanzado','Has Jugado mas de <THRESHOLD> partidas',50.0,false,9.0),
-                        (3,'Jugador Experto','Has Jugado mas de <THRESHOLD> partidas',100.00,false,4.0); 
+INSERT INTO rounds(id,current_round,game_id) VALUES 
+(1,'FIRST',1),
+(2,'FIRST',2),
+(3,'SECOND',3);
 
-INSERT INTO faction_cards(type) VALUES ('LOYAL'), ('TRAITOR'), ('MERCHANT');
-INSERT INTO vote_cards(type) VALUES ('GREEN'), ('RED'), ('YELLOW');
+INSERT INTO turns(id,current_turn,round_id) VALUES 
+(1, 5,1),
+(2, 6,2),
+(3, 8,3);
 
--- MAZOS DE PRUEBA SIMULANDO LA RONDA 1
-INSERT INTO decks(id, role_cards) VALUES 
-        (1, 'CONSUL'),
-        (2, 'PRETOR'),
-        (3, 'EDIL'),
-        (4, 'EDIL'),
-        (5, null),
-        (6, null);
+INSERT INTO stages(id,current_stage,turn_id) VALUES 
+(1,'VOTING',1),
+(2,'SCORING',2),
+(3,'ENDOFTURN',3);
+
+INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 
+(1,true,false,2,1),
+(2,false,false,2,2),
+(3,false,false,2,3),
+(5,false,false,2,5),
+(6,false,true,2,6);
+
+INSERT INTO achievements(id,name,description,threshold) VALUES 
+(1,'Jugador Novato','Has jugado mas de <THRESHOLD> partidas',10.0),
+(2,'Jugador Avanzado','Has jugado mas de <THRESHOLD> partidas',50.0),
+(3,'Jugador Experto','Has jugado mas de <THRESHOLD> partidas',100.00),
+(4,'Ganador Novato','Has ganado mas de <THRESHOLD> partidas',5.0),
+(5,'Ganador Avanzado','Has Jugado mas de <THRESHOLD> partidas',25.0),
+(6,'Ganador Experto','Has Jugado mas de <THRESHOLD> partidas',50.00);
+
+INSERT INTO faction_cards(type) VALUES 
+('LOYAL'), ('TRAITOR'), ('MERCHANT');
+
+INSERT INTO vote_cards(type) VALUES 
+('GREEN'), ('RED'), ('YELLOW');
+
+INSERT INTO decks(id, role_cards,player_id,turn_id) VALUES 
+(1, 'CONSUL',1,1),
+(2, 'PRETOR',5,1),
+(3, 'EDIL',2,2),
+(4, 'EDIL',3,3),
+(5, 'NO_ROL',6,1),
+(6, 'NO_ROL',7,1);
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
-        (3, 'LOYAL'),
-        (3,'MERCHANT'),
-        (4,'TRAITOR'),  
-        (4,'LOYAL');
+(3, 'LOYAL'),
+(3,'MERCHANT'),
+(4,'TRAITOR'),  
+(4,'LOYAL');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
-        (3,'GREEN'),
-        (3,'RED'),
-        (4,'GREEN'),
-        (4,'RED');
+(3,'GREEN'),
+(3,'RED'),
+(4,'GREEN'),
+(4,'RED');
+
+INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
+(1, 100.0, 1, 3),
+(2, 20.0, 2, 3),
+(3, 10.0, 3, 3),
+(4, 100.0, 1, 2),
+(5, 100.0, 2, 2),
+(6, 50.0, 3, 2),
+(7, 100.0, 4, 3),
+(8, 25.0, 5, 3),
+(9, 50.0, 6, 3),
+(10, 100.0, 4, 2),
+(11, 80.0, 5, 2),
+(12, 20.0, 6, 2),
+(13, 100.0, 1, 1),
+(14, 20.0, 2, 1),
+(15, 10.0, 3, 1),
+(16, 100.0, 4, 1),
+(17, 25.0, 5, 1),
+(18, 50.0, 6, 1);
 
 INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
 ('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 2),
 ('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1),
 ('FRIENDSHIP', 'I am player1', FALSE, 5, 1);
+
