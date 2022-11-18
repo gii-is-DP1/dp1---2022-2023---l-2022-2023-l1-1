@@ -18,14 +18,6 @@ public class GameRepositoryTest {
     private GameRepository gameRepository;
 
     @Test
-    public void testFindAll() {
-        List<Game> g = gameRepository.findAll();
-        assertNotNull(g);
-        assertFalse(g.isEmpty());
-        assertEquals(3, g.size());
-    }
-
-    @Test
     public void testFindByName() {
         List<Game> g = gameRepository.findByName("Mi primera partida");
         assertNotNull(g);
@@ -36,7 +28,7 @@ public class GameRepositoryTest {
     @Test
     public void testFindById() {
         Game g = gameRepository.findById(1);
-        Game g2=gameRepository.findById(2);
+        Game g2 = gameRepository.findById(2);
         assertNotNull(g);
         assertNotNull(g2);
         assertNotEquals(g2, g);

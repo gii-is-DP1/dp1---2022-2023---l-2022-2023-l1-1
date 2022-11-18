@@ -11,9 +11,10 @@ import org.springframework.stereotype.Repository;
 public interface GameRepository extends CrudRepository<Game, Long>{
     List<Game> findAll(); 
 
+    @Query("SELECT DISTINCT g FROM Game g WHERE g.id LIKE :id")
+	public Game findById(@Param("id") Integer id);
+
     @Query("SELECT DISTINCT g FROM Game g WHERE g.name LIKE :name%")
 	public List<Game> findByName(@Param("name") String name);
 
-    @Query("SELECT DISTINCT g FROM Game g WHERE g.id LIKE :id")
-	public Game findById(@Param("id") Integer id);
 }

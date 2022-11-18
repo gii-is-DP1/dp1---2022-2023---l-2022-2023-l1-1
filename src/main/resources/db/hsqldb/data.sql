@@ -98,12 +98,14 @@ INSERT INTO players(id,online,playing,username) VALUES
 INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 (1,2,3,8),
 (2,5,3,12),
-(3,6,6,13);
+(3,5,3,12),
+(4,6,6,13);
 
 INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners,suffragium_card_id) VALUES
-(1,'Mi primera partida', 1, 'STARTING', null, null, null, null,1),
-(2,'Partida rapida', 0, 'IN_PROCESS', null, null, null, null,2),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS',3);
+(1,'Mi primera partida', 1, 'STARTING', null, null, null, null, 1),
+(2,'Partida rapida', 0, 'IN_PROCESS', null, null, null, null, 2),
+(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS', 3),
+(4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'LOYALS', 4);
 
 INSERT INTO rounds(id,current_round,game_id) VALUES 
 (1,'FIRST',1),
@@ -125,7 +127,11 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (2,false,false,2,2),
 (3,false,false,2,3),
 (5,false,false,2,5),
-(6,false,true,2,6);
+(6,false,true,2,6),
+
+(10,false,false,3,1),
+
+(20,true,false,4,1);
 
 INSERT INTO achievements(id,name,description,threshold) VALUES 
 (1,'Jugador Novato','Has jugado mas de <THRESHOLD> partidas',10.0),

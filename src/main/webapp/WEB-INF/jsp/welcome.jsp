@@ -9,6 +9,7 @@
     <sec:authorize access="hasAuthority('player')">
         <a class="btn btn-default" href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
         <a class="btn btn-default" href="/games/starting/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
+        <a class="btn btn-default" href="/games/playerHistory/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Your game history</a>
     </sec:authorize>
     <sec:authorize access="hasAuthority('admin')">
         <a class="btn btn-default" href="/games/history/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games history</a>
