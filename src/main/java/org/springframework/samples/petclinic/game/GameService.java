@@ -19,11 +19,14 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<Game> getGamesByNameAndState(String name, State s) {
-        return repo.findByName(name).stream().filter(g -> g.getState() == s).collect(Collectors.toList());
-    }
-    @Transactional(readOnly = true)
     public Game getGameById(Integer id){
         return repo.findById(id);
     }
+
+    @Transactional(readOnly = true)
+    public List<Game> getGamesByNameAndState(String name, State s) {
+        return repo.findByName(name).stream().filter(g -> g.getState() == s).collect(Collectors.toList());
+    }
+
+    
 }
