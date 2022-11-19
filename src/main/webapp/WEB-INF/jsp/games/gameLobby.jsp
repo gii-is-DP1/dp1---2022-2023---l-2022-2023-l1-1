@@ -21,7 +21,7 @@
         <c:forEach items="${playerInfos}" var="playerInfo">
             <tr>
                 <td>
-                    <c:out value="${playerInfo.player}"/>
+                    <c:out value="${playerInfo.player.user.username}"/>
                 </td>
                 <td>
                     <c:out value="${playerInfo.creator}"/>

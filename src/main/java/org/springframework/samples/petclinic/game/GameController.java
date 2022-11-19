@@ -7,11 +7,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
+import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
+import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCardService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -19,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -42,6 +48,9 @@ public class GameController {
 
 	@Autowired
 	private PlayerInfoService playerInfoService;
+
+	@Autowired
+	private SuffragiumCardService suffragiumCardService;
 
     @Autowired
     public GameController(GameService service) {
@@ -176,12 +185,34 @@ public class GameController {
 
     @Transactional
     @GetMapping("/create")
-    public ModelAndView createGame() {
+    public ModelAndView createGameForm() {
         ModelAndView res = new ModelAndView(CREATE_GAME);
-        Game game =new Game();         
-        res.addObject("game", game);                                  
+        Game game = new Game();   
+		SuffragiumCard card = new SuffragiumCard(); 
+		PlayerInfo creatorInfo = new PlayerInfo();     
+        res.addObject("game", game);
+		res.addObject("suffragiumCard", card); 
+		res.addObject("creatorInfo", creatorInfo);                                 
         return res;
     }
+
+	@Transactional
+	@PostMapping("/create")
+	public ModelAndView createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
+	@Valid SuffragiumCard card, @Valid Game game, BindingResult br) {
+		ModelAndView res = null;
+		if(br.hasErrors()) {
+			return new ModelAndView(CREATE_GAME, br.getModel());
+		} else {
+			SuffragiumCard newCard = suffragiumCardService.saveSuffragiumCard(card);
+			Game newGame = gameService.saveGame(game, newCard);
+			Player creator = playerService.getPlayerByUsername(user.getUsername());
+			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
+			res = showlobby(newGame.getId());
+			res.addObject("message", "Game successfully created!");
+		}
+		return res;
+	}
 
 	@Transactional
     @GetMapping("/{gameId}/lobby")

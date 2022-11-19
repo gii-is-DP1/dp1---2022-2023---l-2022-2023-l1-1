@@ -18,7 +18,6 @@ import lombok.Setter;
 @Table(name = "player_infos")
 public class PlayerInfo extends BaseEntity{
 
-    @NotNull
     private Boolean creator;
     
     private Boolean spectator;
