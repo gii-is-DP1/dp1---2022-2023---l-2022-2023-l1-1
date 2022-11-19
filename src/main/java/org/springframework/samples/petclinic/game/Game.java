@@ -30,12 +30,12 @@ public class Game extends NamedEntity {
     @Enumerated(EnumType.STRING)
     private State state;
 
-    @Range(min = 5, max = 8)
+    //@Range(min = 5, max = 8) tiene que estar entre 5 y 8 solo si State == In process
     private Integer numPlayers;
 
     private LocalDate date;
     
-    private Duration duration;
+    private Double duration;
 
     @Enumerated(EnumType.STRING)
     private Faction winners;

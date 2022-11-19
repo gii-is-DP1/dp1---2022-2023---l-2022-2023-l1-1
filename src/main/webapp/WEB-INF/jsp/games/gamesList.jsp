@@ -27,7 +27,7 @@
                     <c:out value="${game.publicGame}"/>
                 </td>
                 <td>
-                    <c:out value="${game.numPlayers}"/>
+                    <c:out value="${game.numPlayers}/8"/>
                 </td>
                 <td>
                     <c:out value="${game.date}"/>

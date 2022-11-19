@@ -60,15 +60,6 @@ public class InvitationController {
         result.addObject("invitation", i);
         return result;
     }
-/* 
-    @Transactional
-    @GetMapping("/send")
-    public String sendInvitation(ModelMap model){
-        List<Player> allPlayers = playerService.getAll();
-        model.put("players", allPlayers);
-        model.put("invitation", new Invitation());
-        return SEND_INVITATION;
-    }*/
 
     @Transactional
     @PostMapping("/send")

@@ -32,4 +32,13 @@ public class PlayerInfoService {
         return repo.findGamesByPlayer(player);
     }
 
+    @Transactional
+    public void saveCreatorInfo(PlayerInfo creatorInfo, Game game, Player player) {
+        creatorInfo.setCreator(true);
+        creatorInfo.setSpectator(false);
+        creatorInfo.setPlayer(player);
+        creatorInfo.setGame(game);
+        repo.save(creatorInfo);
+    }
+
 }

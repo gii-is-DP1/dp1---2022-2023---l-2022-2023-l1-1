@@ -1,40 +1,53 @@
 package org.springframework.samples.petclinic.game;
 
-
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.security.Provider.Service;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.samples.petclinic.enums.State;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@ExtendWith(MockitoExtension.class)
 public class GameServiceTest {
-    @Autowired
-    private GameService gameService;
+    
+    @Mock
+    GameRepository repo;
+
+    private Game createGame(String name, Boolean publicGame) {
+        Game game = new Game();
+        game.setName(name);
+        game.setPublicGame(publicGame);
+        return game;
+    }
+
+    private SuffragiumCard createSuffragiumCard(Integer loyalsVotes, Integer traitorsVotes, Integer voteLimit) {
+        SuffragiumCard card = new SuffragiumCard();
+        card.setLoyalsVotes(loyalsVotes);
+        card.setTraitorsVotes(traitorsVotes);
+        card.setVoteLimit(voteLimit);
+        return card;
+    }
+
+    @Test
+    public void testSaveGameSuccessful() {
+        Game game = createGame("Test game", true);
+        SuffragiumCard card = createSuffragiumCard(0, 0, 15);
+        GameService service = new GameService(repo);
+        try {
+            service.saveGame(game, card);
+        } catch (Exception e) {
+            fail("no exception should be thrown");
+        }
+    }
 /*
     @Test
-    public void testGetGamesByNameAndState(){
-        List<Game> g = gameService.getGamesByNameAndState("Mi primera partida", State.STARTING);
-        List<Game> g2= gameService.getGamesByNameAndState("Partida rapida", State.IN_PROCESS);
-        assertNotNull(g);
-        assertNotNull(g2);
-        assertNotEquals(g2, g);
+    public void testSaveGameUnsuccessfulDueToName() {
+        Game game = createGame("g", true);
+        SuffragiumCard card = createSuffragiumCard(0, 0, 15);
+        GameService service = new GameService(repo);
+        assertThrows(Exception.class, () -> service.saveGame(game, card));
     }
-    
-
-    @Test
-    public void testGetGameById(){
-        Game g=gameService.getGameById(1);
-        Game g2=gameService.getGameById(2);
-        assertNotNull(g);
-        assertNotNull(g2);
-        assertNotEquals(g2, g);
-    }
-    */
+*/
 }
