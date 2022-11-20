@@ -6,24 +6,35 @@
 
 <petclinic:layout pageName="invitations">
     <h2>Invitations</h2>
-    <a href="/invitations/send"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Send invitation</a>
+    <div>
+        <a class="btn btn-default" href="/invitations/send">Send invitation</a>
+    </div>
     <table id="invitationsTable" class="table table-striped">
         <thead>
         <tr>
             <th>From</th>
             <th>Message</th>
+            <th>Accept</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${invitations}" var="invitation">
-            <tr>
-                <td>
-                    <c:out value="${invitation.sender}"/>
-                </td>
-                <td>
-                    <c:out value="${invitation.message}"/>
-                </td>
-            </tr>
+            <c:if test="${!invitation.accepted}">
+                <tr>
+                    <td>
+                        <c:out value="${invitation.sender.user.username}"/>
+                    </td>
+                    <td>
+                        <c:out value="${invitation.message}"/>
+                    </td>
+                    <td>
+                        <a href="/invitations/${invitation.id}/accept">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        </a>
+                    </td>
+                </tr>
+            </c:if>
+            
         </c:forEach>
         </tbody>
     </table>

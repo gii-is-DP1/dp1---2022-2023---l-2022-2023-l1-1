@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.invitation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,25 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
+    public Invitation getById(Integer id) {
+        return invitationRepository.findById(id).get();
+    }
+
+    @Transactional(readOnly = true)
     public List<Invitation> getInvitationsByPlayer(Player recipient) {
         return invitationRepository.findInvitationsByPlayer(recipient);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Player> getFriends(Player recipient) {
+        List<Player> res = new ArrayList<>();
+        List<Invitation> invitations = invitationRepository.findInvitationsByPlayer(recipient);
+        for(Invitation i:invitations) {
+            if(i.getAccepted()) {
+                res.add(i.getSender());
+            }
+        }
+        return res;
     }
 
     @Transactional
@@ -34,5 +52,12 @@ public class InvitationService {
         i.setSender(sender);
         invitationRepository.save(i);
 	}
+
+    @Transactional
+    public void acceptInvitationById(Integer id) throws DataAccessException {
+        Invitation i = getById(id);
+        i.setAccepted(true);
+        invitationRepository.save(i);
+    }
     
 }

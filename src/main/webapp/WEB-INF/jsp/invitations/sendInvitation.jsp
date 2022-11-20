@@ -13,7 +13,9 @@
                    class="form-horizontal">
             <input type="hidden" name="id" value="${invitation.id}"/>
             <div class="form-group has-feedback">
-                <petclinic:selectField label="To" name="recipient" names="${players}" size="3"/>
+                <div class="control-group">
+                    <petclinic:selectField label="To" name="recipient" names="${players}" size="3"/>
+                </div>
                 <petclinic:inputField label="Message" name="message"/>
                 
             </div>
