@@ -13,6 +13,8 @@
             <th>Public</th>
             <th>Number of players</th>
             <th>Date</th>
+            <th>Duration</th>
+            <th>Winners</th>
         </tr>
         </thead>
         <tbody>
@@ -29,6 +31,12 @@
                 </td>
                 <td>
                     <c:out value="${game.date}"/>
+                </td>
+                <td>
+                    <c:out value="${game.duration}"/>
+                </td>
+                <td>
+                    <c:out value="${game.winners}"/>
                 </td>
             </tr>
         </c:forEach>
