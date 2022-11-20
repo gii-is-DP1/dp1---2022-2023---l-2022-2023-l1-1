@@ -16,7 +16,7 @@ import lombok.Setter;
 @Table(name = "turns")
 public class Turn extends BaseEntity{
  
-    @Range(min = 5, max = 8)
+    @Range(min = 1, max = 8)
     private Integer currentTurn;
 
     @ManyToOne

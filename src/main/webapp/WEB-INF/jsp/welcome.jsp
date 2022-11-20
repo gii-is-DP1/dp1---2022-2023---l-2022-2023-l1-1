@@ -6,6 +6,9 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <petclinic:layout pageName="home">
+    <sec:authorize access="!isAuthenticated()">
+		<p>Log in or sing up to start playing</p>
+	</sec:authorize>
     <sec:authorize access="hasAuthority('player')">
         <a class="btn btn-default" href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
         <a class="btn btn-default" href="/games/starting/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
