@@ -15,6 +15,11 @@ public class SuffragiumCardService {
         this.suffragiumCardRepository = repo;
     }
 
+    @Transactional(readOnly = true)
+    public SuffragiumCard getSuffragiumCardByGame(Integer gameId) {
+        return suffragiumCardRepository.findSuffragiumCardByGame(gameId);
+    }
+
     @Transactional
     public SuffragiumCard saveSuffragiumCard(SuffragiumCard card) throws DataAccessException{
         card.setLoyalsVotes(0);

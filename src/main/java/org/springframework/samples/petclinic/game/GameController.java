@@ -33,12 +33,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class GameController {
 
     private static final String GAMES_LIST = "/games/gamesList";
+	private static final String GAMES_FINISHED_LIST = "/games/gamesFinishedList";
     private static final String FIND_GAMES_HISTORY = "/games/findGamesHistory";
 	private static final String FIND_GAMES_PLAYER_HISTORY = "/games/findGamesPlayerHistory";
     private static final String FIND_GAMES_IN_PROCESS = "/games/findGamesInProcess";
     private static final String FIND_GAMES_STARTING = "/games/findGamesStarting";
     private static final String CREATE_GAME = "/games/createGame";
 	private static final String GAME_LOBBY = "/games/gameLobby";
+	private static final String GAME = "/games/game";
+
 
     @Autowired
     private GameService gameService;
@@ -96,7 +99,7 @@ public class GameController {
 		}
 		else {
 			// games found
-			ModelAndView res = new ModelAndView(GAMES_LIST);
+			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
             res.addObject("games", results); 
 			return res;
 		}
@@ -125,7 +128,7 @@ public class GameController {
 			return new ModelAndView(FIND_GAMES_PLAYER_HISTORY);
 		}
 		else {
-			ModelAndView res = new ModelAndView(GAMES_LIST);
+			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
             res.addObject("games", results); 
 			return res;
 		}
@@ -208,7 +211,7 @@ public class GameController {
 			Game newGame = gameService.saveGame(game, newCard);
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
-			res = showlobby(newGame.getId());
+			res = showLobby(newGame.getId());
 			res.addObject("message", "Game successfully created!");
 		}
 		return res;
@@ -216,11 +219,22 @@ public class GameController {
 
 	@Transactional
     @GetMapping("/{gameId}/lobby")
-    public ModelAndView showlobby(@PathVariable("gameId") Integer gameId){
+    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId){
         ModelAndView res=new ModelAndView(GAME_LOBBY);
         Game game=gameService.getGameById(gameId);
         res.addObject("game", game);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+        return res;
+    }
+
+	@Transactional
+    @GetMapping("/{gameId}")
+    public ModelAndView showGame(@PathVariable("gameId") Integer gameId){
+        ModelAndView res=new ModelAndView(GAME);
+        Game game=gameService.getGameById(gameId);
+        res.addObject("game", game);
+        res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
         return res;
     }
 }

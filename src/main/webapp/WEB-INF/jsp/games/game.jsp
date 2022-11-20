@@ -4,34 +4,29 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="games">
-    <h2>Games</h2>
-    <table id="gamesTable" class="table table-striped">
+<petclinic:layout pageName="game">
+    <h1><c:out value="${game.name}"/></h1>
+    <table id="suffragium" class="table table-striped">
+        <h4>Suffragium</h4>
         <thead>
         <tr>
-            <th>Name</th>
-            <th>Public</th>
-            <th>Number of players</th>
-            <th>Date</th>
+            <th>Loyals votes</th>
+            <th>Traitor votes</th>
+            <th>Vote limit</th>
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${games}" var="game">
             <tr>
                 <td>
-                    <c:out value="${game.name}"/>
+                    <c:out value="${suffragiumCard.loyalsVotes}"/>
                 </td>
                 <td>
-                    <c:out value="${game.publicGame}"/>
+                    <c:out value="${suffragiumCard.traitorsVotes}"/>
                 </td>
                 <td>
-                    <c:out value="${game.numPlayers}/8"/>
-                </td>
-                <td>
-                    <c:out value="${game.date}"/>
+                    <c:out value="${suffragiumCard.voteLimit}"/>
                 </td>
             </tr>
-        </c:forEach>
         </tbody>
     </table>
 </petclinic:layout>

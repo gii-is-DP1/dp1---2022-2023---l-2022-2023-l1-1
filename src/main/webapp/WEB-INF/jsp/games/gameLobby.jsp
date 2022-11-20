@@ -5,32 +5,63 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <petclinic:layout pageName="lobbies">
-    <h2>Lobby</h2>
+    <h2><c:out value="${game.name}"/> lobby</h2>
     <td>
-        <c:out value="${game.name}"/>
+        <c:out value="Number of players: ${game.numPlayers}/8"/>
     </td>
-    <table id="lobbiesTable" class="table table-striped">
+    <table id="creatorTable" class="table table-striped">
         <thead>
         <tr>
-            <th>List of players</th>
             <th>Creator</th>
-            <th>Spectator</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${playerInfos}" var="playerInfo">
-            <tr>
-                <td>
-                    <c:out value="${playerInfo.player.user.username}"/>
-                </td>
-                <td>
-                    <c:out value="${playerInfo.creator}"/>
-                </td>
-                <td>
-                    <c:out value="${playerInfo.spectator}"/>
-                </td>
-            </tr>
+            <c:if test="${playerInfo.creator}">
+                <tr>
+                    <td>
+                        <c:out value="${playerInfo.player.user.username}"/>
+                    </td>
+                </tr>
+            </c:if>
         </c:forEach>
         </tbody>
     </table>
+    <table id="creatorTable" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Players</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${playerInfos}" var="playerInfo">
+            <c:if test="${playerInfo.spectator == false}">
+                <tr>
+                    <td>
+                        <c:out value="${playerInfo.player.user.username}"/>
+                    </td>
+                </tr>
+            </c:if>
+        </c:forEach>
+        </tbody>
+    </table>
+    <table id="creatorTable" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Spectators</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${playerInfos}" var="playerInfo">
+            <c:if test="${playerInfo.spectator}">
+                <tr>
+                    <td>
+                        <c:out value="${playerInfo.player.user.username}"/>
+                    </td>
+                </tr>
+            </c:if>
+        </c:forEach>
+        </tbody>
+    </table>
+    <a class="btn btn-default" href="/games/${game.id}">Start game</a>
 </petclinic:layout>
