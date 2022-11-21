@@ -15,6 +15,7 @@
             <th>From</th>
             <th>Message</th>
             <th>Accept</th>
+            <th>Reject</th>
         </tr>
         </thead>
         <tbody>
@@ -30,6 +31,11 @@
                     <td>
                         <a href="/invitations/${invitation.id}/accept">
                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="/invitations/${invitation.id}/reject">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                         </a>
                     </td>
                 </tr>

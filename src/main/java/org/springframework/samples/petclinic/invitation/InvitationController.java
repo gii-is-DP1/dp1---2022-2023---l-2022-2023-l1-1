@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,11 +40,12 @@ public class InvitationController {
         this.invitationService = iS;
     }
 
+    @Transactional
     @GetMapping("/invitations")
     public ModelAndView showInvitationsByPlayer(@AuthenticationPrincipal UserDetails user){
         ModelAndView result = new ModelAndView(INVITATIONS_LIST);
         Player recipient = playerService.getPlayerByUsername(user.getUsername());
-        result.addObject("invitations", invitationService.getInvitationsByPlayer(recipient));
+        result.addObject("invitations", invitationService.getInvitationsReceived(recipient));
         return result;
     }
 
@@ -87,6 +89,18 @@ public class InvitationController {
     public ModelAndView acceptInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         invitationService.acceptInvitationById(id);
         model.put("message", "Invitation accepted succesfully!");
+        return showInvitationsByPlayer(user);
+    }
+
+    @Transactional
+    @GetMapping("/invitations/{id}/reject")
+    public ModelAndView rejectInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
+        try{
+            invitationService.rejectInvitationById(id);  
+            model.put("message", "Invitation rejected succesfully!");     
+        } catch(EmptyResultDataAccessException e) {
+            model.put("message", "Invitation " + id + " does not exist");
+        }
         return showInvitationsByPlayer(user);
     }
 
