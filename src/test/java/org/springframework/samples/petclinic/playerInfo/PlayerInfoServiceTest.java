@@ -1,5 +1,7 @@
 package org.springframework.samples.petclinic.playerInfo;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -27,12 +29,23 @@ public class PlayerInfoServiceTest {
         game.setPublicGame(publicGame);
         return game;
     }
-/* 
+
+    private Player createPlayer() {
+        Player player = new Player();
+        return player;
+    }
+
     @Test
     public void testSaveCreatorInfoSuccessful() {
         Game game = createGame("Test game", true);
         Player player = createPlayer();
         PlayerInfo creatorInfo = createCreatorInfo(true, false, game, player);
+        PlayerInfoService service = new PlayerInfoService(repo);
+        try {
+            service.saveCreatorInfo(creatorInfo, game, player);
+        } catch (Exception e) {
+            fail("no exception should be thrown");
+        }
     }
-*/    
+   
 }

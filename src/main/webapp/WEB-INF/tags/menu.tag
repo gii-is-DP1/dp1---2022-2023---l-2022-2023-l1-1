@@ -27,25 +27,20 @@
 					<span class="glyphicon glyphicon-home" aria-hidden="true"></span>
 					<span>Home</span>
 				</petclinic:menuItem>
-
-				<sec:authorize access="hasAnyAuthority('admin', 'player')">
-				
-				
-				</sec:authorize>
 				
 				<sec:authorize access="hasAnyAuthority('admin')">
 
-				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
-					title="find owners">
-					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-					<span>Find owners</span>
-				</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
+						title="find owners">
+						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						<span>Find owners</span>
+					</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
-					title="achievements">										
-					<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
-					<span>Achievements</span>	
-				</petclinic:menuItem>	
+					<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
+						title="achievements">										
+						<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+						<span>Achievements</span>	
+					</petclinic:menuItem>	
 
 				</sec:authorize>
 

@@ -29,17 +29,23 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Invitation> getInvitationsByPlayer(Player recipient) {
-        return invitationRepository.findInvitationsByPlayer(recipient);
+    public List<Invitation> getInvitationsReceived(Player recipient) {
+        return invitationRepository.findInvitationsReceived(recipient);
     }
 
     @Transactional(readOnly = true)
-    public List<Player> getFriends(Player recipient) {
+    public List<Player> getFriends(Player player) {
         List<Player> res = new ArrayList<>();
-        List<Invitation> invitations = invitationRepository.findInvitationsByPlayer(recipient);
-        for(Invitation i:invitations) {
+        List<Invitation> invitationsReceived = invitationRepository.findInvitationsReceived(player);
+        List<Invitation> invitationsSent = invitationRepository.findInvitationsSent(player);
+        for(Invitation i:invitationsReceived) {
             if(i.getAccepted()) {
                 res.add(i.getSender());
+            }
+        }
+        for(Invitation i:invitationsSent) {
+            if(i.getAccepted()) {
+                res.add(i.getRecipient());
             }
         }
         return res;
@@ -58,6 +64,11 @@ public class InvitationService {
         Invitation i = getById(id);
         i.setAccepted(true);
         invitationRepository.save(i);
+    }
+
+    @Transactional
+    public void rejectInvitationById(Integer id) throws DataAccessException {
+        invitationRepository.deleteById(id);
     }
     
 }

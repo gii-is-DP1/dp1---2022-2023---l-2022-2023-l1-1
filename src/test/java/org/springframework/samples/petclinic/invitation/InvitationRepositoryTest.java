@@ -23,27 +23,27 @@ public class InvitationRepositoryTest {
     private PlayerRepository playerRepository;
 
     @Test
-    public void testFindInvitationsByPlayerWithInvitations() {
+    public void testFindInvitationsReceivedWithInvitations() {
         Player p = playerRepository.getPlayerByUsername("alvgonfri");
-        List<Invitation> invitations = invitationRepository.findInvitationsByPlayer(p);
+        List<Invitation> invitations = invitationRepository.findInvitationsReceived(p);
         assertNotNull(invitations);
         assertFalse(invitations.isEmpty());
         assertEquals(invitations.size(), 2);
     }
 
     @Test
-    public void testFindInvitationsByPlayerWithoutInvitations() {
+    public void testFindInvitationsReceivedWithoutInvitations() {
         Player p = playerRepository.getPlayerByUsername("player1");
-        List<Invitation> invitations = invitationRepository.findInvitationsByPlayer(p);
+        List<Invitation> invitations = invitationRepository.findInvitationsReceived(p);
         assertNotNull(invitations);
         assertTrue(invitations.isEmpty());
         assertEquals(invitations.size(), 0);
     }
 
     @Test
-    public void testFindInvitationsByPlayerNotExistingPlayer() {
+    public void testFindInvitationsReceivedNotExistingPlayer() {
         Player p = playerRepository.getPlayerByUsername("CristianoRonaldo_7");
-        List<Invitation> invitations = invitationRepository.findInvitationsByPlayer(p);
+        List<Invitation> invitations = invitationRepository.findInvitationsReceived(p);
         assertNotNull(invitations);
         assertTrue(invitations.isEmpty());
         assertEquals(invitations.size(), 0);
