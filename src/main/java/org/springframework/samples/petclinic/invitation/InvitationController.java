@@ -60,11 +60,15 @@ public class InvitationController {
 
     @Transactional
     @GetMapping("/invitations/send")
-    public ModelAndView sendInvitation() {
+    public ModelAndView sendInvitation(@AuthenticationPrincipal UserDetails user) {
         Invitation i = new Invitation();
-        List<Player> allPlayers = playerService.getAll();
+        List<Player> players = playerService.getAll();
+        Player sender = playerService.getPlayerByUsername(user.getUsername());
+        List<Player> senderFriends = invitationService.getFriends(sender);
+        players.remove(sender);
+        players.removeAll(senderFriends);
         ModelAndView result = new ModelAndView(SEND_INVITATION);
-        result.addObject("players", allPlayers);
+        result.addObject("players", players);
         result.addObject("invitation", i);
         return result;
     }
