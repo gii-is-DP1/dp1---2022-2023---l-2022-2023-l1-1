@@ -189,7 +189,7 @@ INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
 (18, 50.0, 6, 1);
 
 INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
-('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 2),
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3),
 ('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1),
 ('FRIENDSHIP', 'I am player1', FALSE, 5, 1),
 ('FRIENDSHIP', 'I am player2', TRUE, 6, 1);

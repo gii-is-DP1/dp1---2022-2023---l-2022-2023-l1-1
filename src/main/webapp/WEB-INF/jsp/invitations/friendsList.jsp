@@ -15,19 +15,25 @@
             <th>Username</th>
             <th>Online</th>
             <th>Playing</th>
+            <th>Cancel friendship</th>
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${friends}" var="friend">
+        <c:forEach items="${friendsInvitations}" var="friendInvitation">
             <tr>
                 <td>
-                    <c:out value="${friend.user.username}"/>
+                    <c:out value="${friendInvitation.getFirst().user.username}"/>
                 </td>
                 <td>
-                    <c:out value="${friend.online}"/>
+                    <c:out value="${friendInvitation.getFirst().online}"/>
                 </td>
                 <td>
-                    <c:out value="${friend.playing}"/>
+                    <c:out value="${friendInvitation.getFirst().playing}"/>
+                </td>
+                <td>
+                    <a href="/invitations/${friendInvitation.getSecond().id}/cancelFriendship">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </a>
                 </td>
             </tr>
         </c:forEach>

@@ -54,7 +54,7 @@ public class InvitationController {
     public ModelAndView showFriends(@AuthenticationPrincipal UserDetails user) {
         ModelAndView result = new ModelAndView(FRIENDS_LIST);
         Player recipient = playerService.getPlayerByUsername(user.getUsername());
-        result.addObject("friends", invitationService.getFriends(recipient));
+        result.addObject("friendsInvitations", invitationService.getFriendsInvitations(recipient));
         return result;
     }
 
@@ -104,6 +104,18 @@ public class InvitationController {
             model.put("message", "Invitation rejected succesfully!");     
         } catch(EmptyResultDataAccessException e) {
             model.put("message", "Invitation " + id + " does not exist");
+        }
+        return showInvitationsByPlayer(user);
+    }
+
+    @Transactional
+    @GetMapping("/invitations/{id}/cancelFriendship")
+    public ModelAndView cancelFriendship(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
+        try{
+            invitationService.rejectInvitationById(id);  
+            model.put("message", "Friendship cancelled succesfully!");     
+        } catch(EmptyResultDataAccessException e) {
+            model.put("message", "That's not your friend");
         }
         return showInvitationsByPlayer(user);
     }
