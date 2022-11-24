@@ -28,7 +28,7 @@ public class InvitationRepositoryTest {
         List<Invitation> invitations = invitationRepository.findInvitationsReceived(p);
         assertNotNull(invitations);
         assertFalse(invitations.isEmpty());
-        assertEquals(invitations.size(), 2);
+        assertEquals(invitations.size(), 3);
     }
 
     @Test

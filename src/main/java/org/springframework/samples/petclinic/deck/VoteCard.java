@@ -18,8 +18,25 @@ public class VoteCard {
     @Id
     @Enumerated(EnumType.STRING)
     private Type type;
-    
+
     private enum Type {
         GREEN, RED, YELLOW;
+    }
+
+    public String getCard() {
+        String res = null;
+        if (this.type == Type.GREEN) {
+            res = "/resources/images/GreenVote.PNG";
+
+        }
+        if (this.type == Type.RED) {
+            res = "/resources/images/RedVote.PNG";
+
+        }
+        if (this.type == Type.YELLOW) {
+            res = "/resources/images/YellowVote.PNG";
+
+        }
+        return res;
     }
 }

@@ -17,9 +17,27 @@ public class FactionCard {
     
     @Id
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private FCType type;
 
-    private enum Type {
+    public enum FCType {
         LOYAL,TRAITOR,MERCHANT;
     }
+    
+    public String getCard() {
+        String res = null;
+        if (this.type == FCType.LOYAL) {
+            res = "/resources/images/Loyal.PNG";
+
+        }
+        if (this.type == FCType.TRAITOR) {
+            res = "/resources/images/Traitor.PNG";
+
+        }
+        if (this.type == FCType.MERCHANT) {
+            res = "/resources/images/Merchant.PNG";
+
+        }
+        return res;
+    }
+    
 }

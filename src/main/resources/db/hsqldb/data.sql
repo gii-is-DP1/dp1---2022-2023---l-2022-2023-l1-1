@@ -158,7 +158,7 @@ INSERT INTO decks(id, role_cards,player_id,turn_id) VALUES
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
 (3, 'LOYAL'),
-(3,'MERCHANT'),
+(4,'MERCHANT'),
 (4,'TRAITOR'),  
 (4,'LOYAL');
 
@@ -166,7 +166,8 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
 (3,'GREEN'),
 (3,'RED'),
 (4,'GREEN'),
-(4,'RED');
+(4,'RED'),
+(4, 'YELLOW');
 
 INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
 (1, 100.0, 1, 3),
