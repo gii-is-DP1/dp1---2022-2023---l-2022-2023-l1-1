@@ -1,5 +1,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<!--
 <br/>
 <br/>
 <div class="container">
@@ -8,3 +9,4 @@
                                              alt="Sponsored by Pivotal"/></div>
     </div>
 </div>
+-->
