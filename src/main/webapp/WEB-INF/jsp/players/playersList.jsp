@@ -6,7 +6,7 @@
 
 <petclinic:layout pageName="players">
     <h2>Players</h2>
-    <a class="btn btn-default" href="/users/new">Create new player</a>
+    
     <table id="playersTable" class="table table-striped">
         <thead>
         <tr>
@@ -39,4 +39,5 @@
         </c:forEach>
         </tbody>
     </table>
+    <a class="btn btn-default" href="/users/new">Create new player</a>
 </petclinic:layout>

@@ -18,6 +18,7 @@
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button class="btn btn-default" type="submit">Register</button>
+                <a class="btn btn-default" href="/players">Cancel</a>
             </div>
         </div>
     </form:form>

@@ -20,6 +20,13 @@ public class SuffragiumCardService {
         return suffragiumCardRepository.findSuffragiumCardByGame(gameId);
     }
 
+    public void updateVotes (SuffragiumCard card, Integer loyalVotes, Integer traitorVotes) {
+        SuffragiumCard cardToUpdate = suffragiumCardRepository.findById(card.getId()).get();
+        cardToUpdate.setLoyalsVotes(cardToUpdate.getLoyalsVotes() + loyalVotes);
+        cardToUpdate.setTraitorsVotes(cardToUpdate.getTraitorsVotes() + traitorVotes);
+        suffragiumCardRepository.save(cardToUpdate);
+    }
+
     @Transactional
     public SuffragiumCard saveSuffragiumCard(SuffragiumCard card) throws DataAccessException{
         card.setLoyalsVotes(0);

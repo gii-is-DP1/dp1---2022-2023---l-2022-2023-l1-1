@@ -10,6 +10,12 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.deck.Deck;
+import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.deck.FactionCard;
+import org.springframework.samples.petclinic.deck.FactionCardService;
+import org.springframework.samples.petclinic.deck.FactionCard.FCType;
+import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
@@ -54,6 +60,12 @@ public class GameController {
 
 	@Autowired
 	private SuffragiumCardService suffragiumCardService;
+
+	@Autowired
+	private DeckService deckService;
+
+	@Autowired
+	private FactionCardService factionCardService;
 
     @Autowired
     public GameController(GameService service) {
@@ -229,12 +241,43 @@ public class GameController {
 
 	@Transactional
     @GetMapping("/{gameId}")
-    public ModelAndView showGame(@PathVariable("gameId") Integer gameId){
+    public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user){
         ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
+		Player actualPlayer = playerService.getPlayerByUsername(user.getUsername());
+		res.addObject("actualPlayer", actualPlayer);
         res.addObject("game", game);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
         return res;
+    }
+
+	@GetMapping("/{gameId}/updateSuffragium/{voteType}")
+	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType) {
+		Game actualGame = gameService.getGameById(gameId);
+		Integer numLoyal = 0;
+		Integer numTraitor = 0;
+		if (voteType == VCType.GREEN) {
+			numLoyal ++;
+		}
+		if (voteType == VCType.RED) {
+			numTraitor ++;
+		}
+		suffragiumCardService.updateVotes(actualGame.getSuffragiumCard(), numLoyal, numTraitor);
+		return "redirect:/games/" + gameId.toString();
+
+	}
+
+	@Transactional
+    @GetMapping("/{gameId}/edit/{factionType}")
+    public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") String factionType, @AuthenticationPrincipal UserDetails user){
+        
+        Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
+        Deck deck = deckService.getPlayerGameDeck(player.getId(), gameId); //cojo el mazo de este 
+        List<FactionCard> chosenFaction = new ArrayList<>();
+        chosenFaction.add(factionCardService.getByFaction(FCType.valueOf(factionType)));
+        deckService.updateFactionDeck(deck, chosenFaction);  
+        System.out.println("esto" + deckService.getPlayerGameDeck(player.getId(), gameId).getId());     
+        return "redirect:/games/" + gameId.toString();
     }
 }
