@@ -39,18 +39,7 @@ public class DeckController {
         this.factionCardService = factionCardService;
     }
 
-    @Transactional
-    @GetMapping("/edit/{factionType}")
-    public String selectFaction (@PathVariable("factionType") String factionType, @AuthenticationPrincipal UserDetails user){
-        
-        Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
-        Deck deck = deckService.getPlayerDeck(player.getId()); //cojo el mazo de este 
-        List<FactionCard> chosenFaction = new ArrayList<>();
-        chosenFaction.add(factionCardService.getByFaction(FCType.valueOf(factionType)));
-        deckService.updateFactionDeck(deck, chosenFaction);  
-        System.out.println(deckService.getPlayerDeck(player.getId()).getFactionCards().size());     
-        return "redirect:/games/2";
-    }
+   
 
     
 }

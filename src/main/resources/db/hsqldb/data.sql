@@ -129,6 +129,7 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (5,false,false,2,5),
 (6,false,true,2,6),
 (7,false,false,2,7),
+(8,false,false,1,3),
 
 (10,false,false,3,1),
 
@@ -148,19 +149,22 @@ INSERT INTO faction_cards(type) VALUES
 INSERT INTO vote_cards(type) VALUES 
 ('GREEN'), ('RED'), ('YELLOW');
 
-INSERT INTO decks(id, role_cards,player_id,turn_id) VALUES 
-(1, 'CONSUL',1,1),
-(2, 'PRETOR',5,1),
+INSERT INTO decks(id, role_cards,player_id,game_id) VALUES 
+(1, 'CONSUL',1,2),
+(2, 'PRETOR',5,2),
 (3, 'EDIL',2,2),
-(4, 'EDIL',3,3),
-(5, 'NO_ROL',6,1),
-(6, 'NO_ROL',7,1);
+(4, 'EDIL',3,2),
+(5, 'NO_ROL',6,2),
+(6, 'NO_ROL',7,2),
+(7, 'EDIL', 3, 1);
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
 (3, 'LOYAL'),
 (4,'MERCHANT'),
 (4,'TRAITOR'),  
-(4,'LOYAL');
+(4,'LOYAL'),
+(7,'LOYAL'),
+(7,'TRAITOR');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
 (3,'GREEN'),

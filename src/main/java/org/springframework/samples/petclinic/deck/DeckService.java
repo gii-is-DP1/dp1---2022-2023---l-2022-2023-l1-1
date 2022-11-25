@@ -17,8 +17,8 @@ public class DeckService {
         this.rep = rep;
     }
 
-    public Deck getPlayerDeck (Integer playerId) {
-        return rep.findPlayerDeck(playerId);
+    public Deck getPlayerGameDeck (Integer playerId, Integer gameId) {
+        return rep.findPlayerDeck(playerId).stream().filter(x -> x.getGame().getId() == gameId).findFirst().get();
     }
 
     

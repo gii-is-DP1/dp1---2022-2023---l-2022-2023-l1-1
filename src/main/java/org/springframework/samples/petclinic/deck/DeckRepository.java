@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface DeckRepository extends CrudRepository<Deck, Integer> {
     List<Deck> findAll();
 
-    @Query("SELECT DISTINCT d FROM Deck d WHERE d.player.id LIKE :id")
-	public Deck findPlayerDeck(@Param("id") Integer playerId);
+    @Query("SELECT d FROM Deck d WHERE d.player.id LIKE :id")
+	public  List<Deck> findPlayerDeck(@Param("id") Integer playerId);
 }
