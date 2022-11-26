@@ -8,15 +8,19 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import org.springframework.context.support.BeanDefinitionDsl.Role;
 import org.springframework.samples.petclinic.enums.RoleCard;
+import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
@@ -25,7 +29,7 @@ import lombok.Setter;
 @Table(name="decks")
 public class Deck extends BaseEntity {
     
-    @NotEmpty
+    @NonNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role_cards")
     private RoleCard roleCards;
@@ -42,6 +46,25 @@ public class Deck extends BaseEntity {
     private Player player;
 
     @ManyToOne (optional = false)
-    private Turn turn;
+    private Game game;
+
+    public String getRoleCardImg() {
+        
+        if (this.roleCards == RoleCard.EDIL) {
+            return "/resources/images/Edil.png";
+
+        }
+        if (this.roleCards == RoleCard.PRETOR) {
+            return "/resources/images/Pretor.png";
+
+        }
+        if (this.roleCards == RoleCard.CONSUL) {
+            return "/resources/images/Consul.png";
+
+        }
+        else {
+            return null;
+        }
+    }
 
 }
