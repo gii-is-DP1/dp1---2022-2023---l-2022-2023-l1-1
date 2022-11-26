@@ -9,6 +9,12 @@
     <td>
         <c:out value="Number of players: ${game.numPlayers}/8"/>
     </td>
+    <c:if test="${game.numPlayers >= 5 && game.numPlayers <= 8}">
+        <a class="btn btn-default" href="/games/${game.id}">Start game</a>
+    </c:if>
+    <c:if test="${game.numPlayers < 5}">
+        <p>Waitng for more players to start the game</p>
+    </c:if>
     <table id="creatorTable" class="table table-striped">
         <thead>
         <tr>
@@ -63,5 +69,4 @@
         </c:forEach>
         </tbody>
     </table>
-    <a class="btn btn-default" href="/games/${game.id}">Start game</a>
 </petclinic:layout>
