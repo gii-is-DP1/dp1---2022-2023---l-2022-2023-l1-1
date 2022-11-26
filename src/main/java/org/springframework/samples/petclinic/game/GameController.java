@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +113,7 @@ public class GameController {
 		else {
 			// games found
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
+			res.addObject("returnButton", "/games/history/find");
             res.addObject("games", results); 
 			return res;
 		}
@@ -141,6 +143,7 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
+			res.addObject("returnButton", "/games/playerHistory/find");
             res.addObject("games", results); 
 			return res;
 		}
@@ -167,6 +170,7 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_LIST);
+			res.addObject("returnButton", "/games/inProcess/find");
             res.addObject("games", results); 
 			return res;
 		}
@@ -193,6 +197,7 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_LIST);
+			res.addObject("returnButton", "/games/starting/find");
             res.addObject("games", results); 
 			return res;
 		}
@@ -241,8 +246,9 @@ public class GameController {
 
 	@Transactional
     @GetMapping("/{gameId}")
-    public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user){
-        ModelAndView res=new ModelAndView(GAME);
+    public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
+        response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
+		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
 		Player actualPlayer = playerService.getPlayerByUsername(user.getUsername());
 		res.addObject("actualPlayer", actualPlayer);
