@@ -113,6 +113,7 @@ public class GameController {
 		else {
 			// games found
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
+			res.addObject("returnButton", "/games/history/find");
             res.addObject("games", results); 
 			return res;
 		}
@@ -142,6 +143,7 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
+			res.addObject("returnButton", "/games/playerHistory/find");
             res.addObject("games", results); 
 			return res;
 		}
@@ -168,6 +170,7 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_LIST);
+			res.addObject("returnButton", "/games/inProcess/find");
             res.addObject("games", results); 
 			return res;
 		}
@@ -194,6 +197,7 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_LIST);
+			res.addObject("returnButton", "/games/starting/find");
             res.addObject("games", results); 
 			return res;
 		}
