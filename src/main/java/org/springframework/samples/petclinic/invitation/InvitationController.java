@@ -61,7 +61,7 @@ public class InvitationController {
     @Transactional
     @GetMapping("/invitations/send")
     public ModelAndView sendInvitation(@AuthenticationPrincipal UserDetails user) {
-        Invitation i = new Invitation();
+        Invitation invitation = new Invitation();
         List<Player> players = playerService.getAll();
         Player sender = playerService.getPlayerByUsername(user.getUsername());
         List<Player> senderFriends = invitationService.getFriends(sender);
@@ -69,19 +69,19 @@ public class InvitationController {
         players.removeAll(senderFriends);
         ModelAndView result = new ModelAndView(SEND_INVITATION);
         result.addObject("players", players);
-        result.addObject("invitation", i);
+        result.addObject("invitation", invitation);
         return result;
     }
 
     @Transactional
     @PostMapping("/invitations/send")
-    public ModelAndView saveInvitation(@Valid Invitation i, @AuthenticationPrincipal UserDetails user, BindingResult br) {
+    public ModelAndView saveInvitation(@Valid Invitation invitation, @AuthenticationPrincipal UserDetails user, BindingResult br) {
         ModelAndView result = null;
         Player sender = playerService.getPlayerByUsername(user.getUsername());
         if(br.hasErrors()) {
             return new ModelAndView(SEND_INVITATION, br.getModel());
         } else {
-            invitationService.saveInvitation(i, sender);
+            invitationService.saveInvitation(invitation, sender);
             result = showInvitationsByPlayer(user);
             result.addObject("message", "Invitation sent succesfully!");
         }
