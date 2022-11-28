@@ -28,28 +28,23 @@ public class ProgressService {
         return progressRepository.findAll();
     }
 
-    public List<Progress> getUserProgress(Player player) {
+    public List<Progress> getPlayerProgress(Player player) {
         return progressRepository.findByPlayer(player);
     }
 
-    public List<Progress> addNewAchievement(Achievement achievement) {
+    /*public List<Progress> addNewAchievement(Achievement achievement) { //CREO QUE NO HACE FALTA
         List<Progress> progressCreated = new ArrayList<>();
         for (Player player :  playerRepository.findAll()){
             Progress progress = new Progress(0.0, achievement, player);
             progressCreated.add(progress);
         }
         return progressCreated;
+    } */
+
+    public void addAchievementPlayer (Achievement achievement, Player player) {
+        progressRepository.save(new Progress(0.0, achievement, player));
     }
- /* 
-    public List<Progress> addNewPlayer(Player player) {
-        List<Progress> progressCreated = new ArrayList<>();
-        for (Achievement achievement :  achievementRepository.findAll()){
-            Progress progress = new Progress(0.0, achievement, player);
-            progressCreated.add(progress);
-        }
-        return progressCreated;
-    }
-*/
+
     public void saveProgress (Progress progress) { 
         progressRepository.save(progress);
     }

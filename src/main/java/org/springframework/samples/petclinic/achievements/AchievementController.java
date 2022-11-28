@@ -1,5 +1,8 @@
 package org.springframework.samples.petclinic.achievements;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
@@ -47,9 +50,24 @@ public class AchievementController {
 
     @GetMapping("/player")
     public ModelAndView showUserAchievements(@AuthenticationPrincipal UserDetails user) {
+        //Añado aquí los logros (progresos) no existentes por jugador y los quito del create
         ModelAndView result=new ModelAndView(USER_ACHIEVEMENTS_VIEW);
         Player pl = playerService.getPlayerByUsername(user.getUsername());
-        result.addObject("progress", progressService.getUserProgress(pl));
+
+        List <Achievement> achievementsNotFound = achievementService.getAchievements();
+        List <Progress> actualPlayerProgress = progressService.getPlayerProgress(pl);
+
+        for (Progress progress : actualPlayerProgress) {
+            if (achievementsNotFound.contains(progress.getAchievement())) {
+                achievementsNotFound.remove(progress.getAchievement());
+            }
+        }
+
+        for (Achievement achievement : achievementsNotFound) {
+            progressService.addAchievementPlayer(achievement, pl);
+        }
+        
+        result.addObject("progress", progressService.getPlayerProgress(pl));
         return result;
     }
 
@@ -105,9 +123,6 @@ public class AchievementController {
         return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
        } else {
         achievementService.saveAchievement(achievement);
-        for (Progress progress : progressService.addNewAchievement(achievement)) {
-            progressService.saveProgress(progress);
-        }
         result = showAchievements();
         result.addObject("message", "Achievement saved succesfully!");
        }

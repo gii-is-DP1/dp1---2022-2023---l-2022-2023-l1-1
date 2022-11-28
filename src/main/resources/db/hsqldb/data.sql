@@ -104,7 +104,7 @@ INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 
 INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners,suffragium_card_id) VALUES
 (1,'Mi primera partida', 1, 'STARTING', 5, '2022-10-24', null, null, 1),
-(2,'Partida rapida', 0, 'IN_PROCESS', 5, '2022-10-27', null, null, 2),
+(2,'Partida rapida', 0, 'IN_PROCESS', 6, '2022-10-27', null, null, 2),
 (3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS', 3),
 (4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'LOYALS', 4),
 (5,'Testing decks', 1, 'STARTING', 5, '2022-11-27', null, null, 5);
