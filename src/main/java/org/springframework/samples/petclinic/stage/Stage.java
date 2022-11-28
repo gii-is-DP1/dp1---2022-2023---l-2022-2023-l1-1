@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.samples.petclinic.enums.CurrentStage;
@@ -22,6 +24,17 @@ public class Stage extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private CurrentStage currentStage;
 
-    @ManyToOne
+    @OneToOne
     private Turn turn;
+
+
+    public Stage () {
+
+    }
+
+    public Stage (Turn turn) {
+        this.currentStage = CurrentStage.VOTING;
+        this.turn = turn;
+
+    }
 }
