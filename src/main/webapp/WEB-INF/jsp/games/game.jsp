@@ -69,7 +69,7 @@
                         <c:forEach var="deck" items="${playerInfo.player.decks}">
                             <c:if test="${deck.game.id == game.id}">
                                 <c:choose>
-                                    <c:when test="${deck.player.id == actualPlayer.id}">
+                                    <c:when test="${deck.player.id == currentPlayer.id}">
                                         <c:forEach var="factions" items="${deck.factionCards}">
                                             <c:if test="${stage.currentStage =='END_OF_TURN'}"></c:if>
                                             <a href="/games/${game.id}/edit/${factions.type}"> 
@@ -92,7 +92,7 @@
                         <c:forEach var="deck" items="${playerInfo.player.decks}">
                             <c:if test="${deck.game.id == game.id}">
                                 <c:choose>
-                                    <c:when test="${deck.player.id == actualPlayer.id}">
+                                    <c:when test="${deck.player.id == currentPlayer.id}">
                                         <c:forEach var="votes" items="${deck.voteCards}">
                                             <c:if test="${stage.currentStage =='VOTING'}">
                                                 <a href="/games/${game.id}/updateSuffragium/${votes.type}"> 

@@ -34,7 +34,7 @@ public class DeckService {
 
     @Transactional(readOnly = true)
     public Deck getPlayerGameDeck (Integer playerId, Integer gameId) {
-        return rep.findPlayerDeck(playerId).stream().filter(x -> x.getGame().getId() == gameId).findFirst().get();
+        return rep.findPlayerDecks(playerId).stream().filter(x -> x.getGame().getId() == gameId).findFirst().get();
     }
 
     @Transactional
@@ -87,46 +87,49 @@ public class DeckService {
     }
 
     @Transactional
-    public void assingDecks(Game game) {        
+    public void assingDecksIfNeeded(Game game) {        
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
-        System.out.println(players);
-        List<FactionCard> factions = getFactionCards(players.size());
-        List<VoteCard> votes = getFirstRoundVoteCards();
-        Integer consul = (int) (Math.random() * (players.size()-1));
-        Integer pretor = (consul+1) % (players.size());
-        Integer edil1 = (pretor+1) % (players.size());
-        Integer edil2 = (edil1+1) % (players.size());
-        for(int i=0; i<players.size(); i++) {
-            Deck deck = new Deck();
-            deck.setGame(game);
-            deck.setPlayer(players.get(i));
-            if(i == consul) {
-                deck.setRoleCard(RoleCard.CONSUL);
-                List<FactionCard> playerFactions = getPlayerFactionCards(factions);
-                deck.setFactionCards(playerFactions);
-                deck.setVoteCards(new ArrayList<>());
-            } 
-            else if(i == pretor) {
-                deck.setRoleCard(RoleCard.PRETOR);
-                List<FactionCard> playerFactions = getPlayerFactionCards(factions);
-                deck.setFactionCards(playerFactions);
-                deck.setVoteCards(new ArrayList<>());
+        if(rep.findDecksByPlayerAndGame(players.get(0), game).isEmpty()) {
+            List<FactionCard> factions = getFactionCards(players.size());
+            List<VoteCard> votes = getFirstRoundVoteCards();
+            Integer consul = (int) (Math.random() * (players.size()-1));
+            Integer pretor = (consul+1) % (players.size());
+            Integer edil1 = (pretor+1) % (players.size());
+            Integer edil2 = (edil1+1) % (players.size());
+            
+            for(int i=0; i<players.size(); i++) {
+                Deck deck = new Deck();
+                deck.setGame(game);
+                deck.setPlayer(players.get(i));
+                if(i == consul) {
+                    deck.setRoleCard(RoleCard.CONSUL);
+                    List<FactionCard> playerFactions = getPlayerFactionCards(factions);
+                    deck.setFactionCards(playerFactions);
+                    deck.setVoteCards(new ArrayList<>());
+                } 
+                else if(i == pretor) {
+                    deck.setRoleCard(RoleCard.PRETOR);
+                    List<FactionCard> playerFactions = getPlayerFactionCards(factions);
+                    deck.setFactionCards(playerFactions);
+                    deck.setVoteCards(new ArrayList<>());
+                }
+                
+                else if(i == edil1 || i == edil2) {
+                    deck.setRoleCard(RoleCard.EDIL);
+                    List<FactionCard> playerFactions = getPlayerFactionCards(factions);
+                    deck.setFactionCards(playerFactions);
+                    deck.setVoteCards(votes);
+                } 
+                else {
+                    deck.setRoleCard(RoleCard.NO_ROL);
+                    List<FactionCard> playerFactions = getPlayerFactionCards(factions);
+                    deck.setFactionCards(playerFactions);
+                    deck.setVoteCards(new ArrayList<>());
+                } 
+                rep.save(deck);
             }
-               
-            else if(i == edil1 || i == edil2) {
-                deck.setRoleCard(RoleCard.EDIL);
-                List<FactionCard> playerFactions = getPlayerFactionCards(factions);
-                deck.setFactionCards(playerFactions);
-                deck.setVoteCards(votes);
-            } 
-            else {
-                deck.setRoleCard(RoleCard.NO_ROL);
-                List<FactionCard> playerFactions = getPlayerFactionCards(factions);
-                deck.setFactionCards(playerFactions);
-                deck.setVoteCards(new ArrayList<>());
-            } 
-            rep.save(deck);
         }
+        
     }
     
 }

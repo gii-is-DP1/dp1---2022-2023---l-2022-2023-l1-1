@@ -141,7 +141,9 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (51,false,false,5,2),
 (52,false,false,5,3),
 (53,false,false,5,5),
-(54,false,false,5,6);
+(54,false,false,5,6),
+(55,false,false,5,7),
+(56,false,false,5,8);
 
 INSERT INTO achievements(id,name,description,threshold) VALUES 
 (1,'Jugador Novato','Has jugado mas de <THRESHOLD> partidas',10.0),

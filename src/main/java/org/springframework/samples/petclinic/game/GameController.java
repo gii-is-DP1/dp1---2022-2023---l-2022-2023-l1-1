@@ -273,18 +273,18 @@ public class GameController {
         response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
-        SuffragiumCard suffragiumCard = suffragiumCardService.saveSuffragiumCard();
+        SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
 		Game gameStarted = gameService.startGame(game, suffragiumCard);
-		Player actualPlayer = playerService.getPlayerByUsername(user.getUsername());
-		Round actualRound = roundService.getRoundByGame(game);
-		Turn actualTurn = turnService.getTurnByRound(actualRound);
-		Stage actualStage = stageService.getStageByTurn(actualTurn);
-    deckService.assingDecks(game);
+		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Round currentRound = roundService.getRoundByGame(game);
+		Turn currentTurn = turnService.getTurnByRound(currentRound);
+		Stage currentStage = stageService.getStageByTurn(currentTurn);
+    	deckService.assingDecksIfNeeded(game);
 
-		res.addObject("stage", actualStage);
-		res.addObject("turn", actualTurn);
-		res.addObject("round", actualRound);
-		res.addObject("actualPlayer", actualPlayer);
+		res.addObject("stage", currentStage);
+		res.addObject("turn", currentTurn);
+		res.addObject("round", currentRound);
+		res.addObject("currentPlayer", currentPlayer);
         res.addObject("game", gameStarted);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
