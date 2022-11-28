@@ -28,11 +28,12 @@ public class SuffragiumCardService {
     }
 
     @Transactional
-    public SuffragiumCard saveSuffragiumCard(SuffragiumCard card) throws DataAccessException{
-        card.setLoyalsVotes(0);
-        card.setTraitorsVotes(0);
-        card.setVoteLimit(15);
-        return suffragiumCardRepository.save(card);
+    public SuffragiumCard saveSuffragiumCard() throws DataAccessException{
+        SuffragiumCard suffragiumCard = new SuffragiumCard();
+        suffragiumCard.setLoyalsVotes(0);
+        suffragiumCard.setTraitorsVotes(0);
+        suffragiumCard.setVoteLimit(15);
+        return suffragiumCardRepository.save(suffragiumCard);
     }
     
 }

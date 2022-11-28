@@ -36,7 +36,7 @@
         <thead>
         <tr>
             <th>Player</th>
-            <th>Role Cards</th>
+            <th>Role Card</th>
             <th>Faction Cards</th>
             <th>Vote Cards</th>
         </tr>
@@ -52,7 +52,7 @@
                             <c:if test="${deck.game.id == game.id}">
                                 <c:if test="${deck.roleCardImg != NO_ROLE}">
                                     <a href="/"> 
-                                        <img src="${deck.roleCardImg}" width="80" height="120" />                            
+                                        <img src="${deck.getRoleCardImg()}" width="80" height="120" />                            
                                     </a>
                                 </c:if>
                             </c:if>

@@ -40,6 +40,6 @@ public class Game extends NamedEntity {
     @Enumerated(EnumType.STRING)
     private Faction winners;
 
-    @OneToOne (optional=false)
+    @OneToOne (optional=true)
     private SuffragiumCard suffragiumCard;
 }

@@ -20,6 +20,7 @@ import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCardService;
@@ -202,25 +203,20 @@ public class GameController {
     @GetMapping("/create")
     public ModelAndView createGameForm() {
         ModelAndView res = new ModelAndView(CREATE_GAME);
-        Game game = new Game();   
-		SuffragiumCard card = new SuffragiumCard(); 
-		PlayerInfo creatorInfo = new PlayerInfo();     
-        res.addObject("game", game);
-		res.addObject("suffragiumCard", card); 
-		res.addObject("creatorInfo", creatorInfo);                                 
+        Game game = new Game();       
+        res.addObject("game", game);                                
         return res;
     }
 
 	@Transactional
 	@PostMapping("/create")
 	public ModelAndView createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
-	@Valid SuffragiumCard card, @Valid Game game, BindingResult br) {
+	@Valid Game game, BindingResult br) {
 		ModelAndView res = null;
 		if(br.hasErrors()) {
 			return new ModelAndView(CREATE_GAME, br.getModel());
 		} else {
-			SuffragiumCard newCard = suffragiumCardService.saveSuffragiumCard(card);
-			Game newGame = gameService.saveGame(game, newCard);
+			Game newGame = gameService.saveGame(game);
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
 			res = showLobby(newGame.getId());
@@ -242,11 +238,14 @@ public class GameController {
 	@Transactional
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user){
-        ModelAndView res=new ModelAndView(GAME);
-        Game game=gameService.getGameById(gameId);
+        ModelAndView res = new ModelAndView(GAME);
+        Game game = gameService.getGameById(gameId);
+		SuffragiumCard suffragiumCard = suffragiumCardService.saveSuffragiumCard();
+		Game gameStarted = gameService.startGame(game, suffragiumCard);
 		Player actualPlayer = playerService.getPlayerByUsername(user.getUsername());
+		deckService.assingDecks(game);
 		res.addObject("actualPlayer", actualPlayer);
-        res.addObject("game", game);
+        res.addObject("game", gameStarted);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
         return res;
