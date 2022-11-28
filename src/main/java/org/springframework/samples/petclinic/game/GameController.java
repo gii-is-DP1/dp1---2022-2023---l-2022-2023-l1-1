@@ -22,6 +22,7 @@ import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
 import org.springframework.samples.petclinic.round.Round;
 import org.springframework.samples.petclinic.round.RoundController;
@@ -226,26 +227,20 @@ public class GameController {
     @GetMapping("/create")
     public ModelAndView createGameForm() {
         ModelAndView res = new ModelAndView(CREATE_GAME);
-        Game game = new Game();   
-		SuffragiumCard card = new SuffragiumCard(); 
-		PlayerInfo creatorInfo = new PlayerInfo();
-		
-        res.addObject("game", game);
-		res.addObject("suffragiumCard", card); 
-		res.addObject("creatorInfo", creatorInfo);                                 
+        Game game = new Game();       
+        res.addObject("game", game);                                
         return res;
     }
 
 	@Transactional
 	@PostMapping("/create")
 	public ModelAndView createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
-	@Valid SuffragiumCard card, @Valid Game game, BindingResult br) {
+	@Valid Game game, BindingResult br) {
 		ModelAndView res = null;
 		if(br.hasErrors()) {
 			return new ModelAndView(CREATE_GAME, br.getModel());
 		} else {
-			SuffragiumCard newCard = suffragiumCardService.saveSuffragiumCard(card);
-			Game newGame = gameService.saveGame(game, newCard);
+			Game newGame = gameService.saveGame(game);
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
 			Round round = new Round(newGame);
 			Turn turn = new Turn(round);
@@ -278,17 +273,19 @@ public class GameController {
         response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
-		Player actualPlayer = playerService.getPlayerByUsername(user.getUsername());
-		Round actualRound = roundService.getRoundByGame(game);
-		Turn actualTurn = turnService.getTurnByRound(actualRound);
-		Stage actualStage = stageService.getStageByTurn(actualTurn);
+        SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
+		Game gameStarted = gameService.startGame(game, suffragiumCard);
+		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Round currentRound = roundService.getRoundByGame(game);
+		Turn currentTurn = turnService.getTurnByRound(currentRound);
+		Stage currentStage = stageService.getStageByTurn(currentTurn);
+    	deckService.assingDecksIfNeeded(game);
 
-
-		res.addObject("stage", actualStage);
-		res.addObject("turn", actualTurn);
-		res.addObject("round", actualRound);
-		res.addObject("actualPlayer", actualPlayer);
-        res.addObject("game", game);
+		res.addObject("stage", currentStage);
+		res.addObject("turn", currentTurn);
+		res.addObject("round", currentRound);
+		res.addObject("currentPlayer", currentPlayer);
+        res.addObject("game", gameStarted);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
         return res;

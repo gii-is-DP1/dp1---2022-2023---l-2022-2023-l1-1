@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.deck;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EnumType;
@@ -14,6 +15,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FactionCardRepository extends CrudRepository <FactionCard, FCType> {
-
     
 }
