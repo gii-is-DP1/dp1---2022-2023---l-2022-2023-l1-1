@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.samples.petclinic.enums.InvitationType;
+import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.stereotype.Service;
@@ -70,12 +71,37 @@ public class InvitationService {
         return res;
     }
 
-    @Transactional
-	public void saveInvitation(Invitation i, Player sender) throws DataAccessException {
-		i.setInvitationType(InvitationType.FRIENDSHIP);
-        i.setAccepted(false);
-        i.setSender(sender);
-        invitationRepository.save(i);
+    @Transactional(readOnly = true) 
+    public Boolean invitationIsDuplicated(Invitation invitation) {
+        Boolean res = false;
+        Player p1 = invitation.getSender();
+        Player p2 = invitation.getRecipient();
+        List<Player> players = new ArrayList<>();
+        players.add(p1);
+        players.add(p2);
+        List<Invitation> invitationsInDB = invitationRepository.findAll();
+        for(Invitation i: invitationsInDB) {
+            Player p1InDB = i.getSender();
+            Player p2InDB = i.getRecipient();
+            List<Player> playersInDB = new ArrayList<>();
+            playersInDB.add(p1InDB);
+            playersInDB.add(p2InDB);
+            if(players.containsAll(playersInDB)) res = true;
+        }
+
+        return true;
+    }
+
+    @Transactional(rollbackFor = DuplicatedInvitationException.class)
+	public void saveInvitation(Invitation invitation, Player sender) throws DataAccessException, DuplicatedInvitationException {
+        if(invitationIsDuplicated(invitation)) {
+            throw new DuplicatedInvitationException();
+        } else {
+            invitation.setInvitationType(InvitationType.FRIENDSHIP);
+            invitation.setAccepted(false);
+            invitation.setSender(sender);
+            invitationRepository.save(invitation);
+        }
 	}
 
     @Transactional

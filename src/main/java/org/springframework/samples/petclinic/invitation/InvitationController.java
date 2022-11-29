@@ -5,7 +5,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -75,15 +77,19 @@ public class InvitationController {
 
     @Transactional
     @PostMapping("/invitations/send")
-    public ModelAndView saveInvitation(@Valid Invitation invitation, @AuthenticationPrincipal UserDetails user, BindingResult br) {
+    public ModelAndView saveInvitation(@Valid Invitation invitation, @AuthenticationPrincipal UserDetails user, BindingResult br) throws DataAccessException, DuplicatedInvitationException {
         ModelAndView result = null;
         Player sender = playerService.getPlayerByUsername(user.getUsername());
         if(br.hasErrors()) {
             return new ModelAndView(SEND_INVITATION, br.getModel());
         } else {
-            invitationService.saveInvitation(invitation, sender);
-            result = showInvitationsByPlayer(user);
-            result.addObject("message", "Invitation sent succesfully!");
+            try {
+                invitationService.saveInvitation(invitation, sender);
+                result = showInvitationsByPlayer(user);
+                result.addObject("message", "Invitation sent succesfully!");
+            } catch (DuplicatedInvitationException e) {
+                return new ModelAndView(SEND_INVITATION);
+            }     
         }
         return result;
     }
