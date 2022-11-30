@@ -112,17 +112,20 @@ INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners,su
 INSERT INTO rounds(id,current_round,game_id) VALUES 
 (1,'FIRST',1),
 (2,'FIRST',2),
-(3,'SECOND',3);
+(3,'SECOND',3),
+(50, 'FIRST', 5);
 
 INSERT INTO turns(id,current_turn,round_id) VALUES 
-(1, 5,1),
-(2, 6,2),
-(3, 8,3);
+(1, 5, 1),
+(2, 6, 2),
+(3, 8, 3),
+(50, 1, 50);
 
 INSERT INTO stages(id,current_stage,turn_id) VALUES 
 (1,'VOTING',1),
 (2,'SCORING',2),
-(3,'ENDOFTURN',3);
+(3,'ENDOFTURN',3),
+(50, 'VOTING', 50);
 
 INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 
 (1,true,false,2,1),
