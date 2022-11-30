@@ -15,6 +15,7 @@
             <th>Date</th>
             <th>Duration</th>
             <th>Winners</th>
+            <th>Join game</th>
         </tr>
         </thead>
         <tbody>
@@ -37,6 +38,11 @@
                 </td>
                 <td>
                     <c:out value="${game.winners}"/>
+                </td>
+                <td>
+                <sec:authorize access="hasAuthority('player')">
+                    <a href="/games/${game.id}/lobby"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join game</a>
+                </sec:authorize>
                 </td>
             </tr>
         </c:forEach>
