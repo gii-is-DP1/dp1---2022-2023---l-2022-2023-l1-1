@@ -47,7 +47,7 @@ public class PlayerController {
     public String getPlayer(@PathVariable("id") Integer id, ModelMap model){
         Player player = playerService.getPlayer(id);
         if(player !=null){
-            List<User> allUsers = userService.getAll();
+            List<User> allUsers = userService.findAll();
             model.put("users", allUsers);
             model.put("player", player);
             return EDIT_PLAYER;
@@ -96,7 +96,7 @@ public class PlayerController {
 
     @GetMapping("/create")
     public String addPlayer(ModelMap model){
-        List<User> allUsers = userService.getAll();
+        List<User> allUsers = userService.findAll();
         model.put("users", allUsers);
         model.put("player", new Player());
         return EDIT_PLAYER;

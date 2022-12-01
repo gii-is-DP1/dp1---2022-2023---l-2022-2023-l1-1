@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.user;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+	@Autowired
 	private UserRepository userRepository;
-
 	@Autowired
 	private PlayerService playerService;
 
@@ -45,18 +46,34 @@ public class UserService {
 	}
 
 	@Transactional
-	public User saveUser(User user) throws DataAccessException {
-		user.setEnabled(true);
-		userRepository.save(user);
+    public User saveUser(User user) throws DataAccessException {
+		String username = user.getUsername();
+        List<String> usernameList = new ArrayList<>();
+        for(User u:userRepository.findAll()){
+            usernameList.add(u.getUsername());
+        }
+		/* 
+        if (usernameList.contains(username)){
+			throw new DuplicatedUsername();
+        }
+		*/
+        user.setEnabled(true);
+        userRepository.save(user);
 		return user;
-	}
+    }
 
-	public List<User> getAll() {
+
+	public List<User> findAll() {
 		return userRepository.findAll();
 	}
 
 	public Optional<User> findUser(String username) {
 		return userRepository.findById(username);
+	}
+
+	@Transactional
+	public List<String> findUsernames(){
+		return userRepository.findUsernames();
 	}
 
 	@Transactional

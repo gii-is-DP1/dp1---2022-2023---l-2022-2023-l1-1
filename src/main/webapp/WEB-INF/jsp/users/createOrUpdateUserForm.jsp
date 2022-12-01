@@ -10,8 +10,7 @@
             <c:choose>
                 <c:when test="${user['new']}">Register User </c:when> 
                 <c:otherwhise> Update User </c:otherwhise>
-            </c:choose>
-            
+            </c:choose> 
         </h2>
         <form:form modelAttribute="user"
                    class="form-horizontal">
@@ -19,7 +18,10 @@
             <div class="form-group has-feedback">
                 <petclinic:inputField label="Username" name="username"/>
                 <petclinic:inputField label="Password" name="password"/>
-                
+                <!-- 
+                <petclinic:inputField label="Name" name="firstname"/>
+                <petclinic:inputField label="Surname" name="surname"/>
+                -->
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">

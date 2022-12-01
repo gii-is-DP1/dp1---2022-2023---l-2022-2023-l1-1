@@ -47,6 +47,8 @@ public class UserController {
 	private static final String VIEWS_USER_LIST = "/users/usersList";
 
 	private final UserService service;
+    @Autowired
+    private  AuthoritiesService authoritiesService;
 
 	@Autowired
 	public UserController(UserService uS) {
@@ -60,7 +62,7 @@ public class UserController {
 
 	@GetMapping
     public String listAllUsers(ModelMap model){
-        List<User> allUsers = service.getAll();
+        List<User> allUsers = service.findAll();
         model.put("users", allUsers);
         return VIEWS_USER_LIST;
     }

@@ -11,6 +11,11 @@
         <tr>
             <th>Username</th>
             <th>Password</th>
+
+            <!--
+            <th>Name</th>
+            <th>Surname</th>
+            -->
         </tr>
         </thead>
         <tbody>
@@ -22,6 +27,14 @@
                 <td>
                     <c:out value="${user.password}"/>
                 </td>
+                <!--
+                <td>
+                    <c:out value="${user.firstname}"/>
+                </td>
+                <td>
+                    <c:out value="${user.surname}"/>
+                </td>
+                -->
                 <td>
                     <a class="btn btn-default" href="/players/${user.username}/edit">Edit user</a>
                 </td>
