@@ -23,13 +23,30 @@ public class Turn extends BaseEntity{
     @OneToOne
     private Round round;
 
+    private Integer votesLoyal;
+
+    private Integer votesTraitor;
+
+    private Integer votesNeutral;
+
+    public Integer getVoteCount() {
+        if (this.votesLoyal == null) { this.votesLoyal = 0;}
+        if (this.votesTraitor == null) { this.votesTraitor = 0;}
+        if (this.votesNeutral == null) {this.votesNeutral = 0;}
+        return votesLoyal + votesTraitor + votesNeutral;
+    }
+
 
     public Turn () {
+        
         
     }
 
     public Turn (Round round) {
         this.currentTurn = 1;
         this.round = round;
+        this.votesLoyal = 0;
+        this.votesTraitor = 0;
+        this.votesNeutral = 0;
     }
 }

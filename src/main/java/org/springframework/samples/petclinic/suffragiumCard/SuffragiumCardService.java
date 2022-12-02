@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.suffragiumCard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +22,10 @@ public class SuffragiumCardService {
         return suffragiumCardRepository.findSuffragiumCardByGame(gameId);
     }
 
-    public void updateVotes (SuffragiumCard card, Integer loyalVotes, Integer traitorVotes) {
+    public void updateVotes (SuffragiumCard card, Turn turn) {
         SuffragiumCard cardToUpdate = suffragiumCardRepository.findById(card.getId()).get();
-        cardToUpdate.setLoyalsVotes(cardToUpdate.getLoyalsVotes() + loyalVotes);
-        cardToUpdate.setTraitorsVotes(cardToUpdate.getTraitorsVotes() + traitorVotes);
+        cardToUpdate.setLoyalsVotes(cardToUpdate.getLoyalsVotes() + turn.getVotesLoyal());
+        cardToUpdate.setTraitorsVotes(cardToUpdate.getTraitorsVotes() + turn.getVotesTraitor());
         suffragiumCardRepository.save(cardToUpdate);
     }
 

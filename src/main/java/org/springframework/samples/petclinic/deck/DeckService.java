@@ -43,9 +43,22 @@ public class DeckService {
     }
 
     @Transactional
-    public void updateFactionDeck (Deck deck, List<FactionCard> fc) {
+    public void updateFactionDeck (Deck deck, FCType factionCard) {
+        List<FactionCard> chosenFaction = new ArrayList<>();
+        FactionCard cardChoosen = factionCardRepository.findById(factionCard).get();
+        chosenFaction.add(cardChoosen);
         Deck deckToUpdate = rep.findById(deck.getId()).get();
-        deckToUpdate.setFactionCards(fc);
+        deckToUpdate.setFactionCards(chosenFaction);
+        rep.save(deckToUpdate);
+    }
+    
+    @Transactional
+    public void updateVotesDeck (Deck deck, VCType voteCard) {
+        List<VoteCard> chosenVote = new ArrayList<>();
+        VoteCard cardChoosen = voteCardRepository.findById(voteCard).get();
+        chosenVote.add(cardChoosen);
+        Deck deckToUpdate = rep.findById(deck.getId()).get();
+        deckToUpdate.setVoteCards(chosenVote);
         rep.save(deckToUpdate);
     } 
 
@@ -76,6 +89,12 @@ public class DeckService {
         res.add(factions.get(faction2));
         factions.remove(faction2);
         return res;
+    }
+
+    public void clearVoteCards (Deck deck) {
+        deck.setVoteCards(new ArrayList<>());
+        rep.save(deck);
+
     }
 
     @Transactional(readOnly = true)
