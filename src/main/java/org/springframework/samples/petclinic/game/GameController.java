@@ -3,7 +3,6 @@ package org.springframework.samples.petclinic.game;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +12,9 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckService;
-import org.springframework.samples.petclinic.deck.FactionCard;
 import org.springframework.samples.petclinic.deck.FactionCardService;
+import org.springframework.samples.petclinic.deck.VoteCard;
+import org.springframework.samples.petclinic.deck.VoteCardService;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentStage;
@@ -22,14 +22,10 @@ import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
-import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
 import org.springframework.samples.petclinic.round.Round;
-import org.springframework.samples.petclinic.round.RoundController;
-import org.springframework.samples.petclinic.round.RoundRepository;
 import org.springframework.samples.petclinic.round.RoundService;
 import org.springframework.samples.petclinic.stage.Stage;
-import org.springframework.samples.petclinic.stage.StageRepository;
 import org.springframework.samples.petclinic.stage.StageService;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCardService;
@@ -59,6 +55,7 @@ public class GameController {
     private static final String CREATE_GAME = "/games/createGame";
 	private static final String GAME_LOBBY = "/games/gameLobby";
 	private static final String GAME = "/games/game";
+	private static final String PRETOR_SELECTION = "games/pretorCardSelection";
 
 
     @Autowired
@@ -87,6 +84,9 @@ public class GameController {
 
 	@Autowired
 	private StageService stageService;
+
+	@Autowired
+	private VoteCardService voteCardService;
 
     @Autowired
     public GameController(GameService service) {
@@ -270,17 +270,19 @@ public class GameController {
 	@Transactional
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
-        response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
+        response.addHeader("Refresh", "5"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
 		Game gameStarted = gameService.startGame(game, suffragiumCard);
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Deck playerDeck = deckService.getPlayerGameDeck(currentPlayer.getId(), gameId);
 		Round currentRound = roundService.getRoundByGame(game);
 		Turn currentTurn = turnService.getTurnByRound(currentRound);
 		Stage currentStage = stageService.getStageByTurn(currentTurn);
     	deckService.assingDecksIfNeeded(game);
 
+		res.addObject("playerDeck", playerDeck);
 		res.addObject("stage", currentStage);
 		res.addObject("turn", currentTurn);
 		res.addObject("round", currentRound);
@@ -291,42 +293,75 @@ public class GameController {
         return res;
     }
 
-	@GetMapping("/{gameId}/updateSuffragium/{voteType}")
-	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType) {
+	@GetMapping("/{gameId}/pretorSelection/{voteType}")
+	public ModelAndView pretorSelection (@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType) {
+		ModelAndView res = new ModelAndView(PRETOR_SELECTION);
+		VoteCard selectedCard = voteCardService.getById(voteType);
+		List <VoteCard> changeOptions = voteCardService.getChangeOptions(gameService.getGameById(gameId), selectedCard);
+		
+
+		res.addObject("game", gameService.getGameById(gameId));
+		res.addObject("selectedCard", selectedCard);
+		res.addObject("changeOptions", changeOptions);
+		
+		return res;
+	}
+
+	@GetMapping("/{gameId}/pretorSelection/{voteType}/{changedVoteType}")
+	public String pretorChange (@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType, @PathVariable("changedVoteType") VCType changedVoteType) {
+
+		Stage actualstage = stageService.getStageByTurn(turnService
+												.getTurnByRound(roundService
+												.getRoundByGame(gameService.getGameById(gameId))));
+		turnService.pretorVoteChange(voteType, changedVoteType, gameService.getGameById(gameId));
+		stageService.changeStage(actualstage, CurrentStage.SCORING);
+		updateSuffragiumCard(gameId);
+		return "redirect:/games/" + gameId.toString();
+		
+	}
+
+	@GetMapping("/{gameId}/updateSuffragium")
+	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId) {
 		Game actualGame = gameService.getGameById(gameId);
-		Integer numLoyal = 0;
-		Integer numTraitor = 0;
-		if (voteType == VCType.GREEN) {
-			numLoyal ++;
-		}
-		if (voteType == VCType.RED) {
-			numTraitor ++;
-		}
-		suffragiumCardService.updateVotes(actualGame.getSuffragiumCard(), numLoyal, numTraitor);
+		Turn actualTurn = turnService.getTurnByRound(roundService.getRoundByGame(actualGame));
+		suffragiumCardService.updateVotes(actualGame.getSuffragiumCard(), actualTurn);
 		stageService.changeStage(stageService
 		.getStageByTurn(turnService
 		.getTurnByRound(roundService
-		.getRoundByGame(actualGame))), CurrentStage.VETO);
+		.getRoundByGame(actualGame))), CurrentStage.END_OF_TURN);
 		return "redirect:/games/" + gameId.toString();
+	}
 
+	@GetMapping("/{gameId}/updateVotes/{voteType}")
+	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType, @AuthenticationPrincipal UserDetails user) {
+		Game actualGame = gameService.getGameById(gameId);
+		Turn actualTurn = turnService.getTurnByRound(roundService.getRoundByGame(actualGame));
+		Stage actualStage = stageService.getStageByTurn(actualTurn);
+		Player actualPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Deck deck = deckService.getPlayerGameDeck(actualPlayer.getId(), gameId);
+
+		turnService.updateTurnVotes(actualTurn, voteType, actualPlayer);
+		stageService.updateStageVotes(actualStage);
+		deckService.updateVotesDeck(deck, voteType);
+		return "redirect:/games/" + gameId.toString();
 	}
 
 	@Transactional
     @GetMapping("/{gameId}/edit/{factionType}")
-    public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") String factionType, @AuthenticationPrincipal UserDetails user){
+    public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") FCType factionType, @AuthenticationPrincipal UserDetails user){
         
         Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
         Deck deck = deckService.getPlayerGameDeck(player.getId(), gameId); //cojo el mazo de este 
-        List<FactionCard> chosenFaction = new ArrayList<>();
 		Game game = gameService.getGameById(gameId);
 		Round round = roundService.getRoundByGame(game);
 		Turn turn = turnService.getTurnByRound(round);
 		Stage stage = stageService.getStageByTurn(turn);
 
-        chosenFaction.add(factionCardService.getByFaction(FCType.valueOf(factionType)));
-        deckService.updateFactionDeck(deck, chosenFaction);  
+        deckService.updateFactionDeck(deck, factionType);  
 		turnService.newTurn(turn);
 		stageService.changeStage(stage, CurrentStage.VOTING);
         return "redirect:/games/" + gameId.toString();
     }
+
+	
 }

@@ -22,9 +22,17 @@ public class StageService {
         return stageRepository.findStageByTurn(turn);
     }
 
-    public void changeStage (Stage stage, CurrentStage currentStage) {
+    public void changeStage (Stage stage, CurrentStage currentStage) { //por ahora no hace falta luego puede que si
         stage.setCurrentStage(currentStage);
         stageRepository.save(stage);
+
+    }
+
+    public void updateStageVotes (Stage actualStage) {
+        if (actualStage.getTurn().getVoteCount() == 2) {
+            actualStage.setCurrentStage(CurrentStage.VETO);
+            stageRepository.save(actualStage);
+            }
 
     }
     
