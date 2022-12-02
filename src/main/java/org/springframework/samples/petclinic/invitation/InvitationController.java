@@ -40,7 +40,6 @@ public class InvitationController {
         this.invitationService = iS;
     }
 
-    @Transactional
     @GetMapping("/invitations")
     public ModelAndView showInvitationsByPlayer(@AuthenticationPrincipal UserDetails user){
         ModelAndView result = new ModelAndView(INVITATIONS_LIST);
@@ -49,7 +48,6 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @GetMapping("/friends")
     public ModelAndView showFriends(@AuthenticationPrincipal UserDetails user) {
         ModelAndView result = new ModelAndView(FRIENDS_LIST);
@@ -58,7 +56,6 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @GetMapping("/invitations/send")
     public ModelAndView sendInvitation(@AuthenticationPrincipal UserDetails user) {
         Invitation invitation = new Invitation();
@@ -73,7 +70,6 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @PostMapping("/invitations/send")
     public ModelAndView saveInvitation(@Valid Invitation invitation, @AuthenticationPrincipal UserDetails user, BindingResult br) {
         ModelAndView result = null;
@@ -88,7 +84,6 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @GetMapping("/invitations/{id}/accept")
     public ModelAndView acceptInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         invitationService.acceptInvitationById(id);
@@ -96,7 +91,6 @@ public class InvitationController {
         return showInvitationsByPlayer(user);
     }
 
-    @Transactional
     @GetMapping("/invitations/{id}/reject")
     public ModelAndView rejectInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         try{
@@ -108,7 +102,6 @@ public class InvitationController {
         return showInvitationsByPlayer(user);
     }
 
-    @Transactional
     @GetMapping("/invitations/{id}/cancelFriendship")
     public ModelAndView cancelFriendship(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         try{

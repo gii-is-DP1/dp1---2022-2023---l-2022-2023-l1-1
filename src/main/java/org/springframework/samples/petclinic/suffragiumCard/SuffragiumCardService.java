@@ -21,6 +21,7 @@ public class SuffragiumCardService {
         return suffragiumCardRepository.findSuffragiumCardByGame(gameId);
     }
 
+    @Transactional
     public void updateVotes (SuffragiumCard card, Integer loyalVotes, Integer traitorVotes) {
         SuffragiumCard cardToUpdate = suffragiumCardRepository.findById(card.getId()).get();
         cardToUpdate.setLoyalsVotes(cardToUpdate.getLoyalsVotes() + loyalVotes);
@@ -35,7 +36,7 @@ public class SuffragiumCardService {
             SuffragiumCard suffragiumCard = new SuffragiumCard();
             suffragiumCard.setLoyalsVotes(0);
             suffragiumCard.setTraitorsVotes(0);
-            suffragiumCard.setVoteLimit(15);
+            suffragiumCard.setVoteLimit(game.getSuffragiumLimit());
             return suffragiumCardRepository.save(suffragiumCard);
         }
         return card;

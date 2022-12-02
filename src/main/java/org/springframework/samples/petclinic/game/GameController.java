@@ -24,17 +24,8 @@ import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
-import org.springframework.samples.petclinic.round.Round;
-import org.springframework.samples.petclinic.round.RoundController;
-import org.springframework.samples.petclinic.round.RoundRepository;
-import org.springframework.samples.petclinic.round.RoundService;
-import org.springframework.samples.petclinic.stage.Stage;
-import org.springframework.samples.petclinic.stage.StageRepository;
-import org.springframework.samples.petclinic.stage.StageService;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCardService;
-import org.springframework.samples.petclinic.turn.Turn;
-import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -79,15 +70,6 @@ public class GameController {
 	@Autowired
 	private FactionCardService factionCardService;
 
-	@Autowired
-	private RoundService roundService;
-
-	@Autowired
-	private TurnService turnService;
-
-	@Autowired
-	private StageService stageService;
-
     @Autowired
     public GameController(GameService service) {
         this.gameService = service;
@@ -107,14 +89,12 @@ public class GameController {
         return resultList;
     }
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/history/find")
 	public String gamesHistoryForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_HISTORY;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/history")
 	public ModelAndView processGamesHistoryForm(Game game, BindingResult result) {
 
@@ -139,14 +119,12 @@ public class GameController {
 		}
 	}
 
-	@Transactional(readOnly = true)
     @GetMapping(value = "/playerHistory/find")
 	public String gamesHistoryByPlayerForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_PLAYER_HISTORY;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/playerHistory")
 	public ModelAndView processGamesHistoryByPlayerForm(@AuthenticationPrincipal UserDetails user, Game game, BindingResult result) {
 		if (game.getName() == null) {
@@ -169,14 +147,12 @@ public class GameController {
 		}
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/inProcess/find")
 	public String gamesInProcessForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_IN_PROCESS;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/inProcess")
 	public ModelAndView processGamesInProcessForm(Game game, BindingResult result) {
 		if (game.getName() == null) {
@@ -196,14 +172,12 @@ public class GameController {
 		}
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/starting/find")
 	public String gamesStartingForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_STARTING;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/starting")
 	public ModelAndView processGamesStartingForm(Game game, BindingResult result) {
 		if (game.getName() == null) {
@@ -223,7 +197,6 @@ public class GameController {
 		}
 	}
 
-    @Transactional
     @GetMapping("/create")
     public ModelAndView createGameForm() {
         ModelAndView res = new ModelAndView(CREATE_GAME);
@@ -232,7 +205,6 @@ public class GameController {
         return res;
     }
 
-	@Transactional
 	@PostMapping("/create")
 	public ModelAndView createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
 	@Valid Game game, BindingResult br) {
@@ -242,14 +214,8 @@ public class GameController {
 		} else {
 			Game newGame = gameService.saveGame(game);
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
-			Round round = new Round(newGame);
-			Turn turn = new Turn(round);
-			Stage stage = new Stage(turn);
 
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
-			roundService.save(round);
-			turnService.save(turn);
-			stageService.save(stage);
 			
 			res = showLobby(newGame.getId());
 			res.addObject("message", "Game successfully created!");
@@ -257,7 +223,6 @@ public class GameController {
 		return res;
 	}
 
-	@Transactional
     @GetMapping("/{gameId}/lobby")
     public ModelAndView showLobby(@PathVariable("gameId") Integer gameId){
         ModelAndView res=new ModelAndView(GAME_LOBBY);
@@ -267,7 +232,6 @@ public class GameController {
         return res;
     }
 
-	@Transactional
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
         response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
@@ -276,14 +240,8 @@ public class GameController {
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
 		Game gameStarted = gameService.startGame(game, suffragiumCard);
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
-		Round currentRound = roundService.getRoundByGame(game);
-		Turn currentTurn = turnService.getTurnByRound(currentRound);
-		Stage currentStage = stageService.getStageByTurn(currentTurn);
     	deckService.assingDecksIfNeeded(game);
 
-		res.addObject("stage", currentStage);
-		res.addObject("turn", currentTurn);
-		res.addObject("round", currentRound);
 		res.addObject("currentPlayer", currentPlayer);
         res.addObject("game", gameStarted);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
@@ -293,7 +251,7 @@ public class GameController {
 
 	@GetMapping("/{gameId}/updateSuffragium/{voteType}")
 	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType) {
-		Game actualGame = gameService.getGameById(gameId);
+		Game game = gameService.getGameById(gameId);
 		Integer numLoyal = 0;
 		Integer numTraitor = 0;
 		if (voteType == VCType.GREEN) {
@@ -302,16 +260,12 @@ public class GameController {
 		if (voteType == VCType.RED) {
 			numTraitor ++;
 		}
-		suffragiumCardService.updateVotes(actualGame.getSuffragiumCard(), numLoyal, numTraitor);
-		stageService.changeStage(stageService
-		.getStageByTurn(turnService
-		.getTurnByRound(roundService
-		.getRoundByGame(actualGame))), CurrentStage.VETO);
+		suffragiumCardService.updateVotes(game.getSuffragiumCard(), numLoyal, numTraitor);
+		gameService.changeStage(game, CurrentStage.VETO);
 		return "redirect:/games/" + gameId.toString();
 
 	}
 
-	@Transactional
     @GetMapping("/{gameId}/edit/{factionType}")
     public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") String factionType, @AuthenticationPrincipal UserDetails user){
         
@@ -319,14 +273,11 @@ public class GameController {
         Deck deck = deckService.getPlayerGameDeck(player.getId(), gameId); //cojo el mazo de este 
         List<FactionCard> chosenFaction = new ArrayList<>();
 		Game game = gameService.getGameById(gameId);
-		Round round = roundService.getRoundByGame(game);
-		Turn turn = turnService.getTurnByRound(round);
-		Stage stage = stageService.getStageByTurn(turn);
 
         chosenFaction.add(factionCardService.getByFaction(FCType.valueOf(factionType)));
         deckService.updateFactionDeck(deck, chosenFaction);  
-		turnService.newTurn(turn);
-		stageService.changeStage(stage, CurrentStage.VOTING);
+		gameService.changeStage(game, CurrentStage.VOTING);
+		gameService.changeTurnAndRound(game);
         return "redirect:/games/" + gameId.toString();
     }
 }
