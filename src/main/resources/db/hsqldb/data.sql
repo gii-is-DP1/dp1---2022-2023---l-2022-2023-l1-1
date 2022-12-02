@@ -107,7 +107,7 @@ INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners,su
 (2,'Partida rapida', 0, 'IN_PROCESS', 6, '2022-10-27', null, null, 2),
 (3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS', 3),
 (4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'LOYALS', 4),
-(5,'Testing decks', 1, 'STARTING', 7, '2022-11-27', null, null, 5);
+(5,'Testing decks', 1, 'STARTING', 7, '2022-11-27', null, null, null);
 
 INSERT INTO rounds(id,current_round,game_id) VALUES 
 (1,'FIRST',1),

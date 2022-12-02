@@ -107,14 +107,12 @@ public class GameController {
         return resultList;
     }
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/history/find")
 	public String gamesHistoryForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_HISTORY;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/history")
 	public ModelAndView processGamesHistoryForm(Game game, BindingResult result) {
 
@@ -139,14 +137,12 @@ public class GameController {
 		}
 	}
 
-	@Transactional(readOnly = true)
     @GetMapping(value = "/playerHistory/find")
 	public String gamesHistoryByPlayerForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_PLAYER_HISTORY;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/playerHistory")
 	public ModelAndView processGamesHistoryByPlayerForm(@AuthenticationPrincipal UserDetails user, Game game, BindingResult result) {
 		if (game.getName() == null) {
@@ -169,14 +165,12 @@ public class GameController {
 		}
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/inProcess/find")
 	public String gamesInProcessForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_IN_PROCESS;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/inProcess")
 	public ModelAndView processGamesInProcessForm(Game game, BindingResult result) {
 		if (game.getName() == null) {
@@ -196,14 +190,12 @@ public class GameController {
 		}
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/starting/find")
 	public String gamesStartingForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_STARTING;
 	}
 
-    @Transactional(readOnly = true)
     @GetMapping(value = "/starting")
 	public ModelAndView processGamesStartingForm(Game game, BindingResult result) {
 		if (game.getName() == null) {
@@ -223,7 +215,6 @@ public class GameController {
 		}
 	}
 
-    @Transactional
     @GetMapping("/create")
     public ModelAndView createGameForm() {
         ModelAndView res = new ModelAndView(CREATE_GAME);
@@ -232,7 +223,6 @@ public class GameController {
         return res;
     }
 
-	@Transactional
 	@PostMapping("/create")
 	public ModelAndView createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
 	@Valid Game game, BindingResult br) {
@@ -257,7 +247,6 @@ public class GameController {
 		return res;
 	}
 
-	@Transactional
     @GetMapping("/{gameId}/lobby")
     public ModelAndView showLobby(@PathVariable("gameId") Integer gameId){
         ModelAndView res=new ModelAndView(GAME_LOBBY);
@@ -267,7 +256,6 @@ public class GameController {
         return res;
     }
 
-	@Transactional
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
         response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
@@ -311,7 +299,6 @@ public class GameController {
 
 	}
 
-	@Transactional
     @GetMapping("/{gameId}/edit/{factionType}")
     public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") String factionType, @AuthenticationPrincipal UserDetails user){
         
