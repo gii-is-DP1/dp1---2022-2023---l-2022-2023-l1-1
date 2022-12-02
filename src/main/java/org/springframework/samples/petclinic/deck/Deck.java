@@ -19,7 +19,6 @@ import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
 import lombok.Setter;

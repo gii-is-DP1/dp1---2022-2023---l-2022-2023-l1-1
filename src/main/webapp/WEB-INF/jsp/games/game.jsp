@@ -6,9 +6,9 @@
 
 <petclinic:layout pageName="game">
     <h1><c:out value="${game.name}"/></h1>
-    <h1><c:out value="${round.currentRound} ROUND"/></h1>
-    <h1><c:out value="TURN NUMBER: ${turn.currentTurn}"/></h1>
-    <h1><c:out value="STAGE: ${stage.currentStage}"/></h1>
+    <h1><c:out value="${game.round} ROUND"/></h1>
+    <h1><c:out value="TURN ${game.turn}"/></h1>
+    <h1><c:out value="${game.stage} STAGE"/></h1>
     
     <table id="suffragium" class="table table-striped">
         <h4>Suffragium</h4>
@@ -71,7 +71,7 @@
                                 <c:choose>
                                     <c:when test="${deck.player.id == currentPlayer.id}">
                                         <c:forEach var="factions" items="${deck.factionCards}">
-                                            <c:if test="${stage.currentStage =='END_OF_TURN'}"></c:if>
+                                            <c:if test="${game.stage =='END_OF_TURN'}"></c:if>
                                             <a href="/games/${game.id}/edit/${factions.type}"> 
                                                 <img src="${factions.card}" width="80" height="120"/>                            
                                             </a>
@@ -94,12 +94,12 @@
                                 <c:choose>
                                     <c:when test="${deck.player.id == currentPlayer.id}">
                                         <c:forEach var="votes" items="${deck.voteCards}">
-                                            <c:if test="${stage.currentStage =='VOTING'}">
+                                            <c:if test="${game.stage =='VOTING'}">
                                                 <a href="/games/${game.id}/updateSuffragium/${votes.type}"> 
                                                     <img src="${votes.card}" width="80" height="120"/>                            
                                                 </a>
                                             </c:if>
-                                            <c:if test="${stage.currentStage != 'VOTING'}">
+                                            <c:if test="${game.stage != 'VOTING'}">
                                                 <img src="${votes.card}" width="80" height="120"/>
                                             </c:if>
                                         </c:forEach>

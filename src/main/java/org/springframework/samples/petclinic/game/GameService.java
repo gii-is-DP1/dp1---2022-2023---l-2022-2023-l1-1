@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.enums.CurrentRound;
+import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class GameService {
         LocalDate date = LocalDate.now();
         game.setDate(date);
         game.setDuration(0.);
+        game.setRound(CurrentRound.FIRST);
+        game.setTurn(1);
+        game.setStage(CurrentStage.VOTING);
         game.setWinners(null);
         game.setSuffragiumCard(null);
         return repo.save(game);
@@ -48,6 +53,23 @@ public class GameService {
         game.setState(State.IN_PROCESS);
         game.setSuffragiumCard(suffragiumCard);
         return repo.save(game);
+    }
+
+    @Transactional
+    public void changeStage(Game game, CurrentStage stage) {
+        game.setStage(stage);
+        repo.save(game);
+    }
+
+    @Transactional
+    public void changeTurnAndRound(Game game) {
+        game.setTurn(game.getTurn() + 1);
+        if(game.getTurn() > game.getNumPlayers()) {
+            game.setTurn(1);
+            if(game.getRound() == CurrentRound.FIRST)
+                game.setRound(CurrentRound.SECOND);
+        }
+        repo.save(game);
     }
 
     

@@ -43,12 +43,14 @@ public class Game extends NamedEntity {
     private Double duration;
 
     @NonNull
+    @Enumerated(EnumType.STRING)
     private CurrentRound round;
 
     @NonNull
     private Integer turn;
 
     @NonNull
+    @Enumerated(EnumType.STRING)
     private CurrentStage stage;
 
     @Enumerated(EnumType.STRING)
