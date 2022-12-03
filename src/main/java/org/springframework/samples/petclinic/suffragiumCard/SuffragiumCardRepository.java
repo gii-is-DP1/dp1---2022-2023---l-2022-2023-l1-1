@@ -11,5 +11,8 @@ public interface SuffragiumCardRepository extends CrudRepository<SuffragiumCard,
 
     @Query("SELECT g.suffragiumCard FROM Game g WHERE g.id =?1")
 	public SuffragiumCard findSuffragiumCardByGame(@Param("gameId") Integer gameId);
+
+    @Query("SELECT g FROM Game g WHERE g.suffragiumCard =?1")
+	public Game findGameBySuffragiumCard(@Param("suffragiumCard") SuffragiumCard suffragiumCard);
     
 }

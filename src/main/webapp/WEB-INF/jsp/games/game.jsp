@@ -6,9 +6,9 @@
 
 <petclinic:layout pageName="game">
     <h1><c:out value="${game.name}"/></h1>
-    <h1><c:out value="${round.currentRound} ROUND"/></h1>
-    <h1><c:out value="TURN NUMBER: ${turn.currentTurn}"/></h1>
-    <h1><c:out value="STAGE: ${stage.currentStage}"/></h1>
+    <h1><c:out value="${game.round} ROUND"/></h1>
+    <h1><c:out value="TURN ${turn.currentTurn}"/></h1>
+    <h1><c:out value="${game.stage} STAGE"/></h1>
     
     <table id="suffragium" class="table table-striped">
         <h4>Suffragium</h4>
@@ -69,12 +69,12 @@
                                 <c:choose>
                                     <c:when test="${deck.player.id == currentPlayer.id}">
                                         <c:forEach var="factions" items="${deck.factionCards}">
-                                            <c:if test="${stage.currentStage =='END_OF_TURN' && playerDeck.roleCard =='CONSUL'}">
+                                            <c:if test="${game.stage =='END_OF_TURN' && playerDeck.roleCard =='CONSUL'}">
                                                 <a href="/games/${game.id}/edit/${factions.type}"> 
                                                     <img src="${factions.card}" width="80" height="120"/>                            
                                                 </a>
                                             </c:if>
-                                            <c:if test="${stage.currentStage != 'END_OF_TURN' || playerDeck.roleCard != 'CONSUL'}">
+                                            <c:if test="${game.stage != 'END_OF_TURN' || playerDeck.roleCard != 'CONSUL'}">
                                                 <img src="${factions.card}" width="80" height="120"/>
                                             </c:if>
                                         </c:forEach>
@@ -96,24 +96,24 @@
                                 <c:choose>
                                     <c:when test="${deck.player.id == currentPlayer.id}">
                                         <c:forEach var="votes" items="${deck.voteCards}">
-                                            <c:if test="${stage.currentStage =='VOTING' && deck.voteCardsNumber > 1}">
+                                            <c:if test="${game.stage =='VOTING' && deck.voteCardsNumber > 1}">
                                                 <a href="/games/${game.id}/updateVotes/${votes.type}"> 
                                                     <img src="${votes.card}" width="80" height="120"/>                            
                                                 </a>
                                             </c:if>
-                                            <c:if test="${stage.currentStage != 'VOTING' || deck.voteCardsNumber == 1}">
+                                            <c:if test="${game.stage != 'VOTING' || deck.voteCardsNumber == 1}">
                                                 <img src="${votes.card}" width="80" height="120"/>
                                             </c:if>
                                         </c:forEach>
                                     </c:when>
                                     <c:otherwise>
                                         <c:forEach var="votes" items="${deck.voteCards}">
-                                            <c:if test="${playerDeck.roleCard =='PRETOR' && stage.currentStage =='VETO'}">
+                                            <c:if test="${playerDeck.roleCard =='PRETOR' && game.stage =='VETO'}">
                                                 <a href="/games/${game.id}/pretorSelection/${votes.type}"> 
                                                     <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>                            
                                                 </a>   
                                             </c:if>
-                                            <c:if test="${playerDeck.roleCard !='PRETOR' || stage.currentStage !='VETO'}">
+                                            <c:if test="${playerDeck.roleCard !='PRETOR' || game.stage !='VETO'}">
                                                 <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>
                                             </c:if>                          
                                         </c:forEach>

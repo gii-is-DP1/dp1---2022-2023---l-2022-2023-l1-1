@@ -5,68 +5,72 @@ import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.round.Round;
-import org.springframework.samples.petclinic.round.RoundRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TurnService {
+
+    @Autowired
     TurnRepository turnRepository;
-    RoundRepository roundRepository;
+    
+    @Autowired
+    GameRepository gameRepository;
+
+    @Autowired
     DeckService deckService;
 
     @Autowired
-    public TurnService (TurnRepository turnRepository, RoundRepository roundRepository, DeckService deckService) {
+    public TurnService (TurnRepository turnRepository, GameRepository gameRepository, DeckService deckService) {
         this.turnRepository = turnRepository;
-        this.roundRepository = roundRepository;
+        this.gameRepository = gameRepository;
         this.deckService = deckService;
     }
 
-    public Turn getTurnByRound (Round round) {
-        return turnRepository.findTurnByRound(round);
+    @Transactional(readOnly = true)
+    public Turn getTurnByGame (Game game) {
+        return turnRepository.findTurnByGame(game);
     }
 
+    @Transactional
     public void save (Turn turn) {
         turnRepository.save(turn);
-
     }
 
-
-    public void updateTurnVotes (Turn actualTurn, VCType voteType, Player actualPlayer) {
-        
+    @Transactional
+    public void updateTurnVotes (Turn turn, VCType voteType) {
         if (voteType == VCType.GREEN) {
-			actualTurn.setVotesLoyal(actualTurn.getVotesLoyal() == null ? 1 : actualTurn.getVotesLoyal() + 1); //creo que aparece null como predeterminado pq esta en la base de dato, si no, no deberia
+			turn.setVotesLoyal(turn.getVotesLoyal() == null ? 1 : turn.getVotesLoyal() + 1); //creo que aparece null como predeterminado pq esta en la base de dato, si no, no deberia
 		}
 		if (voteType == VCType.RED) {
-			actualTurn.setVotesTraitor(actualTurn.getVotesTraitor() == null ? 1 : actualTurn.getVotesTraitor() + 1);
+			turn.setVotesTraitor(turn.getVotesTraitor() == null ? 1 : turn.getVotesTraitor() + 1);
 		}
-        
-		turnRepository.save(actualTurn);
+		turnRepository.save(turn);
     }
 
+    @Transactional
     public void newTurn (Turn turn) {
-         Game game = turn.getRound().getGame(); //COJO EL GAME ACTUAL
-         Round round = turn.getRound(); //COJO LA RONDA ACTUAL
+        Game game = turnRepository.findGameByTurn(turn); //COJO EL GAME ACTUAL
          
         turn.setCurrentTurn(turn.getCurrentTurn() + 1);
         turn.setVotesLoyal(0);
         turn.setVotesTraitor(0);
+        turn.setVotesNeutral(0);
         if (turn.getCurrentTurn() > game.getNumPlayers()) {
             turn.setCurrentTurn(1);
-            
-            if (round.getCurrentRound() == CurrentRound.FIRST) {
-                round.setCurrentRound(CurrentRound.SECOND);
-                roundRepository.save(round);
-
+            if(game.getRound() == CurrentRound.FIRST) {
+                game.setRound(CurrentRound.SECOND);
+                gameRepository.save(game);
             }
         }
-        turnRepository.save(turn);
-        
+        turnRepository.save(turn);  
     }
 
+    @Transactional
     public void pretorVoteChange (VCType actualVoteType, VCType changedVoteType, Game game) {
-        Turn actualTurn = turnRepository.findTurnByRound(roundRepository.findRoundByGame(game));
+        Turn actualTurn = turnRepository.findTurnByGame(game);
         Integer actualLoyalVotes = actualTurn.getVotesLoyal();
         Integer actualTraitorVotes = actualTurn.getVotesTraitor();
         if (actualVoteType != changedVoteType) {
@@ -81,9 +85,6 @@ public class TurnService {
             }
             }
             turnRepository.save(actualTurn);
-
         }
-
-    
 
 }

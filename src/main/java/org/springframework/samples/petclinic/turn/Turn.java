@@ -5,8 +5,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.model.BaseEntity;
-import org.springframework.samples.petclinic.round.Round;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,9 +19,6 @@ public class Turn extends BaseEntity{
  
     @Range(min = 1, max = 8)
     private Integer currentTurn;
-
-    @OneToOne
-    private Round round;
 
     private Integer votesLoyal;
 
@@ -36,15 +33,8 @@ public class Turn extends BaseEntity{
         return votesLoyal + votesTraitor + votesNeutral;
     }
 
-
     public Turn () {
-        
-        
-    }
-
-    public Turn (Round round) {
         this.currentTurn = 1;
-        this.round = round;
         this.votesLoyal = 0;
         this.votesTraitor = 0;
         this.votesNeutral = 0;

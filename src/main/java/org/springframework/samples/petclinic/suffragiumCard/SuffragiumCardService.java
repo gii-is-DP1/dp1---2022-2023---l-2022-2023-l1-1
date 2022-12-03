@@ -22,7 +22,12 @@ public class SuffragiumCardService {
         return suffragiumCardRepository.findSuffragiumCardByGame(gameId);
     }
 
-    public void updateVotes (SuffragiumCard card, Turn turn) {
+    @Transactional(readOnly = true)
+    public Game getGameBySuffragiumCard(SuffragiumCard suffragiumCard) {
+        return suffragiumCardRepository.findGameBySuffragiumCard(suffragiumCard);
+    }
+
+    public void updateVotes(SuffragiumCard card, Turn turn) {
         SuffragiumCard cardToUpdate = suffragiumCardRepository.findById(card.getId()).get();
         cardToUpdate.setLoyalsVotes(cardToUpdate.getLoyalsVotes() + turn.getVotesLoyal());
         cardToUpdate.setTraitorsVotes(cardToUpdate.getTraitorsVotes() + turn.getVotesTraitor());

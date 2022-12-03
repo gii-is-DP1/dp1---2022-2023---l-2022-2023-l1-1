@@ -45,8 +45,8 @@ public class DeckService {
     @Transactional
     public void updateFactionDeck (Deck deck, FCType factionCard) {
         List<FactionCard> chosenFaction = new ArrayList<>();
-        FactionCard cardChoosen = factionCardRepository.findById(factionCard).get();
-        chosenFaction.add(cardChoosen);
+        FactionCard cardChosen = factionCardRepository.findById(factionCard).get();
+        chosenFaction.add(cardChosen);
         Deck deckToUpdate = rep.findById(deck.getId()).get();
         deckToUpdate.setFactionCards(chosenFaction);
         rep.save(deckToUpdate);
@@ -55,8 +55,8 @@ public class DeckService {
     @Transactional
     public void updateVotesDeck (Deck deck, VCType voteCard) {
         List<VoteCard> chosenVote = new ArrayList<>();
-        VoteCard cardChoosen = voteCardRepository.findById(voteCard).get();
-        chosenVote.add(cardChoosen);
+        VoteCard cardChosen = voteCardRepository.findById(voteCard).get();
+        chosenVote.add(cardChosen);
         Deck deckToUpdate = rep.findById(deck.getId()).get();
         deckToUpdate.setVoteCards(chosenVote);
         rep.save(deckToUpdate);

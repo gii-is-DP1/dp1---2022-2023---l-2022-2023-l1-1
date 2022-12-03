@@ -9,12 +9,16 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
 import javax.persistence.EnumType;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
+import org.springframework.samples.petclinic.enums.CurrentRound;
+import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.model.NamedEntity;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
+import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -38,9 +42,20 @@ public class Game extends NamedEntity {
     
     private Double duration;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private CurrentRound round;
+
+    @OneToOne(optional = false)
+    private Turn turn;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private CurrentStage stage;
+
     @Enumerated(EnumType.STRING)
     private Faction winners;
 
-    @OneToOne (optional=true)
+    @OneToOne(optional = true)
     private SuffragiumCard suffragiumCard;
 }
