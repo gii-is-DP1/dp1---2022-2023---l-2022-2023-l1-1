@@ -21,6 +21,7 @@ import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
@@ -29,15 +30,16 @@ import lombok.Setter;
 @Table(name = "games")
 public class Game extends NamedEntity {
     
-    
+    @NonNull
     private Boolean publicGame;
 
     @Enumerated(EnumType.STRING)
     private State state;
 
     //@Range(min = 5, max = 8) tiene que estar entre 5 y 8 solo si State == In process
-    private Integer numPlayers; //deberia ser derivado
+    private Integer numPlayers; 
 
+    @NonNull
     private LocalDate date;
     
     private Double duration;
@@ -58,4 +60,23 @@ public class Game extends NamedEntity {
 
     @OneToOne(optional = true)
     private SuffragiumCard suffragiumCard;
+
+
+    public Integer getSuffragiumLimit() {
+        Integer players = this.getNumPlayers();
+        Integer res = null;
+        if (players == 5) {
+         res = 13;
+        }
+        else if (players == 6) {
+         res = 15;
+        }
+        else if (players == 7) {
+         res = 17;
+        }
+        else if (players == 8) {
+         res = 20;
+        }
+        return res;
+     }
 }
