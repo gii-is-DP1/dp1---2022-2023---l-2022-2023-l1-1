@@ -13,5 +13,8 @@ import org.springframework.samples.petclinic.player.Player;
 public interface InvitationRepository extends CrudRepository<Invitation, Integer> {
     
     @Query("SELECT i FROM Invitation i WHERE i.recipient=:recipient")
-    public List<Invitation> findInvitationsByPlayer(@Param("recipient") Player recipient);
+    public List<Invitation> findInvitationsReceived(@Param("recipient") Player recipient);
+
+    @Query("SELECT i FROM Invitation i WHERE i.sender=:sender")
+    public List<Invitation> findInvitationsSent(@Param("sender") Player sender);
 }

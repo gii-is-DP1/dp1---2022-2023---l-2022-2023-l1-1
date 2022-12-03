@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
+import org.springframework.samples.petclinic.player.Player;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,5 +44,28 @@ public class InvitationControllerTest {
         .andExpect(view().name("invitations/invitationsList"))
         .andExpect(model().attributeExists("invitations"));
     }*/
-    
+/* 
+    @WithMockUser
+    @Test
+    public void testSendInvitation() throws Exception {
+        mockMvc.perform(get("/invitations/send"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/sendInvitation"))
+        .andExpect(model().attributeExists("players"))
+        .andExpect(model().attributeExists("invitation"));
+    }*/
+/* 
+    @WithMockUser
+    @Test
+    public void testSaveInvitation() throws Exception {
+        mockMvc.perform(post("/invitations/send", null)
+        .with(csrf())
+        .param("recipient", "2")
+        .param("message", "Testing invitations"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/invitationsList"))
+        .andExpect(model().attributeExists("invitations"));
+
+        verify(invitationService).saveInvitation(any(Invitation.class), any(Player.class));    
+    }*/
 }

@@ -17,9 +17,26 @@ public class VoteCard {
     
     @Id
     @Enumerated(EnumType.STRING)
-    private Type type;
-    
-    private enum Type {
+    private VCType type;
+
+    public enum VCType {
         GREEN, RED, YELLOW;
+    }
+
+    public String getCard() {
+        String res = null;
+        if (this.type == VCType.GREEN) {
+            res = "/resources/images/GreenVote.PNG";
+
+        }
+        if (this.type == VCType.RED) {
+            res = "/resources/images/RedVote.PNG";
+
+        }
+        if (this.type == VCType.YELLOW) {
+            res = "/resources/images/YellowVote.PNG";
+
+        }
+        return res;
     }
 }

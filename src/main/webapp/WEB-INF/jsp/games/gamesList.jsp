@@ -5,6 +5,7 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <petclinic:layout pageName="games">
+    <a href="${returnButton}"><span style="font-size: 25px" class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
     <h2>Games</h2>
     <table id="gamesTable" class="table table-striped">
         <thead>
@@ -13,8 +14,6 @@
             <th>Public</th>
             <th>Number of players</th>
             <th>Date</th>
-            <th>Duration</th>
-            <th>Winners</th>
         </tr>
         </thead>
         <tbody>
@@ -27,16 +26,10 @@
                     <c:out value="${game.publicGame}"/>
                 </td>
                 <td>
-                    <c:out value="${game.numPlayers}"/>
+                    <c:out value="${game.numPlayers}/8"/>
                 </td>
                 <td>
                     <c:out value="${game.date}"/>
-                </td>
-                <td>
-                    <c:out value="${game.duration}"/>
-                </td>
-                <td>
-                    <c:out value="${game.winners}"/>
                 </td>
             </tr>
         </c:forEach>

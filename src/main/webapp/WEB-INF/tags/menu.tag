@@ -10,8 +10,9 @@
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container">
 		<div class="navbar-header">
-			<a class="navbar-brand"
-				href="<spring:url value="/" htmlEscape="true" />"><span></span></a>
+				<a href="/"> 
+                	<img src="/resources/images/idus_martii-logo.png" width="70" height="75"/>                            
+                </a>
 			<button type="button" class="navbar-toggle" data-toggle="collapse"
 				data-target="#main-navbar">
 				<span class="sr-only"><os-p>Toggle navigation</os-p></span> <span
@@ -21,48 +22,43 @@
 		</div>
 		<div class="navbar-collapse collapse" id="main-navbar">
 			<ul class="nav navbar-nav">
-
-				<petclinic:menuItem active="${name eq 'home'}" url="/"
-					title="home page">
-					<span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-					<span>Home</span>
-				</petclinic:menuItem>
-
-				<sec:authorize access="hasAnyAuthority('admin', 'player')">
-				
-				
-				</sec:authorize>
 				
 				<sec:authorize access="hasAnyAuthority('admin')">
 
-				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
-					title="find owners">
-					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-					<span>Find owners</span>
-				</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
+						title="find owners">
+						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						<span>Find owners</span>
+					</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
-					title="achievements">										
-					<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
-					<span>Achievements</span>	
-				</petclinic:menuItem>	
+					<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
+						title="achievements">										
+						<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+						<span>Achievements</span>	
+					</petclinic:menuItem>	
 
 				</sec:authorize>
 
 
 				
 				<sec:authorize access="hasAnyAuthority('player')">
-        
-        <petclinic:menuItem active="${name eq 'invitations'}" url="/invitations"
-					title="invitations">
-					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
-					<span>Invitations</span>
-				</petclinic:menuItem>
 
 				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements/player" 
 					title="achievements">										
 					<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 					<span>Achievements</span>	
+				</petclinic:menuItem>
+
+				<petclinic:menuItem active="${name eq 'invitations'}" url="/invitations"
+					title="invitations">
+					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+					<span>Invitations</span>
+				</petclinic:menuItem>
+
+				<petclinic:menuItem active="${name eq 'friends'}" url="/friends"
+					title="friends">
+					<span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+					<span>Friends</span>
 				</petclinic:menuItem>
 
 
@@ -80,7 +76,7 @@
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
 					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>�
+						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>
 							<strong><sec:authentication property="name" /></strong> <span
 							class="glyphicon glyphicon-chevron-down"></span>
 					</a>

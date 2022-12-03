@@ -6,32 +6,17 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <petclinic:layout pageName="home">
+    <sec:authorize access="!isAuthenticated()">
+		<p>Log in or sing up to start playing</p>
+	</sec:authorize>
     <sec:authorize access="hasAuthority('player')">
-        <a href="/games/create"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create game</a>
-        <a href="/games/starting/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Join a game</a>
+        <a class="btn btn-default" href="/games/create">Create game</a>
+        <a class="btn btn-default" href="/games/starting/find">Join a game</a>
+        <a class="btn btn-default" href="/games/playerHistory/find">Your game history</a>
     </sec:authorize>
     <sec:authorize access="hasAuthority('admin')">
-        <a href="/games/history/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games history</a>
-        <a href="/games/inProcess/find"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Games in process</a>
-        <a href="/players"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Manage players</a>
+        <a class="btn btn-default" href="/games/history/find">Games history</a>
+        <a class="btn btn-default" href="/games/inProcess/find">Games in process</a>
+        <a class="btn btn-default" href="/players">Manage players</a>
     </sec:authorize>
-    <a href="/users/new"><span class="glyphicon glyphicon-plus sucess" aria-hidden="true"></span>Create User</a>
-    <h2><fmt:message key="welcome"/></h2>
-    <div class="row">
-        <h2> Project: ${title}</h2>
-        <p><h2> Group: ${group}</h2></p>
-        <p><ul>
-            <c:forEach items="${persons}" var="person">
-                <li>${person.firstName}&nbsp${person.lastName}</li>
-            </c:forEach>
-        </ul></p>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <spring:url value="/resources/images/logoUS.png" htmlEscape="true" var="logoImage"/>
-            <img class="img-responsive" src="${logoImage}"/>
-            <spring:url value="/resources/images/pets.png" htmlEscape="true" var="petsImage"/>
-            <img class="img-responsive" src="${petsImage}"/>
-        </div>
-    </div>
 </petclinic:layout>
