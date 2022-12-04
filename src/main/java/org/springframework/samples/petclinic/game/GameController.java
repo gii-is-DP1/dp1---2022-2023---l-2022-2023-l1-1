@@ -12,7 +12,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckService;
-import org.springframework.samples.petclinic.deck.FactionCardService;
 import org.springframework.samples.petclinic.deck.VoteCard;
 import org.springframework.samples.petclinic.deck.VoteCardService;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
@@ -30,7 +29,6 @@ import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -214,23 +212,20 @@ public class GameController {
 	public String createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
 	@Valid Game game, BindingResult br, ModelMap model) {
 		if(br.hasErrors()) {
-			model.put("game", game);
-			return "redirect:/games/" + game.getId().toString() + "/lobby";
+			return CREATE_GAME;
 		} else {
 			Turn turn = new Turn();
 			turnService.save(turn);
 
-			Game newGame = gameService.saveGame(game, turn);
+			gameService.saveGame(game, turn);
 
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
-
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
 			
 			model.put("game", game);
         	model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
-			model.put("message", "Game successfully created!");
+        	return "redirect:/games/" + game.getId().toString() + "/lobby";
 		}
-		return "redirect:/games/" + game.getId().toString() + "/lobby";
 	}
 
     @GetMapping("/{gameId}/lobby")
@@ -270,13 +265,14 @@ public class GameController {
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
-		Game gameStarted = gameService.startGame(game, suffragiumCard);
+		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
 		Turn currentTurn = gameStarted.getTurn();
     	deckService.assingDecksIfNeeded(game);
-		Deck playerDeck = deckService.getPlayerGameDeck(currentPlayer.getId(), gameId);
-
-		res.addObject("playerDeck", playerDeck);
+		if(!playerInfoService.isSpectator(currentPlayer, gameStarted)){
+			Deck playerDeck = deckService.getDeckByPlayerAndGame(currentPlayer, game);
+			res.addObject("playerDeck", playerDeck);
+		} 
 		res.addObject("turn", currentTurn);
 		res.addObject("currentPlayer", currentPlayer);
         res.addObject("game", gameStarted);
@@ -323,7 +319,7 @@ public class GameController {
 		Game currentGame = gameService.getGameById(gameId);
 		Turn currentTurn = currentGame.getTurn();
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
-		Deck deck = deckService.getPlayerGameDeck(currentPlayer.getId(), gameId);
+		Deck deck = deckService.getDeckByPlayerAndGame(currentPlayer, currentGame);
 
 		turnService.updateTurnVotes(currentTurn, voteType);
 		gameService.changeStageIfVotesCompleted(currentGame);
@@ -333,9 +329,9 @@ public class GameController {
 
     @GetMapping("/{gameId}/edit/{factionType}")
     public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") FCType factionType, @AuthenticationPrincipal UserDetails user){
-        Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
-        Deck deck = deckService.getPlayerGameDeck(player.getId(), gameId); //cojo el mazo de este 
-		Game game = gameService.getGameById(gameId);
+        Game game = gameService.getGameById(gameId);
+		Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
+        Deck deck = deckService.getDeckByPlayerAndGame(player, game); //cojo el mazo de este 
 
         deckService.updateFactionDeck(deck, factionType);  
 		gameService.changeTurnAndRound(game);

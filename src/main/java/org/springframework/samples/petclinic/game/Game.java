@@ -30,7 +30,6 @@ import lombok.Setter;
 @Table(name = "games")
 public class Game extends NamedEntity {
     
-    @NonNull
     private Boolean publicGame;
 
     @Enumerated(EnumType.STRING)
@@ -39,19 +38,16 @@ public class Game extends NamedEntity {
     //@Range(min = 5, max = 8) tiene que estar entre 5 y 8 solo si State == In process
     private Integer numPlayers; 
 
-    @NonNull
     private LocalDate date;
     
     private Double duration;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private CurrentRound round;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = true)
     private Turn turn;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private CurrentStage stage;
 
