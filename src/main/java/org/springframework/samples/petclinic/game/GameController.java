@@ -268,6 +268,30 @@ public class GameController {
     }
 
 	@Transactional
+	@GetMapping("/{gameId}/join")
+    public ModelAndView joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo){
+		ModelAndView res=new ModelAndView(GAME_LOBBY);
+		Game game=gameService.getGameById(gameId);
+		Game game2=gameService.joinGame(game);
+		Player player=playerService.getPlayerByUsername(user.getUsername());
+		PlayerInfo playerInfo=playerInfoService.saveJoinedPlayerInfo(joinedInfo, game2, player);
+		res.addObject(playerInfo);
+        return showLobby(game2.getId());
+    }
+
+	@Transactional
+	@GetMapping("/{gameId}/spectate")
+    public ModelAndView spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo){
+		ModelAndView res=new ModelAndView(GAME_LOBBY);
+		Game game=gameService.getGameById(gameId);
+		Game game2=gameService.joinGame(game);
+		Player player=playerService.getPlayerByUsername(user.getUsername());
+		PlayerInfo playerInfo=playerInfoService.saveSpectatorPlayerInfo(spectatorInfo, game2, player);
+		res.addObject(playerInfo);
+        return showLobby(game2.getId());
+    }
+
+	@Transactional
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
         response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina

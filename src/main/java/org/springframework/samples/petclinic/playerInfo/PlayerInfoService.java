@@ -41,4 +41,21 @@ public class PlayerInfoService {
         repo.save(creatorInfo);
     }
 
+    @Transactional
+    public PlayerInfo saveJoinedPlayerInfo(PlayerInfo joinedInfo, Game game, Player player) {
+        joinedInfo.setCreator(false);
+        joinedInfo.setSpectator(false);
+        joinedInfo.setPlayer(player);
+        joinedInfo.setGame(game);
+        return repo.save(joinedInfo);
+    }
+
+    @Transactional
+    public PlayerInfo saveSpectatorPlayerInfo(PlayerInfo spectatorInfo, Game game, Player player) {
+        spectatorInfo.setCreator(false);
+        spectatorInfo.setSpectator(true);
+        spectatorInfo.setPlayer(player);
+        spectatorInfo.setGame(game);
+        return repo.save(spectatorInfo);
+    }
 }

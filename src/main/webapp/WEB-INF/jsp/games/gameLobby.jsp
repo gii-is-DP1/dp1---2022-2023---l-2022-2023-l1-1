@@ -1,3 +1,38 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Codespaces
+Marketplace
+Explore
+ 
+@gahijil 
+gii-is-DP1
+/
+dp1-2022-2023-l1-1
+Public
+generated from gii-is-DP1/spring-petclinic
+Code
+Issues
+19
+Pull requests
+Discussions
+Actions
+Projects
+1
+Wiki
+Security
+Insights
+Settings
+dp1-2022-2023-l1-1/src/main/webapp/WEB-INF/jsp/games/gameLobby.jsp
+@alvgonfri
+alvgonfri Initial deck assignment
+Latest commit caf9b65 4 days ago
+ History
+ 2 contributors
+@alvgonfri@gahijil
+72 lines (71 sloc)  2.27 KB
+
 <%@ page session="false" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>

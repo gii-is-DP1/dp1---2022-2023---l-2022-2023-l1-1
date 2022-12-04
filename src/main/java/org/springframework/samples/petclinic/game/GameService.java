@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.enums.State;
+import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,5 +52,10 @@ public class GameService {
         return repo.save(game);
     }
 
+    @Transactional
+    public Game joinGame(Game game) throws DataAccessException {
+        game.setNumPlayers(game.getNumPlayers()+1);
+        return repo.save(game);
+    }
     
 }
