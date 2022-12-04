@@ -29,11 +29,6 @@ public class TurnService {
         this.deckService = deckService;
     }
 
-    @Transactional(readOnly = true)
-    public Turn getTurnByGame (Game game) {
-        return turnRepository.findTurnByGame(game);
-    }
-
     @Transactional
     public void save (Turn turn) {
         turnRepository.save(turn);
@@ -69,22 +64,22 @@ public class TurnService {
     }
 
     @Transactional
-    public void pretorVoteChange (VCType actualVoteType, VCType changedVoteType, Game game) {
-        Turn actualTurn = turnRepository.findTurnByGame(game);
-        Integer actualLoyalVotes = actualTurn.getVotesLoyal();
-        Integer actualTraitorVotes = actualTurn.getVotesTraitor();
-        if (actualVoteType != changedVoteType) {
+    public void pretorVoteChange (VCType currentVoteType, VCType changedVoteType, Game game) {
+        Turn currentTurn = game.getTurn();
+        Integer currentLoyalVotes = currentTurn.getVotesLoyal();
+        Integer currentTraitorVotes = currentTurn.getVotesTraitor();
+        if (currentVoteType != changedVoteType) {
             
-            if (actualVoteType == VCType.GREEN) {
-                actualTurn.setVotesLoyal(actualLoyalVotes-1);
-                actualTurn.setVotesTraitor(actualTraitorVotes+1);
+            if (currentVoteType == VCType.GREEN) {
+                currentTurn.setVotesLoyal(currentLoyalVotes-1);
+                currentTurn.setVotesTraitor(currentTraitorVotes+1);
             }
-            else if (actualVoteType == VCType.RED) {
-                actualTurn.setVotesTraitor(actualTraitorVotes - 1);
-                actualTurn.setVotesLoyal(actualLoyalVotes + 1);
+            else if (currentVoteType == VCType.RED) {
+                currentTurn.setVotesTraitor(currentTraitorVotes - 1);
+                currentTurn.setVotesLoyal(currentLoyalVotes + 1);
             }
             }
-            turnRepository.save(actualTurn);
+            turnRepository.save(currentTurn);
         }
 
 }

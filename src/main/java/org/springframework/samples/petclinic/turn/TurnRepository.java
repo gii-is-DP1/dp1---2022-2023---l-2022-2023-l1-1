@@ -10,9 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TurnRepository extends CrudRepository<Turn, Long>{
 
-    @Query("SELECT g.turn FROM Game g WHERE g LIKE :game")
-    public Turn findTurnByGame(@Param("game") Game game);
-
     @Query("SELECT g FROM Game g WHERE g.turn LIKE :turn")
     public Game findGameByTurn(@Param("turn") Turn turn);
 

@@ -248,7 +248,7 @@ public class GameController {
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
 		Game gameStarted = gameService.startGame(game, suffragiumCard);
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
-		Turn currentTurn = turnService.getTurnByGame(gameStarted);
+		Turn currentTurn = gameStarted.getTurn();
     	deckService.assingDecksIfNeeded(game);
 		Deck playerDeck = deckService.getPlayerGameDeck(currentPlayer.getId(), gameId);
 
@@ -288,7 +288,7 @@ public class GameController {
 	@GetMapping("/{gameId}/updateSuffragium")
 	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId) {
 		Game currentGame = gameService.getGameById(gameId);
-		Turn currentTurn = turnService.getTurnByGame(currentGame);
+		Turn currentTurn = currentGame.getTurn();
 		suffragiumCardService.updateVotes(currentGame.getSuffragiumCard(), currentTurn);
 		gameService.changeStage(currentGame, CurrentStage.END_OF_TURN);
 		return "redirect:/games/" + gameId.toString();
@@ -297,7 +297,7 @@ public class GameController {
 	@GetMapping("/{gameId}/updateVotes/{voteType}")
 	public String updateTurnVotes(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType, @AuthenticationPrincipal UserDetails user) {
 		Game currentGame = gameService.getGameById(gameId);
-		Turn currentTurn = turnService.getTurnByGame(currentGame);
+		Turn currentTurn = currentGame.getTurn();
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
 		Deck deck = deckService.getPlayerGameDeck(currentPlayer.getId(), gameId);
 
