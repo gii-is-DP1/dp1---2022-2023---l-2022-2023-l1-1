@@ -6,9 +6,9 @@
 
 <petclinic:layout pageName="game">
     <h1><c:out value="${game.name}"/></h1>
-    <h1><c:out value="${round.currentRound} ROUND"/></h1>
-    <h1><c:out value="TURN NUMBER: ${turn.currentTurn}"/></h1>
-    <h1><c:out value="STAGE: ${stage.currentStage}"/></h1>
+    <h1><c:out value="${game.round} ROUND"/></h1>
+    <h1><c:out value="TURN ${turn.currentTurn}"/></h1>
+    <h1><c:out value="${game.stage} STAGE"/></h1>
     
     <table id="suffragium" class="table table-striped">
         <h4>Suffragium</h4>
@@ -47,6 +47,7 @@
         </thead>
         <tbody>
             <c:forEach items="${playerInfos}" var="playerInfo">
+
                 <c:if test="${playerInfo.spectator == false}">
                     <tr>
                         <td>
@@ -65,7 +66,6 @@
                             
                         </td>
                         
-
                         <td>
                             <c:forEach var="deck" items="${playerInfo.player.decks}">
                                 <c:if test="${deck.game.id == game.id}">

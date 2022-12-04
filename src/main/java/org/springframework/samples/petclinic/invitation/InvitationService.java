@@ -8,7 +8,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.samples.petclinic.enums.InvitationType;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvitationService {
 
     private InvitationRepository invitationRepository;
-
-    private PlayerRepository playerRepository;
 
     @Autowired
     public InvitationService(InvitationRepository repo) {
