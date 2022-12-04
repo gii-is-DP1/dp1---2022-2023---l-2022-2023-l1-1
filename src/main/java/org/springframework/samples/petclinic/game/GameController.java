@@ -31,6 +31,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -210,11 +211,11 @@ public class GameController {
     }
 
 	@PostMapping("/create")
-	public ModelAndView createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
-	@Valid Game game, BindingResult br) {
-		ModelAndView res = null;
+	public String createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
+	@Valid Game game, BindingResult br, ModelMap model) {
 		if(br.hasErrors()) {
-			return new ModelAndView(CREATE_GAME, br.getModel());
+			model.put("game", game);
+			return "redirect:/games/" + game.getId().toString() + "/lobby";
 		} else {
 			Turn turn = new Turn();
 			turnService.save(turn);
@@ -225,19 +226,42 @@ public class GameController {
 
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
 			
-			res = showLobby(newGame.getId());
-			res.addObject("message", "Game successfully created!");
+			model.put("game", game);
+        	model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+			model.put("message", "Game successfully created!");
 		}
-		return res;
+		return "redirect:/games/" + game.getId().toString() + "/lobby";
 	}
 
     @GetMapping("/{gameId}/lobby")
-    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId){
+    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, HttpServletResponse response){
+		response.addHeader("Refresh", "2");
         ModelAndView res=new ModelAndView(GAME_LOBBY);
         Game game=gameService.getGameById(gameId);
         res.addObject("game", game);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
         return res;
+    }
+
+	@GetMapping("/{gameId}/join")
+    public String joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo, ModelMap model){
+		Game game=gameService.getGameById(gameId);
+		gameService.joinGame(game);
+		Player player=playerService.getPlayerByUsername(user.getUsername());
+		playerInfoService.savePlayerInfo(joinedInfo, game, player);
+		model.put("game", game);
+        model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+        return "redirect:/games/" + gameId.toString() + "/lobby";
+    }
+
+	@GetMapping("/{gameId}/spectate")
+    public String spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo, ModelMap model){
+		Game game=gameService.getGameById(gameId);
+		Player player=playerService.getPlayerByUsername(user.getUsername());
+		playerInfoService.saveSpectatorInfo(spectatorInfo, game, player);
+		model.put("game", game);
+        model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+        return "redirect:/games/" + gameId.toString() + "/lobby";
     }
 
     @GetMapping("/{gameId}")
