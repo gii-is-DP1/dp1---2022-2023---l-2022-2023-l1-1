@@ -9,8 +9,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.State;
-import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnRepository;
@@ -57,9 +55,11 @@ public class GameService {
     }
 
     @Transactional
-    public Game startGame(Game game, SuffragiumCard suffragiumCard) throws DataAccessException {
-        game.setState(State.IN_PROCESS);
-        game.setSuffragiumCard(suffragiumCard);
+    public Game startGameIfNeeded(Game game, SuffragiumCard suffragiumCard) throws DataAccessException {
+        if(game.getState() == State.STARTING) {
+            game.setState(State.IN_PROCESS);
+            game.setSuffragiumCard(suffragiumCard);
+        }
         return repo.save(game);
     }
 

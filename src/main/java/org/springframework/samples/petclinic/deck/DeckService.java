@@ -8,6 +8,7 @@ import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,8 @@ public class DeckService {
     }
 
     @Transactional(readOnly = true)
-    public Deck getPlayerGameDeck (Integer playerId, Integer gameId) {
-        return rep.findPlayerDecks(playerId).stream().filter(x -> x.getGame().getId() == gameId).findFirst().get();
+    public Deck getDeckByPlayerAndGame(Player player, Game game) {
+        return rep.findPlayerDecks(player.getId()).stream().filter(x -> x.getGame().getId() == game.getId()).findFirst().get();
     }
 
     @Transactional

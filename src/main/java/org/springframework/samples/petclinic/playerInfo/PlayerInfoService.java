@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PlayerInfoService {
 
+    @Autowired
     private PlayerInfoRepository repo; 
 
     @Autowired
@@ -30,6 +31,12 @@ public class PlayerInfoService {
     @Transactional(readOnly = true)
     public List<Game> getGamesByPlayer(Player player) {
         return repo.findGamesByPlayer(player);
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean isSpectator(Player player, Game game) {
+        List<Player> players = repo.findPlayersByGame(game);
+        return !players.contains(player);
     }
 
     @Transactional
