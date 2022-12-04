@@ -10,13 +10,19 @@ import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
+import org.springframework.samples.petclinic.turn.Turn;
+import org.springframework.samples.petclinic.turn.TurnRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GameService {
     
+    @Autowired
     private GameRepository repo;
+
+    @Autowired
+    private TurnRepository turnRepository;
 
     @Autowired
     public GameService(GameRepository repo) {
@@ -34,14 +40,14 @@ public class GameService {
     }
 
     @Transactional
-    public Game saveGame(Game game) throws DataAccessException {
+    public Game saveGame(Game game, Turn turn) throws DataAccessException {
         game.setState(State.STARTING);
         game.setNumPlayers(1);
         LocalDate date = LocalDate.now();
         game.setDate(date);
         game.setDuration(0.);
         game.setRound(CurrentRound.FIRST);
-        game.setTurn(1);
+        game.setTurn(turn);
         game.setStage(CurrentStage.VOTING);
         game.setWinners(null);
         game.setSuffragiumCard(null);
@@ -61,11 +67,27 @@ public class GameService {
         repo.save(game);
     }
 
+    private static final Integer TOTAL_VOTES_NUMBER = 2;
+
+    @Transactional
+    public void changeStageIfVotesCompleted(Game game) {
+        if(game.getTurn().getVoteCount() == TOTAL_VOTES_NUMBER) {
+            game.setStage(CurrentStage.VETO);
+            repo.save(game);
+        }
+    }
+
     @Transactional
     public void changeTurnAndRound(Game game) {
-        game.setTurn(game.getTurn() + 1);
-        if(game.getTurn() > game.getNumPlayers()) {
-            game.setTurn(1);
+        Turn turnToChange = game.getTurn();
+        turnToChange.setCurrentTurn(turnToChange.getCurrentTurn() + 1);
+        turnToChange.setVotesLoyal(0);
+        turnToChange.setVotesTraitor(0);
+        turnToChange.setVotesNeutral(0);
+        turnRepository.save(turnToChange);
+        if(game.getTurn().getCurrentTurn() > game.getNumPlayers()) {
+            turnToChange.setCurrentTurn(1);
+            turnRepository.save(turnToChange);
             if(game.getRound() == CurrentRound.FIRST)
                 game.setRound(CurrentRound.SECOND);
         }
