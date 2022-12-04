@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,22 +37,36 @@ public class UserService {
 	private UserRepository userRepository;
 
 	@Autowired
+	private PlayerService playerService;
+
+	@Autowired
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
 	@Transactional
-	public void saveUser(User user) throws DataAccessException {
+	public User saveUser(User user) throws DataAccessException {
 		user.setEnabled(true);
 		userRepository.save(user);
-	}
-	
-	public Optional<User> findUser(String username) {
-		return userRepository.findById(username);
+		return user;
 	}
 
 	public List<User> getAll() {
 		return userRepository.findAll();
 	}
-	
+
+	public Optional<User> findUser(String username) {
+		return userRepository.findById(username);
+	}
+
+	@Transactional
+	public void removeUser(String username){
+		this.userRepository.deleteById(username);
+	}
+
+	@Transactional
+	public User getUser(String username){
+		Optional<User> user = this.userRepository.findById(username);
+		return user.isPresent()? user.get() : null;
+	}
 }

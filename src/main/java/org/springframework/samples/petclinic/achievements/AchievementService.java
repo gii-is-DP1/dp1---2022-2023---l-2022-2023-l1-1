@@ -12,7 +12,7 @@ public class AchievementService {
 
     @Autowired
     public AchievementService(AchievementRepository achievementRepository) {
-        this.achievementRepository= achievementRepository;
+        this.achievementRepository = achievementRepository;
     }
 
     public List<Achievement> getAchievements() {

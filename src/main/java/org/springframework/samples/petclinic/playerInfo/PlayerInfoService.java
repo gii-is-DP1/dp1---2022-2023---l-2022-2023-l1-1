@@ -26,4 +26,19 @@ public class PlayerInfoService {
     public List<PlayerInfo> getPlayerInfosByGame(Game game) {
         return repo.findPlayerInfosByGame(game);
     }
+
+    @Transactional(readOnly = true)
+    public List<Game> getGamesByPlayer(Player player) {
+        return repo.findGamesByPlayer(player);
+    }
+
+    @Transactional
+    public void saveCreatorInfo(PlayerInfo creatorInfo, Game game, Player player) {
+        creatorInfo.setCreator(true);
+        creatorInfo.setSpectator(false);
+        creatorInfo.setPlayer(player);
+        creatorInfo.setGame(game);
+        repo.save(creatorInfo);
+    }
+
 }

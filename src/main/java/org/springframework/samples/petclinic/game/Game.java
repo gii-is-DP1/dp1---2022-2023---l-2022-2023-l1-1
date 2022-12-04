@@ -25,21 +25,22 @@ import lombok.Setter;
 @Table(name = "games")
 public class Game extends NamedEntity {
     
+    
     private Boolean publicGame;
 
     @Enumerated(EnumType.STRING)
     private State state;
 
-    @Range(min = 5, max = 8)
-    private Integer numPlayers;
+    //@Range(min = 5, max = 8) tiene que estar entre 5 y 8 solo si State == In process
+    private Integer numPlayers; //deberia ser derivado
 
     private LocalDate date;
     
-    private Duration duration;
+    private Double duration;
 
     @Enumerated(EnumType.STRING)
     private Faction winners;
 
-    @OneToOne (optional=false)
+    @OneToOne (optional=true)
     private SuffragiumCard suffragiumCard;
 }

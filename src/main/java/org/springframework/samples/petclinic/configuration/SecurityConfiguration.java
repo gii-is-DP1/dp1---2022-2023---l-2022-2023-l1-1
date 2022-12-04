@@ -35,6 +35,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
+				.antMatchers("/users/new").hasAnyAuthority("admin")
+				.antMatchers("/decks/**").hasAnyAuthority("player") //esto es provisional
 				.antMatchers("/users/new").anonymous()
 				.antMatchers("/session/**").permitAll()
 				.antMatchers("/currentuser").permitAll()
@@ -44,8 +46,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/admin/**").hasAnyAuthority("admin")
 				.antMatchers("/owners/**").hasAnyAuthority("owner","admin")				
 				.antMatchers("/vets/**").authenticated()
-				.antMatchers("/games/create", "/games/starting/**", "/invitations/**","/games/{id}/lobby").hasAnyAuthority("player")
 				.antMatchers("/games/history/**", "/games/inProcess/**").hasAnyAuthority("admin")
+				.antMatchers("/games/create", "/games/starting/**", "/games/{id}/**", "/games/playerHistory/**",
+				 "/invitations/**", "/friends/**").hasAnyAuthority("player")
+				.antMatchers("/players/**").hasAnyAuthority("admin")
 				.anyRequest().denyAll()
 				.and()
 				 	.formLogin()
