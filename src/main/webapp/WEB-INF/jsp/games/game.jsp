@@ -47,75 +47,76 @@
         </thead>
         <tbody>
             <c:forEach items="${playerInfos}" var="playerInfo">
-                <tr>
-                    <td>
-                        <c:out value="${playerInfo.player.user.username}"/><br>
-                    </td>
-                    <td>
-                        <c:forEach var="deck" items="${playerInfo.player.decks}">
-                            <c:if test="${deck.game.id == game.id}">
-                                <c:if test="${deck.roleCardImg != NO_ROLE}">
-                                    <a href="/"> 
-                                        <img src="${deck.getRoleCardImg()}" width="80" height="120" />                            
-                                    </a>
+                <c:if test="${playerInfo.spectator == false}">
+                    <tr>
+                        <td>
+                            <c:out value="${playerInfo.player.user.username}"/><br>
+                        </td>
+                        <td>
+                            <c:forEach var="deck" items="${playerInfo.player.decks}">
+                                <c:if test="${deck.game.id == game.id}">
+                                    <c:if test="${deck.roleCardImg != NO_ROLE}">
+                                        <a href="/"> 
+                                            <img src="${deck.getRoleCardImg()}" width="80" height="120" />                            
+                                        </a>
+                                    </c:if>
                                 </c:if>
-                            </c:if>
-                        </c:forEach>
+                            </c:forEach>
+                            
+                        </td>
                         
-                    </td>
-                    
 
-                    <td>
-                        <c:forEach var="deck" items="${playerInfo.player.decks}">
-                            <c:if test="${deck.game.id == game.id}">
-                                <c:choose>
-                                    <c:when test="${deck.player.id == currentPlayer.id}">
-                                        <c:forEach var="factions" items="${deck.factionCards}">
-                                            <c:if test="${stage.currentStage =='END_OF_TURN'}"></c:if>
-                                            <a href="/games/${game.id}/edit/${factions.type}"> 
-                                                <img src="${factions.card}" width="80" height="120"/>                            
-                                            </a>
-                                        </c:forEach>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:forEach var="factions" items="${deck.factionCards}">
-                                            <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>                               
-                                        </c:forEach>
-                                    </c:otherwise>
-                                </c:choose>
-                                
-                            </c:if>
-                        </c:forEach>
-                        
-                    </td>
-                    <td>
-                        <c:forEach var="deck" items="${playerInfo.player.decks}">
-                            <c:if test="${deck.game.id == game.id}">
-                                <c:choose>
-                                    <c:when test="${deck.player.id == currentPlayer.id}">
-                                        <c:forEach var="votes" items="${deck.voteCards}">
-                                            <c:if test="${stage.currentStage =='VOTING'}">
-                                                <a href="/games/${game.id}/updateSuffragium/${votes.type}"> 
-                                                    <img src="${votes.card}" width="80" height="120"/>                            
+                        <td>
+                            <c:forEach var="deck" items="${playerInfo.player.decks}">
+                                <c:if test="${deck.game.id == game.id}">
+                                    <c:choose>
+                                        <c:when test="${deck.player.id == currentPlayer.id}">
+                                            <c:forEach var="factions" items="${deck.factionCards}">
+                                                <c:if test="${stage.currentStage =='END_OF_TURN'}"></c:if>
+                                                <a href="/games/${game.id}/edit/${factions.type}"> 
+                                                    <img src="${factions.card}" width="80" height="120"/>                            
                                                 </a>
-                                            </c:if>
-                                            <c:if test="${stage.currentStage != 'VOTING'}">
-                                                <img src="${votes.card}" width="80" height="120"/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:forEach var="votes" items="${deck.voteCards}">
-                                            <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>                               
-                                        </c:forEach>
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:if>
-                        </c:forEach>
-                        
-                    </td>
-                </tr>
-
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach var="factions" items="${deck.factionCards}">
+                                                <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>                               
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    
+                                </c:if>
+                            </c:forEach>
+                            
+                        </td>
+                        <td>
+                            <c:forEach var="deck" items="${playerInfo.player.decks}">
+                                <c:if test="${deck.game.id == game.id}">
+                                    <c:choose>
+                                        <c:when test="${deck.player.id == currentPlayer.id}">
+                                            <c:forEach var="votes" items="${deck.voteCards}">
+                                                <c:if test="${stage.currentStage =='VOTING'}">
+                                                    <a href="/games/${game.id}/updateSuffragium/${votes.type}"> 
+                                                        <img src="${votes.card}" width="80" height="120"/>                            
+                                                    </a>
+                                                </c:if>
+                                                <c:if test="${stage.currentStage != 'VOTING'}">
+                                                    <img src="${votes.card}" width="80" height="120"/>
+                                                </c:if>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach var="votes" items="${deck.voteCards}">
+                                                <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>                               
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:if>
+                            </c:forEach>
+                            
+                        </td>
+                    </tr>
+                </c:if>
             </c:forEach>
         </tbody>
 </petclinic:layout>

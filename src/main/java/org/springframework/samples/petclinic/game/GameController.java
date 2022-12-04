@@ -39,6 +39,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -234,11 +235,11 @@ public class GameController {
 
 	@Transactional
 	@PostMapping("/create")
-	public ModelAndView createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
-	@Valid Game game, BindingResult br) {
-		ModelAndView res = null;
+	public String createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
+	@Valid Game game, BindingResult br, ModelMap model) {
 		if(br.hasErrors()) {
-			return new ModelAndView(CREATE_GAME, br.getModel());
+			model.put("game", game);
+			return "redirect:/games/" + game.getId().toString() + "/lobby";
 		} else {
 			Game newGame = gameService.saveGame(game);
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
@@ -251,15 +252,17 @@ public class GameController {
 			turnService.save(turn);
 			stageService.save(stage);
 			
-			res = showLobby(newGame.getId());
-			res.addObject("message", "Game successfully created!");
+			model.put("game", game);
+        	model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+			model.put("message", "Game successfully created!");
 		}
-		return res;
+		return "redirect:/games/" + game.getId().toString() + "/lobby";
 	}
 
 	@Transactional
     @GetMapping("/{gameId}/lobby")
-    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId){
+    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, HttpServletResponse response){
+		response.addHeader("Refresh", "2");
         ModelAndView res=new ModelAndView(GAME_LOBBY);
         Game game=gameService.getGameById(gameId);
         res.addObject("game", game);
@@ -269,26 +272,25 @@ public class GameController {
 
 	@Transactional
 	@GetMapping("/{gameId}/join")
-    public ModelAndView joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo){
-		ModelAndView res=new ModelAndView(GAME_LOBBY);
+    public String joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
-		Game game2=gameService.joinGame(game);
+		gameService.joinGame(game);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
-		PlayerInfo playerInfo=playerInfoService.saveJoinedPlayerInfo(joinedInfo, game2, player);
-		res.addObject(playerInfo);
-        return showLobby(game2.getId());
+		playerInfoService.savePlayerInfo(joinedInfo, game, player);
+		model.put("game", game);
+        model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+        return "redirect:/games/" + gameId.toString() + "/lobby";
     }
 
 	@Transactional
 	@GetMapping("/{gameId}/spectate")
-    public ModelAndView spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo){
-		ModelAndView res=new ModelAndView(GAME_LOBBY);
+    public String spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
-		Game game2=gameService.joinGame(game);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
-		PlayerInfo playerInfo=playerInfoService.saveSpectatorPlayerInfo(spectatorInfo, game2, player);
-		res.addObject(playerInfo);
-        return showLobby(game2.getId());
+		playerInfoService.saveSpectatorInfo(spectatorInfo, game, player);
+		model.put("game", game);
+        model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+        return "redirect:/games/" + gameId.toString() + "/lobby";
     }
 
 	@Transactional

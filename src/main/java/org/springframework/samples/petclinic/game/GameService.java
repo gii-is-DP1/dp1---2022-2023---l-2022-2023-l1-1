@@ -53,9 +53,9 @@ public class GameService {
     }
 
     @Transactional
-    public Game joinGame(Game game) throws DataAccessException {
+    public void joinGame(Game game) throws DataAccessException {
         game.setNumPlayers(game.getNumPlayers()+1);
-        return repo.save(game);
+        repo.save(game);
     }
     
 }
