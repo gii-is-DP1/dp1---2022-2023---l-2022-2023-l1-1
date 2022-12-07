@@ -19,16 +19,14 @@ import org.springframework.samples.petclinic.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @Table(name="players")
 public class Player extends BaseEntity {
 
-    @NotNull
+    
     private Boolean online;
-
-    @NotNull
     private Boolean playing;
 
     @OneToOne(cascade = CascadeType.PERSIST)

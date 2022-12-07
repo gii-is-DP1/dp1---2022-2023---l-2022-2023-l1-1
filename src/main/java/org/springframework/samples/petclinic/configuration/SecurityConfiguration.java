@@ -35,9 +35,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
-				.antMatchers("/users/new").hasAnyAuthority("admin")
+				//.antMatchers("/users/new").hasAnyAuthority("admin")
 				.antMatchers("/decks/**").hasAnyAuthority("player") //esto es provisional
-				.antMatchers("/users/new").anonymous()
+				.antMatchers("/users/**").permitAll()
 				.antMatchers("/session/**").permitAll()
 				.antMatchers("/currentuser").permitAll()
 				.antMatchers("/statistics/**").hasAnyAuthority("admin")

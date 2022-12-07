@@ -27,17 +27,12 @@
                 <td>
                     <c:out value="${player.playing}"/>
                 </td>
-                <%--  
                 <td>
-                    <a class="btn btn-default" href="/players/${player.id}/edit">Edit player</a>
+                    <a class="btn btn-default" href="/players/${player.id}/delete">Delete</a>
                 </td>
-                <td>
-                    <a class="btn btn-default" href="/players/${player.id}/delete">Delete player</a>
-                </td>
-                --%>
             </tr>
         </c:forEach>
         </tbody>
     </table>
-    <a class="btn btn-default" href="/users/new">Create new player</a>
+    <a class="btn btn-default" href="/users/create">Create new player</a>
 </petclinic:layout>

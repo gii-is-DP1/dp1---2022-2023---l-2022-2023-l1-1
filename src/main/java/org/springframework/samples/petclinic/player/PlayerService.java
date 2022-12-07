@@ -26,40 +26,32 @@ public class PlayerService {
 		this.playerRepository = playerRepository;
 	}
 
-    public List<Player> getAll(){
-        return playerRepository.findAll();
-    }
-
 	@Transactional
-	public void removePlayer(Integer id){
-		this.playerRepository.deleteById(id);
+	public List<Player> getAll(){
+		return playerRepository.findAll();
 	}
-    
+
+	
+	@Transactional
+	public Player savePlayer(Player player) throws DataAccessException {
+		playerRepository.save(player);
+		return player;
+	}
+	
+	@Transactional
+	public void deletePlayer(Integer id) throws DataAccessException {
+		Player p = getPlayerById(id);
+		playerRepository.delete(p);
+	}
+
 	public Player getPlayerById(Integer id) {
 		return playerRepository.findById(id).get();
 	}
 
-    @Transactional
-	public Player savePlayer(Player p) throws DataAccessException {
-		//creating user
-		userService.saveUser(p.getUser());
-		//creating authorities
-		authoritiesService.saveAuthorities(p.getUser().getUsername(), "player");
-
-		//creating player
-		return playerRepository.save(p);	
-	}
-	
-	@Transactional
-	public Player getPlayer(Integer id){
-		Optional<Player> player = this.playerRepository.findById(id);
-		return player.isPresent()? player.get() : null;
-
-	}
-	
 	@Transactional(readOnly = true)
 	public Player getPlayerByUsername(String username) {
 		return playerRepository.getPlayerByUsername(username);
 
 	}
+
 }

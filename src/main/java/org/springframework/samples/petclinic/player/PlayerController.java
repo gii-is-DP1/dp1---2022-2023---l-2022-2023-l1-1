@@ -23,12 +23,12 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/players")
 public class PlayerController {
     private PlayerService playerService;
-
+    
     @Autowired
     private UserService userService;
 
-    private static final String VIEWS_PLAYER_LIST = "/players/playersList";
-    private static final String EDIT_PLAYER = "/players/createOrUpdatePlayerForm";
+    private static final String VIEWS_PLAYER_LIST = "/users/playersList";
+
 
 
     @Autowired
@@ -43,6 +43,23 @@ public class PlayerController {
         return VIEWS_PLAYER_LIST;
     }
 
+    @GetMapping("/{id}/delete")
+    public String removePlayer(@PathVariable("id") Integer id, ModelMap model){
+        String message;
+        try{
+            playerService.deletePlayer(id);
+            return listAllPlayers(model);
+            //message = "Player " + id + " successfully deleted";   
+        } catch (EmptyResultDataAccessException e){
+            message = "Player " + id + " doesn't exist";
+        }
+        model.put("message", message);
+        model.put("messageType", "info");
+        return listAllPlayers(model);
+        
+    }
+    
+    /* 
     @GetMapping("/{id}/edit")
     public String getPlayer(@PathVariable("id") Integer id, ModelMap model){
         Player player = playerService.getPlayer(id);
@@ -79,41 +96,7 @@ public class PlayerController {
         }
     }
 
-    @GetMapping("/{id}/delete")
-    public String removePlayer(@PathVariable("id") Integer id, ModelMap model){
-        String message;
-
-        try{
-            playerService.removePlayer(id);
-            message = "Player " + id + " successfully deleted";   
-        } catch (EmptyResultDataAccessException e){
-            message = "Player " + id + " doesn't exist";
-        }
-        model.put("message", message);
-        model.put("messageType", "info");
-        return listAllPlayers(model);
-    }
-
-    @GetMapping("/create")
-    public String addPlayer(ModelMap model){
-        List<User> allUsers = userService.findAll();
-        model.put("users", allUsers);
-        model.put("player", new Player());
-        return EDIT_PLAYER;
-    }
-
-    @PostMapping("/create")
-    public String saveNewPlayer(@Valid Player player, BindingResult bindingResult, ModelMap model){
-       if (bindingResult.hasErrors()) {
-        return EDIT_PLAYER;
-       } else {
-        Player newPlayer = new Player();
-        BeanUtils.copyProperties(player, newPlayer, "id");
-        Player createdPlayer = playerService.savePlayer(newPlayer);
-        model.put("message", "Player " + createdPlayer.getId() + " successfully created" );
-        return "redirect:/players/";
-       }
-    }
-
+  
+    */
 
 }

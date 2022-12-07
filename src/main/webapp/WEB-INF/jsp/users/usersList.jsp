@@ -6,16 +6,13 @@
 
 <petclinic:layout pageName="users">
     <h2>Users</h2>
+    
     <table id="usersTable" class="table table-striped">
         <thead>
         <tr>
             <th>Username</th>
             <th>Password</th>
-
-            <!--
-            <th>Name</th>
-            <th>Surname</th>
-            -->
+            <th>Enabled</th>
         </tr>
         </thead>
         <tbody>
@@ -27,24 +24,18 @@
                 <td>
                     <c:out value="${user.password}"/>
                 </td>
-                <!--
                 <td>
-                    <c:out value="${user.firstname}"/>
+                    <c:out value="${user.enabled}"/>
+                </td> 
+                <td>
+                    <a class="btn btn-default" href="/users/${user.username}/delete">Delete</a>
                 </td>
                 <td>
-                    <c:out value="${user.surname}"/>
+                    <a class="btn btn-default" href="/users/${user.username}/edit">Edit</a>
                 </td>
-                -->
-                <td>
-                    <a class="btn btn-default" href="/players/${user.username}/edit">Edit user</a>
-                </td>
-                <td>
-                    <a class="btn btn-default" href="/users/${user.username}/delete">Delete user</a>
-                </td>
-
             </tr>
         </c:forEach>
         </tbody>
     </table>
-    <a class="btn btn-default" href="/users/new">Create new user</a>
+    <a class="btn btn-default" href="/users/create">Create new User</a>
 </petclinic:layout>
