@@ -22,7 +22,7 @@ public class Player extends BaseEntity {
 
     private Boolean playing;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
 }
