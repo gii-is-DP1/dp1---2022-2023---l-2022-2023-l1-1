@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.user;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
@@ -45,18 +47,26 @@ public class UserService {
 	}
 
 	@Transactional
-	public User saveUser(User user) throws DataAccessException {
-		user.setEnabled(true);
-		userRepository.save(user);
+	public User getUserByUsername(String username) {
+		User user = userRepository.findById(username).get();
 		return user;
 	}
 
-	public List<User> getAll() {
-		return userRepository.findAll();
+	@Transactional
+    public void saveUser(User user) throws DataAccessException {
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
+	@Transactional(readOnly = true)
+	public User findUser(String username) {
+		Optional<User> u =  userRepository.findById(username);
+		return u.get();
 	}
 
-	public Optional<User> findUser(String username) {
-		return userRepository.findById(username);
+	@Transactional
+	public Iterable<User> findAll(){
+		return userRepository.findAll();
 	}
 
 	@Transactional
@@ -64,9 +74,36 @@ public class UserService {
 		this.userRepository.deleteById(username);
 	}
 
+	/* 
+
+	@Transactional
+    public User saveUser(User user) throws DataAccessException {
+		String username = user.getUsername();
+        List<String> usernameList = new ArrayList<>();
+        for(User u:userRepository.findAll()){
+            usernameList.add(u.getUsername());
+        }
+        user.setEnabled(true);
+        userRepository.save(user);
+		return user;
+    }
+
+
+	public List<User> findAll() {
+		return userRepository.findAll();
+	}
+
+	public Optional<User> findUser(String username) {
+		return userRepository.findById(username);
+	}
+
+	
+
 	@Transactional
 	public User getUser(String username){
 		Optional<User> user = this.userRepository.findById(username);
 		return user.isPresent()? user.get() : null;
 	}
+
+	*/
 }
