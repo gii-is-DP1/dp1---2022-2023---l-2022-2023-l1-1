@@ -7,8 +7,6 @@ import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.samples.petclinic.achievements.Achievement;
-import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,13 +21,12 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/players")
 public class PlayerController {
     private PlayerService playerService;
-
+    
     @Autowired
     private UserService userService;
 
-    private static final String VIEWS_PLAYER_LIST = "/players/playersList";
-    private static final String EDIT_PLAYER = "/players/createOrUpdatePlayerForm";
-
+    private static final String VIEWS_PLAYER_LIST = "/users/playersList";
+    private static final String PLAYER_REGISTRATION = "/players/playerRegistration";
 
     @Autowired
     public PlayerController(PlayerService playerService) {
@@ -43,11 +40,47 @@ public class PlayerController {
         return VIEWS_PLAYER_LIST;
     }
 
+    @GetMapping("/register")
+    public ModelAndView playerRegistration() {
+        ModelAndView res = new ModelAndView(PLAYER_REGISTRATION);
+        Player player = new Player();       
+        res.addObject("player", player);                                
+        return res;
+    }
+
+	@PostMapping(value = "/register")
+	public String savePlayer(@Valid Player player, BindingResult result) {
+		if (result.hasErrors()) {
+			return PLAYER_REGISTRATION;
+		}
+		else {
+			playerService.savePlayer(player);
+			return "redirect:/";
+		}
+	}
+
+    @GetMapping("/{id}/delete")
+    public String removePlayer(@PathVariable("id") Integer id, ModelMap model){
+        String message;
+        try{
+            playerService.deletePlayer(id);
+            message = "Player " + id + " successfully deleted"; 
+            return "redirect:/players";
+        } catch (EmptyResultDataAccessException e){
+            message = "Player " + id + " doesn't exist";
+        }
+        model.put("message", message);
+        model.put("messageType", "info");
+        return listAllPlayers(model);
+        
+    }
+    
+    /* 
     @GetMapping("/{id}/edit")
     public String getPlayer(@PathVariable("id") Integer id, ModelMap model){
         Player player = playerService.getPlayer(id);
         if(player !=null){
-            List<User> allUsers = userService.getAll();
+            List<User> allUsers = userService.findAll();
             model.put("users", allUsers);
             model.put("player", player);
             return EDIT_PLAYER;
@@ -79,41 +112,7 @@ public class PlayerController {
         }
     }
 
-    @GetMapping("/{id}/delete")
-    public String removePlayer(@PathVariable("id") Integer id, ModelMap model){
-        String message;
-
-        try{
-            playerService.removePlayer(id);
-            message = "Player " + id + " successfully deleted";   
-        } catch (EmptyResultDataAccessException e){
-            message = "Player " + id + " doesn't exist";
-        }
-        model.put("message", message);
-        model.put("messageType", "info");
-        return listAllPlayers(model);
-    }
-
-    @GetMapping("/create")
-    public String addPlayer(ModelMap model){
-        List<User> allUsers = userService.getAll();
-        model.put("users", allUsers);
-        model.put("player", new Player());
-        return EDIT_PLAYER;
-    }
-
-    @PostMapping("/create")
-    public String saveNewPlayer(@Valid Player player, BindingResult bindingResult, ModelMap model){
-       if (bindingResult.hasErrors()) {
-        return EDIT_PLAYER;
-       } else {
-        Player newPlayer = new Player();
-        BeanUtils.copyProperties(player, newPlayer, "id");
-        Player createdPlayer = playerService.savePlayer(newPlayer);
-        model.put("message", "Player " + createdPlayer.getId() + " successfully created" );
-        return "redirect:/players/";
-       }
-    }
-
+  
+    */
 
 }

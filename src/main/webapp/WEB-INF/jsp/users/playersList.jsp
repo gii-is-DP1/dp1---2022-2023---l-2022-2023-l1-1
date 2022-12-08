@@ -6,13 +6,15 @@
 
 <petclinic:layout pageName="players">
     <h2>Players</h2>
-    
+    <a class="btn btn-default" href="/users/new">Create new player</a>
     <table id="playersTable" class="table table-striped">
         <thead>
         <tr>
             <th>Username</th>
             <th>Online</th>
             <th>Playing</th>
+            <th>Edit</th>
+            <th>Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -27,17 +29,18 @@
                 <td>
                     <c:out value="${player.playing}"/>
                 </td>
-                <%--  
                 <td>
-                    <a class="btn btn-default" href="/players/${player.id}/edit">Edit player</a>
+                    <a href="/users/${player.user.username}/edit">
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                    </a>
                 </td>
                 <td>
-                    <a class="btn btn-default" href="/players/${player.id}/delete">Delete player</a>
+                    <a href="/players/${player.id}/delete">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    </a>
                 </td>
-                --%>
             </tr>
         </c:forEach>
         </tbody>
     </table>
-    <a class="btn btn-default" href="/users/new">Create new player</a>
 </petclinic:layout>

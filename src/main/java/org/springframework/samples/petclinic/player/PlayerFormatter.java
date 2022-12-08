@@ -1,7 +1,7 @@
 package org.springframework.samples.petclinic.player;
 
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class PlayerFormatter implements Formatter<Player> {
 
     @Override
 	public Player parse(String text, Locale locale) throws ParseException {
-		Collection<Player> players = this.playerService.getAll();
+		List<Player> players = this.playerService.getAll();
 		for (Player p : players) {
 			if (p.getUser().getUsername().equals(text)) {
 				return p;
