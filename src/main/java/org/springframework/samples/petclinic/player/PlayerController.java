@@ -7,8 +7,6 @@ import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.samples.petclinic.achievements.Achievement;
-import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -28,8 +26,7 @@ public class PlayerController {
     private UserService userService;
 
     private static final String VIEWS_PLAYER_LIST = "/users/playersList";
-
-
+    private static final String PLAYER_REGISTRATION = "/players/playerRegistration";
 
     @Autowired
     public PlayerController(PlayerService playerService) {
@@ -43,13 +40,32 @@ public class PlayerController {
         return VIEWS_PLAYER_LIST;
     }
 
+    @GetMapping("/register")
+    public ModelAndView playerRegistration() {
+        ModelAndView res = new ModelAndView(PLAYER_REGISTRATION);
+        Player player = new Player();       
+        res.addObject("player", player);                                
+        return res;
+    }
+
+	@PostMapping(value = "/register")
+	public String savePlayer(@Valid Player player, BindingResult result) {
+		if (result.hasErrors()) {
+			return PLAYER_REGISTRATION;
+		}
+		else {
+			playerService.savePlayer(player);
+			return "redirect:/";
+		}
+	}
+
     @GetMapping("/{id}/delete")
     public String removePlayer(@PathVariable("id") Integer id, ModelMap model){
         String message;
         try{
             playerService.deletePlayer(id);
-            return listAllPlayers(model);
-            //message = "Player " + id + " successfully deleted";   
+            message = "Player " + id + " successfully deleted"; 
+            return "redirect:/players";
         } catch (EmptyResultDataAccessException e){
             message = "Player " + id + " doesn't exist";
         }

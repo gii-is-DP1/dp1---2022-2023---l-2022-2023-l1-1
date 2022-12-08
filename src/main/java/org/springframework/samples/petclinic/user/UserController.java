@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Juergen Hoeller
@@ -46,7 +47,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
 	private static final String VIEWS_USER_LIST = "/users/usersList";
-	private static final String CREATE = "/users/createUser";
+	private static final String CREATE_USER = "/users/createUser";
+	private static final String CREATE_UPDATE_PLAYER = "/users/createOrUpdatePlayer";
 
 	@Autowired
     private UserService userService;
@@ -72,85 +74,84 @@ public class UserController {
         return VIEWS_USER_LIST;
     }
 
-	@GetMapping(value="/new")
-    public String createUser(ModelMap modelMap) {
-        String vista = "users/createUser";
-        modelMap.addAttribute("user", new User());
-        return vista;
+	@GetMapping("/new")
+    public ModelAndView createPlayerForm() {
+        ModelAndView res = new ModelAndView(CREATE_UPDATE_PLAYER);
+        Player player = new Player();       
+        res.addObject("player", player);                                
+        return res;
     }
 
-	@PostMapping(value="/new")
-    public String saveUser(@Valid User user, BindingResult result, ModelMap modelMap) {
-        if (result.hasErrors()) {
-            return CREATE;
-        } else {
-			List<User> allUsers = new ArrayList<>();
-			for (User u: userService.findAll()){
-				allUsers.add(u);
-			}
-			this.userService.saveUser(user);
-			allUsers.add(user);
-            modelMap.addAttribute("users", allUsers);
-
-            authoritiesService.saveAuthorities(user.getUsername(), "user");
-            modelMap.addAttribute("message", "User created");
-
-			Player player = new Player();
-			player.setId(allUsers.size()+1);
-			player.setUser(user);
-			player.setOnline(true);
-			player.setPlaying(false);
+	@PostMapping("/new")
+	public ModelAndView createPlayer(@Valid Player player, BindingResult result) {
+		ModelAndView res = null;
+		if (result.hasErrors()) {
+			return new ModelAndView(CREATE_UPDATE_PLAYER);
+		}
+		else {
+			res = new ModelAndView("welcome");
 			playerService.savePlayer(player);
-
-			return VIEWS_USER_LIST;
-        }
+			res.addObject("message", "Player successfully created!");
+		}
+		return res;
 	}
 
-		@GetMapping("/{username}/delete")
-    	public String removeUser(@PathVariable("username") String username, ModelMap model){
-        	String message;
+    /* 
+	@GetMapping("/{username}/edit")
+    public ModelAndView editPlayerForm(@PathVariable("username") String username) {
+		ModelAndView res = new ModelAndView(CREATE_USER);
+        User user = userService.getUserByUsername(username);       
+        res.addObject("user", user);
+        return res;
+    }
 
-        	try{
-            	userService.removeUser(username);
-            	message = "User " + username + " successfully deleted";   
-        	}catch (EmptyResultDataAccessException e){
-            	message = "User " + username + " doesn't exist";
-        	}
-        	model.put("message", message);
-     	   model.put("messageType", "info");
-     	   return listAllUsers(model);
-    	}
-
-		@GetMapping("/{username}/edit")
-    	public String getUser(@PathVariable("username") String username, ModelMap model){
-		
-			User user = userService.findUser(username);
-			model.put("user", user);
-			return CREATE;
-    	}
-
-    @PostMapping("/{username}/edit")
-    public String saveUser(@PathVariable("username")String username, @Valid User user, BindingResult bindingResult, ModelMap model){
-        if(bindingResult.hasErrors()){
-            return CREATE;
+	@PostMapping("/{username}/edit")
+    public ModelAndView editPlayer(@PathVariable("username")String username, @Valid User user, BindingResult br) {
+        ModelAndView res = new ModelAndView("welcome");
+        if (br.hasErrors()) {
+            return new ModelAndView(CREATE_USER, br.getModel());
         }
-        else {
-            User userToUpdate = userService.findUser(username);
-            if(userToUpdate != null){
-                BeanUtils.copyProperties(user, userToUpdate, "username");
-                model.put("message", "Player " + username + " successfully updated");
-                userService.saveUser(userToUpdate);
-                return listAllUsers(model);
-            }
-            else{
-                model.put("message", "Player " + username + " doesn't exist");
-                model.put("messageType", "info");
-                return listAllUsers(model);
-            }
-        }
-        
+        User userToBeUpdated = userService.getUserByUsername(username); 
+        BeanUtils.copyProperties(user, userToBeUpdated,"id", "online", "playing");
+        userService.saveUser(userToBeUpdated);
+        res.addObject("message", "Player edited succesfully!");
+        return res;
+    }*/
 
-        
+    @GetMapping("/{username}/edit")
+    public ModelAndView editPlayerForm(@PathVariable("username") String username) {
+		ModelAndView res = new ModelAndView(CREATE_UPDATE_PLAYER);
+        Player player = playerService.getPlayerByUsername(username);        
+        res.addObject("player", player);
+        return res;
+    }
+
+	@PostMapping("/{username}/edit")
+    public ModelAndView editPlayer(@PathVariable("username")String username, @Valid Player player, BindingResult br) {
+        ModelAndView res = new ModelAndView("welcome");
+        if (br.hasErrors()) {
+            return new ModelAndView(CREATE_UPDATE_PLAYER, br.getModel());
+        }
+        Player playerToBeUpdated = playerService.getPlayerByUsername(username); 
+        BeanUtils.copyProperties(player, playerToBeUpdated,"id", "online", "playing");
+        playerService.saveEditedPlayer(playerToBeUpdated);
+        res.addObject("message", "Player edited succesfully!");
+        return res;
+    }
+
+	@GetMapping("/{username}/delete")
+    public String removeUser(@PathVariable("username") String username, ModelMap model){
+        String message;
+
+        try{
+            userService.removeUser(username);
+            message = "User " + username + " successfully deleted";   
+        }catch (EmptyResultDataAccessException e){
+            message = "User " + username + " doesn't exist";
+        }
+        model.put("message", message);
+     	model.put("messageType", "info");
+     	return listAllUsers(model);
     }
 }
 

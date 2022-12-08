@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
+import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +32,20 @@ public class PlayerService {
 		return playerRepository.findAll();
 	}
 
-	
 	@Transactional
 	public Player savePlayer(Player player) throws DataAccessException {
+		userService.saveUser(player.getUser());
+		authoritiesService.saveAuthorities(player.getUser().getUsername(), "player");
+		player.setOnline(false);
+		player.setPlaying(false);
+		playerRepository.save(player);
+		return player;
+	}
+
+	@Transactional
+	public Player saveEditedPlayer(Player player) throws DataAccessException {
+		userService.saveUser(player.getUser());
+		authoritiesService.saveAuthorities(player.getUser().getUsername(), "player");
 		playerRepository.save(player);
 		return player;
 	}

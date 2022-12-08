@@ -37,6 +37,7 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
 	@Autowired
 	private PlayerService playerService;
 
@@ -46,12 +47,18 @@ public class UserService {
 	}
 
 	@Transactional
+	public User getUserByUsername(String username) {
+		User user = userRepository.findById(username).get();
+		return user;
+	}
+
+	@Transactional
     public void saveUser(User user) throws DataAccessException {
         user.setEnabled(true);
         userRepository.save(user);
     }
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public User findUser(String username) {
 		Optional<User> u =  userRepository.findById(username);
 		return u.get();
