@@ -39,10 +39,12 @@ public class GameService {
         return repo.findByName(name).stream().filter(g -> g.getState() == s).collect(Collectors.toList());
     }
 
+    private static final Integer STARTING_NUMBER_OF_PLAYERS = 1;
+
     @Transactional
     public Game saveGame(Game game, Turn turn) throws DataAccessException {
         game.setState(State.STARTING);
-        game.setNumPlayers(1);
+        game.setNumPlayers(STARTING_NUMBER_OF_PLAYERS);
         LocalDate date = LocalDate.now();
         game.setDate(date);
         game.setDuration(0.);
@@ -85,13 +87,15 @@ public class GameService {
         }
     }
 
+    private static final Integer NEW_TURN_INITIAL_VOTES = 0;
+
     @Transactional
     public void changeTurnAndRound(Game game) {
         Turn turnToChange = game.getTurn();
         turnToChange.setCurrentTurn(turnToChange.getCurrentTurn() + 1);
-        turnToChange.setVotesLoyal(0);
-        turnToChange.setVotesTraitor(0);
-        turnToChange.setVotesNeutral(0);
+        turnToChange.setVotesLoyal(NEW_TURN_INITIAL_VOTES);
+        turnToChange.setVotesTraitor(NEW_TURN_INITIAL_VOTES);
+        turnToChange.setVotesNeutral(NEW_TURN_INITIAL_VOTES);
         turnRepository.save(turnToChange);
         if(game.getTurn().getCurrentTurn() > game.getNumPlayers()) {
             turnToChange.setCurrentTurn(1);

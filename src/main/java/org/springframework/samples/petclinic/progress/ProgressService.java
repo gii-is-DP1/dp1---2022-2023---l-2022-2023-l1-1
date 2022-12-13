@@ -29,7 +29,7 @@ public class ProgressService {
     }
 
     public List<Progress> getPlayerProgress(Player player) {
-        return progressRepository.findByPlayer(player);
+        return progressRepository.findProgressByPlayer(player);
     }
 
     /*public List<Progress> addNewAchievement(Achievement achievement) { //CREO QUE NO HACE FALTA
