@@ -123,11 +123,10 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (5,false,false,2,5),
 (6,false,true,2,6),
 (7,false,false,2,7),
+
 (8,false,false,1,3),
 
 (10,false,false,3,1),
-
-(20,true,false,4,1),
 
 (50,true,false,5,1),
 (51,false,false,5,2),

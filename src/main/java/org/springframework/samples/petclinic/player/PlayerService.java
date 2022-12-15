@@ -63,7 +63,7 @@ public class PlayerService {
 
 	@Transactional(readOnly = true)
 	public Player getPlayerByUsername(String username) {
-		return playerRepository.getPlayerByUsername(username);
+		return playerRepository.findPlayerByUsername(username);
 
 	}
 

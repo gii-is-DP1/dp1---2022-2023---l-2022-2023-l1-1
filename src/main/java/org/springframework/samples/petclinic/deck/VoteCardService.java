@@ -8,6 +8,7 @@ import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VoteCardService {
@@ -24,14 +25,17 @@ public class VoteCardService {
         this.gameRepository = gameRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<VoteCard> getAll() {
         return voteCardRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public VoteCard getById (VCType type) {
         return voteCardRepository.findById(type).get();
     }
 
+    @Transactional(readOnly = true)
     public List<VoteCard> getChangeOptions(Game game, VoteCard selectedCard) {
         List<VoteCard> res = voteCardRepository.findAll();
         if (game.getRound() == CurrentRound.FIRST) {

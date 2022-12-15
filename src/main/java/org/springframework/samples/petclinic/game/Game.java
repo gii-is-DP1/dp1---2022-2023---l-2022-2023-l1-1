@@ -21,7 +21,6 @@ import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Entity

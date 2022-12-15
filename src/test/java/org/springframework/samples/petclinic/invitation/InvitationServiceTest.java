@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.invitation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
@@ -21,7 +22,25 @@ import org.springframework.stereotype.Service;
 public class InvitationServiceTest {
 
     @Mock
-    InvitationService invitationService;
+    InvitationRepository invitationRepository;
+
+    private Invitation createInvitation(Player recipient, String message) {
+        Invitation invitation = new Invitation();
+        invitation.setSender(recipient);
+        invitation.setMessage(message);
+        return invitation;
+    }
+
+    @Test
+    public void testSaveInvitation() {
+        Invitation invitation = createInvitation(new Player(), "Hi, this is a test invitation");
+        InvitationService service = new InvitationService(invitationRepository);
+        try {
+            service.saveInvitation(invitation, new Player());
+        } catch (Exception e) {
+            fail("no exception should be thrown");
+        }
+    }
 
 /* 
     @Test
