@@ -28,6 +28,7 @@ public class SuffragiumCardService {
         return suffragiumCardRepository.findGameBySuffragiumCard(suffragiumCard);
     }
 
+    @Transactional
     public void updateVotes(SuffragiumCard card, Turn turn) {
         SuffragiumCard cardToUpdate = suffragiumCardRepository.findById(card.getId()).get();
         cardToUpdate.setLoyalsVotes(cardToUpdate.getLoyalsVotes() + turn.getVotesLoyal());

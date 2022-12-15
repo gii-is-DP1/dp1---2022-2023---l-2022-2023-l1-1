@@ -37,9 +37,6 @@ public class UserService {
 	private UserRepository userRepository;
 
 	@Autowired
-	private PlayerService playerService;
-
-	@Autowired
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}

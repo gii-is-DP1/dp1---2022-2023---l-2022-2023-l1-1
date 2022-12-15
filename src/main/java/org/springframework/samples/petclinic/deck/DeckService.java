@@ -8,7 +8,6 @@ import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
-import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.stereotype.Service;
@@ -106,10 +105,12 @@ public class DeckService {
         return res;
     }
 
+    private static final Integer ANY_PLAYER = 0;
+
     @Transactional
     public void assingDecksIfNeeded(Game game) {        
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
-        if(rep.findDecksByPlayerAndGame(players.get(0), game).isEmpty()) {
+        if(rep.findDecksByPlayerAndGame(players.get(ANY_PLAYER), game).isEmpty()) {
             List<FactionCard> factions = getFactionCards(players.size());
             List<VoteCard> votes = getFirstRoundVoteCards();
             Integer consul = (int) (Math.random() * (players.size()-1));
