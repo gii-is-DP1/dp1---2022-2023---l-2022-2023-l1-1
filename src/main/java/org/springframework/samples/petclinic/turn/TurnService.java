@@ -42,6 +42,9 @@ public class TurnService {
 		if (voteType == VCType.RED) {
 			turn.setVotesTraitor(turn.getVotesTraitor() == null ? 1 : turn.getVotesTraitor() + 1);
 		}
+        if (voteType == VCType.YELLOW) {
+            turn.setVotesNeutral(turn.getVotesNeutral() == null ? 1 : turn.getVotesNeutral() + 1);
+        }
 		turnRepository.save(turn);
     }
 
