@@ -16,6 +16,7 @@ import org.springframework.samples.petclinic.deck.VoteCard;
 import org.springframework.samples.petclinic.deck.VoteCardService;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
+import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
@@ -261,7 +262,7 @@ public class GameController {
 
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
-        response.addHeader("Refresh", "5"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
+        response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
@@ -310,7 +311,20 @@ public class GameController {
 		Game currentGame = gameService.getGameById(gameId);
 		Turn currentTurn = currentGame.getTurn();
 		suffragiumCardService.updateVotes(currentGame.getSuffragiumCard(), currentTurn);
-		gameService.changeStage(currentGame, CurrentStage.END_OF_TURN);
+		if (currentTurn.getCurrentTurn() == 1 && currentGame.getRound() == CurrentRound.FIRST ) {
+			deckService.deckRotation(currentGame);
+			gameService.changeStage(currentGame, CurrentStage.VOTING);
+		}
+		/*else if (currentTurn.getCurrentTurn() > 1 && currentGame.getRound() == CurrentRound.SECOND) {
+			deckService.deckRotation(currentGame);
+			gameService.changeStage(currentGame, CurrentStage.VOTING);
+		}*/ 
+		//esto teoricamente deberia funcionar pero lo comento porque no lo he probado
+		//de todas formas hay que ver como planteamos la asignacion de roles en la segunda ronda asi que esto se cambiaria cuando la signacón este
+		
+		else {
+			gameService.changeStage(currentGame, CurrentStage.END_OF_TURN);
+		}
 		return "redirect:/games/" + gameId.toString();
 	}
 
@@ -333,9 +347,9 @@ public class GameController {
 		Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
         Deck deck = deckService.getDeckByPlayerAndGame(player, game); //cojo el mazo de este 
 
-        deckService.updateFactionDeck(deck, factionType);  
-		gameService.changeTurnAndRound(game);
+        deckService.updateFactionDeck(deck, factionType);
 		gameService.changeStage(game, CurrentStage.VOTING);
+		deckService.deckRotation(game);
         return "redirect:/games/" + gameId.toString();
     }
 

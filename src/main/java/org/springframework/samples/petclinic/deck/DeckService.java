@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.BeanDefinitionDsl.Role;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
+import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
@@ -151,6 +153,46 @@ public class DeckService {
             }
         }
         
+    }
+
+    
+    public void deckRotation (Game game) {
+        List<Player> players = playerInfoRepository.findPlayersByGame(game);
+        Player consulPlayer = getDecks().stream()
+            .filter(x -> x.getGame() == game).filter(y -> y.getRoleCard() == RoleCard.CONSUL).findFirst().get().getPlayer();
+        Integer consulId = players.indexOf(consulPlayer);
+
+        for(int i=0; i<5; i++) {
+            Deck deckToUpdate =  getDeckByPlayerAndGame(players.get((consulId + i) % (players.size())), game);
+            if (i == 0) { //consul pasa a noRol
+                deckToUpdate.setRoleCard(RoleCard.NO_ROL);
+            }
+            else if (i == 1) { //pretor pasa a consul
+                deckToUpdate.setRoleCard(RoleCard.CONSUL);
+                
+            }
+            else if (i == 2) { //edil1 pasa a pretor
+                clearVoteCards(deckToUpdate);
+                deckToUpdate.setRoleCard(RoleCard.PRETOR);
+
+            }
+            else { //los dos nuevos ediles
+                List<VoteCard> newVotes = new ArrayList<>();
+                if (deckToUpdate.getVoteCards().size() != 0) { //si tiene algun voto se lo quitamos
+                    clearVoteCards(deckToUpdate);
+                }
+                if (deckToUpdate.getRoleCard() != RoleCard.EDIL) { //si no es ya edil le damos edil
+                    deckToUpdate.setRoleCard(RoleCard.EDIL);
+                }
+                if (game.getRound() == CurrentRound.SECOND) {
+                    newVotes.add(voteCardRepository.findById(VCType.YELLOW).get());
+                }
+                newVotes.add(voteCardRepository.findById(VCType.GREEN).get());
+                newVotes.add(voteCardRepository.findById(VCType.RED).get());
+                deckToUpdate.setVoteCards(newVotes);
+            }
+            rep.save(deckToUpdate);
+        }
     }
     
 }

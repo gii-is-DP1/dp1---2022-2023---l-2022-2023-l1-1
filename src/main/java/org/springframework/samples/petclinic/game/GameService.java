@@ -74,6 +74,9 @@ public class GameService {
     @Transactional
     public void changeStage(Game game, CurrentStage stage) {
         game.setStage(stage);
+        if (stage == CurrentStage.VOTING) {
+            changeTurnAndRound(game); //si cambiamos a voting es pq pasamos de turno
+        }
         repo.save(game);
     }
 
@@ -92,17 +95,17 @@ public class GameService {
     @Transactional
     public void changeTurnAndRound(Game game) {
         Turn turnToChange = game.getTurn();
-        turnToChange.setCurrentTurn(turnToChange.getCurrentTurn() + 1);
         turnToChange.setVotesLoyal(NEW_TURN_INITIAL_VOTES);
         turnToChange.setVotesTraitor(NEW_TURN_INITIAL_VOTES);
         turnToChange.setVotesNeutral(NEW_TURN_INITIAL_VOTES);
-        turnRepository.save(turnToChange);
+        turnToChange.setCurrentTurn(turnToChange.getCurrentTurn() + 1);
         if(game.getTurn().getCurrentTurn() > game.getNumPlayers()) {
             turnToChange.setCurrentTurn(1);
             turnRepository.save(turnToChange);
             if(game.getRound() == CurrentRound.FIRST)
                 game.setRound(CurrentRound.SECOND);
         }
+        turnRepository.save(turnToChange);
         repo.save(game);
     }
     
