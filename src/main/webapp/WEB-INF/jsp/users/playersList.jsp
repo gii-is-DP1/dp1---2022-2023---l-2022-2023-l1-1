@@ -35,7 +35,7 @@
                     </a>
                 </td>
                 <td>
-                    <a href="/players/${player.id}/delete">
+                    <a href="/users/${player.user.username}/delete">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     </a>
                 </td>

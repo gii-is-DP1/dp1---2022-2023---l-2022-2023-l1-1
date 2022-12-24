@@ -26,7 +26,7 @@ public class Achievement extends NamedEntity {
     @Min(0)
     private double threshold;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "achievement")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "achievement")
     private List<Progress> progress;
 
     public String getActualDescription() {

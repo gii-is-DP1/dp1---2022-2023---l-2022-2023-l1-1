@@ -17,6 +17,8 @@ package org.springframework.samples.petclinic.user;
 
 
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
@@ -45,20 +47,12 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/users")
 public class UserController {
 
-	private static final String VIEWS_USER_LIST = "/users/usersList";
+	private static final String PLAYER_LIST = "/users/playersList";
 	private static final String CREATE_PLAYER = "/users/createPlayer";
     private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
 
 	@Autowired
-    private UserService userService;
-
-	@Autowired
 	private PlayerService playerService;
-
-	@Autowired
-	public UserController(UserService userService) {
-		this.userService = userService;
-	}
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -67,9 +61,9 @@ public class UserController {
 
 	@GetMapping
     public String listAllUsers(ModelMap model){
-        Iterable<User> allUsers = userService.findAll();
-        model.put("users", allUsers);
-        return VIEWS_USER_LIST;
+        List<Player> allPlayers = playerService.getAll();
+        model.put("players", allPlayers);
+        return PLAYER_LIST;
     }
 
 	@GetMapping("/new")
@@ -116,14 +110,19 @@ public class UserController {
     }
 
 	@GetMapping("/{username}/delete")
-    public String removeUser(@PathVariable("username") String username, ModelMap model){
+    public String deleteUser(@PathVariable("username") String username, ModelMap model){
         String message;
-
-        try{
-            userService.removeUser(username);
-            message = "User " + username + " successfully deleted";   
-        }catch (EmptyResultDataAccessException e){
-            message = "User " + username + " doesn't exist";
+        Player player = playerService.getPlayerByUsername(username);
+        if(!playerService.hasGamesPlayed(player)) {
+            try {
+                playerService.deletePlayer(player);
+                message = "User " + username + " successfully deleted";   
+            } catch(EmptyResultDataAccessException e) {
+                message = "User " + username + " doesn't exist";
+            }
+        }
+        else {
+            message = "You can't delete a player who has played any game!";
         }
         model.put("message", message);
      	model.put("messageType", "info");

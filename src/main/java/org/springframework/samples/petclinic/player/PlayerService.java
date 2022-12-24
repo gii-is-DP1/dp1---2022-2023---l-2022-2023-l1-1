@@ -1,12 +1,12 @@
 package org.springframework.samples.petclinic.player;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
-import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +16,12 @@ public class PlayerService {
 
 	@Autowired
     private PlayerRepository playerRepository;
+
+	@Autowired
+	private PlayerInfoRepository playerInfoRepository;
+
+	@Autowired
+	private DeckRepository deckRepository;
 
     @Autowired
 	private UserService userService;
@@ -31,6 +37,16 @@ public class PlayerService {
 	@Transactional
 	public List<Player> getAll(){
 		return playerRepository.findAll();
+	}
+
+	@Transactional(readOnly = true)
+	public Player getPlayerById(Integer id) {
+		return playerRepository.findById(id).get();
+	}
+
+	@Transactional(readOnly = true)
+	public Player getPlayerByUsername(String username) {
+		return playerRepository.findPlayerByUsername(username);
 	}
 
 	@Transactional
@@ -52,19 +68,17 @@ public class PlayerService {
 	}
 	
 	@Transactional
-	public void deletePlayer(Integer id) throws DataAccessException {
-		Player p = getPlayerById(id);
-		playerRepository.delete(p);
-	}
-
-	public Player getPlayerById(Integer id) {
-		return playerRepository.findById(id).get();
+	public void deletePlayer(Player player) throws DataAccessException {
+		playerRepository.delete(player);
 	}
 
 	@Transactional(readOnly = true)
-	public Player getPlayerByUsername(String username) {
-		return playerRepository.findPlayerByUsername(username);
-
+	public Boolean hasGamesPlayed(Player player) {
+		Boolean res = false;
+		if(!playerInfoRepository.findGamesByPlayer(player).isEmpty() || !deckRepository.findPlayerDecks(null).isEmpty()) {
+			res = true;
+		}
+		return res;
 	}
 
 }
