@@ -15,8 +15,7 @@
  */
 package org.springframework.samples.petclinic.user;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import javax.validation.Valid;
 
@@ -47,13 +46,12 @@ import org.springframework.web.servlet.ModelAndView;
 public class UserController {
 
 	private static final String VIEWS_USER_LIST = "/users/usersList";
-	private static final String CREATE_USER = "/users/createUser";
-	private static final String CREATE_UPDATE_PLAYER = "/users/createOrUpdatePlayer";
+	private static final String CREATE_PLAYER = "/users/createPlayer";
+    private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
 
 	@Autowired
     private UserService userService;
-	@Autowired
-	private AuthoritiesService authoritiesService;
+
 	@Autowired
 	private PlayerService playerService;
 
@@ -76,7 +74,7 @@ public class UserController {
 
 	@GetMapping("/new")
     public ModelAndView createPlayerForm() {
-        ModelAndView res = new ModelAndView(CREATE_UPDATE_PLAYER);
+        ModelAndView res = new ModelAndView(CREATE_PLAYER);
         Player player = new Player();       
         res.addObject("player", player);                                
         return res;
@@ -86,7 +84,7 @@ public class UserController {
 	public ModelAndView createPlayer(@Valid Player player, BindingResult result) {
 		ModelAndView res = null;
 		if (result.hasErrors()) {
-			return new ModelAndView(CREATE_UPDATE_PLAYER);
+			return new ModelAndView(CREATE_PLAYER);
 		}
 		else {
 			res = new ModelAndView("welcome");
@@ -96,31 +94,9 @@ public class UserController {
 		return res;
 	}
 
-    /* 
-	@GetMapping("/{username}/edit")
-    public ModelAndView editPlayerForm(@PathVariable("username") String username) {
-		ModelAndView res = new ModelAndView(CREATE_USER);
-        User user = userService.getUserByUsername(username);       
-        res.addObject("user", user);
-        return res;
-    }
-
-	@PostMapping("/{username}/edit")
-    public ModelAndView editPlayer(@PathVariable("username")String username, @Valid User user, BindingResult br) {
-        ModelAndView res = new ModelAndView("welcome");
-        if (br.hasErrors()) {
-            return new ModelAndView(CREATE_USER, br.getModel());
-        }
-        User userToBeUpdated = userService.getUserByUsername(username); 
-        BeanUtils.copyProperties(user, userToBeUpdated,"id", "online", "playing");
-        userService.saveUser(userToBeUpdated);
-        res.addObject("message", "Player edited succesfully!");
-        return res;
-    }*/
-
     @GetMapping("/{username}/edit")
     public ModelAndView editPlayerForm(@PathVariable("username") String username) {
-		ModelAndView res = new ModelAndView(CREATE_UPDATE_PLAYER);
+		ModelAndView res = new ModelAndView(UPDATE_PLAYER_PASSWORD);
         Player player = playerService.getPlayerByUsername(username);        
         res.addObject("player", player);
         return res;
@@ -130,10 +106,10 @@ public class UserController {
     public ModelAndView editPlayer(@PathVariable("username")String username, @Valid Player player, BindingResult br) {
         ModelAndView res = new ModelAndView("welcome");
         if (br.hasErrors()) {
-            return new ModelAndView(CREATE_UPDATE_PLAYER, br.getModel());
+            return new ModelAndView(UPDATE_PLAYER_PASSWORD, br.getModel());
         }
         Player playerToBeUpdated = playerService.getPlayerByUsername(username); 
-        BeanUtils.copyProperties(player, playerToBeUpdated,"id", "online", "playing");
+        BeanUtils.copyProperties(player, playerToBeUpdated,"id", "online", "playing", "progress", "user.username");
         playerService.saveEditedPlayer(playerToBeUpdated);
         res.addObject("message", "Player edited succesfully!");
         return res;

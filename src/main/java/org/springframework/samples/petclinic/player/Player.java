@@ -9,7 +9,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.progress.Progress;
 import org.springframework.samples.petclinic.user.User;
@@ -31,9 +30,6 @@ public class Player extends BaseEntity {
     @JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
 
-    @OneToMany (mappedBy = "player")
-    private List<Deck> decks;
-
-    @OneToMany (mappedBy = "player")
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     private List<Progress> progress;
 }
