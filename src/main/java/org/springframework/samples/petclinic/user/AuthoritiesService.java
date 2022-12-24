@@ -15,9 +15,6 @@
  */
 package org.springframework.samples.petclinic.user;
 
-
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -49,7 +46,7 @@ public class AuthoritiesService {
 	@Transactional
 	public void saveAuthorities(String username, String role) throws DataAccessException {
 		Authorities authority = new Authorities();
-		User user = userService.findUser(username);
+		User user = userService.getUserByUsername(username);
 		if(user != null) {
 			authority.setUser(user);
 			authority.setAuthority(role);

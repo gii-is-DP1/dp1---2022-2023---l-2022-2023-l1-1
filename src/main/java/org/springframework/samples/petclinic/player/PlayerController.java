@@ -6,14 +6,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class PlayerController {
     private PlayerService playerService;
 
-    private static final String VIEWS_PLAYER_LIST = "/users/playersList";
+    private static final String PLAYER_LIST = "/users/playersList";
     private static final String PLAYER_REGISTRATION = "/players/playerRegistration";
     private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
 
@@ -36,7 +34,7 @@ public class PlayerController {
     public String listAllPlayers(ModelMap model){
         List<Player> allPlayers = playerService.getAll();
         model.put("players", allPlayers);
-        return VIEWS_PLAYER_LIST;
+        return PLAYER_LIST;
     }
 
     @GetMapping("/register")
@@ -77,21 +75,5 @@ public class PlayerController {
         playerService.saveEditedPlayer(playerToBeUpdated);
         res.addObject("message", "Password changed succesfully!");
         return res;
-    }
-
-    @GetMapping("/{id}/delete")
-    public String removePlayer(@PathVariable("id") Integer id, ModelMap model){
-        String message;
-        try{
-            playerService.deletePlayer(id);
-            message = "Player " + id + " successfully deleted"; 
-            return "redirect:/players";
-        } catch (EmptyResultDataAccessException e){
-            message = "Player " + id + " doesn't exist";
-        }
-        model.put("message", message);
-        model.put("messageType", "info");
-        return listAllPlayers(model);
-        
     }
 }
