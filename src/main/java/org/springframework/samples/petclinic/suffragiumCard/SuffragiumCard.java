@@ -1,10 +1,8 @@
 package org.springframework.samples.petclinic.suffragiumCard;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.model.BaseEntity;
 
 import lombok.Getter;

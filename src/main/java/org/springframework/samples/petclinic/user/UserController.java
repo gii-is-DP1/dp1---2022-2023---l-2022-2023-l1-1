@@ -77,7 +77,7 @@ public class UserController {
 	@PostMapping("/new")
 	public ModelAndView createPlayer(@Valid Player player, BindingResult result) {
 		ModelAndView res = null;
-		if (result.hasErrors()) {
+		if(result.hasErrors()) {
 			return new ModelAndView(CREATE_PLAYER);
 		}
 		else {

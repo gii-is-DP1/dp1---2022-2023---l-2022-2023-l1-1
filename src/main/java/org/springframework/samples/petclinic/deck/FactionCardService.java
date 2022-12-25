@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.deck;
 
-import javax.persistence.Enumerated;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
