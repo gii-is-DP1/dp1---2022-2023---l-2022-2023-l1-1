@@ -27,7 +27,7 @@ public class Player extends BaseEntity {
 
     private Boolean playing;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
 
