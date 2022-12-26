@@ -1,5 +1,5 @@
 package org.springframework.samples.petclinic.invitation.exceptions;
 
-public class DuplicatedInvitationException extends Exception {
+public class NullRecipientException extends Exception {
     
 }

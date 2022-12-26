@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.invitation;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
+import org.springframework.samples.petclinic.invitation.exceptions.NullRecipientException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -64,8 +66,8 @@ public class InvitationController {
     @GetMapping("/invitations/send")
     public ModelAndView sendInvitation(@AuthenticationPrincipal UserDetails user) {
         Invitation invitation = new Invitation();
-        List<Player> players = playerService.getAll();
         Player sender = playerService.getPlayerByUsername(user.getUsername());
+        List<Player> players = playerService.getAll();
         List<Player> senderFriends = invitationService.getFriends(sender);
         players.remove(sender);
         players.removeAll(senderFriends);
@@ -75,21 +77,37 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @PostMapping("/invitations/send")
-    public ModelAndView saveInvitation(@Valid Invitation invitation, @AuthenticationPrincipal UserDetails user, BindingResult br) throws DataAccessException, DuplicatedInvitationException {
+    public ModelAndView saveInvitation(@Valid Invitation invitation, BindingResult br, @AuthenticationPrincipal UserDetails user) throws DuplicatedInvitationException {
         ModelAndView result = null;
         Player sender = playerService.getPlayerByUsername(user.getUsername());
+        List<Player> players = playerService.getAll();
+        List<Player> senderFriends = invitationService.getFriends(sender);
+        players.remove(sender);
+        players.removeAll(senderFriends);
         if(br.hasErrors()) {
-            return new ModelAndView(SEND_INVITATION, br.getModel());
+            Map<String, Object> map = br.getModel();
+            map.put("players", players);
+            map.put("invitation", invitation);
+            return new ModelAndView(SEND_INVITATION, map);
         } else {
             try {
                 invitationService.saveInvitation(invitation, sender);
                 result = showInvitationsByPlayer(user);
                 result.addObject("message", "Invitation sent succesfully!");
+            } catch (NullRecipientException e) {
+                result = new ModelAndView(SEND_INVITATION);
+                result.addObject("players", players);
+                result.addObject("invitation", invitation);
+                result.addObject("message", "Please, select the player who you want to invite");
+                return result;
             } catch (DuplicatedInvitationException e) {
-                return new ModelAndView(SEND_INVITATION);
-            }     
+                result = new ModelAndView(SEND_INVITATION);
+                result.addObject("players", players);
+                result.addObject("invitation", invitation);
+                result.addObject("message", "An invitation between you and that player already exists!");
+                return result;
+            }
         }
         return result;
     }
