@@ -15,7 +15,6 @@ import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +43,6 @@ public class InvitationController {
         this.invitationService = iS;
     }
 
-    @Transactional
     @GetMapping("/invitations")
     public ModelAndView showInvitationsByPlayer(@AuthenticationPrincipal UserDetails user){
         ModelAndView result = new ModelAndView(INVITATIONS_LIST);
@@ -53,7 +51,6 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @GetMapping("/friends")
     public ModelAndView showFriends(@AuthenticationPrincipal UserDetails user) {
         ModelAndView result = new ModelAndView(FRIENDS_LIST);
@@ -62,7 +59,6 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @GetMapping("/invitations/send")
     public ModelAndView sendInvitation(@AuthenticationPrincipal UserDetails user) {
         Invitation invitation = new Invitation();
@@ -112,7 +108,6 @@ public class InvitationController {
         return result;
     }
 
-    @Transactional
     @GetMapping("/invitations/{id}/accept")
     public ModelAndView acceptInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         invitationService.acceptInvitationById(id);
@@ -120,7 +115,6 @@ public class InvitationController {
         return showInvitationsByPlayer(user);
     }
 
-    @Transactional
     @GetMapping("/invitations/{id}/reject")
     public ModelAndView rejectInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         try{
@@ -132,7 +126,6 @@ public class InvitationController {
         return showInvitationsByPlayer(user);
     }
 
-    @Transactional
     @GetMapping("/invitations/{id}/cancelFriendship")
     public ModelAndView cancelFriendship(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         try{

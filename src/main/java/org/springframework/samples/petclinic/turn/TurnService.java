@@ -1,49 +1,87 @@
 package org.springframework.samples.petclinic.turn;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.game.Game;
-import org.springframework.samples.petclinic.round.Round;
-import org.springframework.samples.petclinic.round.RoundRepository;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TurnService {
-    TurnRepository turnRepository;
-    RoundRepository roundRepository;
 
     @Autowired
-    public TurnService (TurnRepository turnRepository, RoundRepository roundRepository) {
+    TurnRepository turnRepository;
+    
+    @Autowired
+    GameRepository gameRepository;
+
+    @Autowired
+    DeckService deckService;
+
+    @Autowired
+    public TurnService (TurnRepository turnRepository, GameRepository gameRepository, DeckService deckService) {
         this.turnRepository = turnRepository;
-        this.roundRepository = roundRepository;
+        this.gameRepository = gameRepository;
+        this.deckService = deckService;
     }
 
-    public Turn getTurnByRound (Round round) {
-        return turnRepository.findTurnByRound(round);
-    }
-
+    @Transactional
     public void save (Turn turn) {
         turnRepository.save(turn);
-
     }
 
+    @Transactional
+    public void updateTurnVotes (Turn turn, VCType voteType) {
+        if (voteType == VCType.GREEN) {
+			turn.setVotesLoyal(turn.getVotesLoyal() == null ? 1 : turn.getVotesLoyal() + 1); //creo que aparece null como predeterminado pq esta en la base de dato, si no, no deberia
+		}
+		if (voteType == VCType.RED) {
+			turn.setVotesTraitor(turn.getVotesTraitor() == null ? 1 : turn.getVotesTraitor() + 1);
+		}
+        if (voteType == VCType.YELLOW) {
+            turn.setVotesNeutral(turn.getVotesNeutral() == null ? 1 : turn.getVotesNeutral() + 1);
+        }
+		turnRepository.save(turn);
+    }
+
+    @Transactional
     public void newTurn (Turn turn) {
-         Game game = turn.getRound().getGame(); //COJO EL GAME ACTUAL
-         Round round = turn.getRound(); //COJO LA RONDA ACTUAL
-         System.out.println("aqui" + turn.getCurrentTurn() + game.getNumPlayers());
+        Game game = turnRepository.findGameByTurn(turn); //COJO EL GAME ACTUAL
+         
         turn.setCurrentTurn(turn.getCurrentTurn() + 1);
-        System.out.println("aqui" + turn.getCurrentTurn() + game.getNumPlayers());
+        turn.setVotesLoyal(0);
+        turn.setVotesTraitor(0);
+        turn.setVotesNeutral(0);
         if (turn.getCurrentTurn() > game.getNumPlayers()) {
             turn.setCurrentTurn(1);
-            System.out.println("aqui" + turn.getCurrentTurn() + game.getNumPlayers());
-            if (round.getCurrentRound() == CurrentRound.FIRST) {
-                round.setCurrentRound(CurrentRound.SECOND);
-                roundRepository.save(round);
-
+            if(game.getRound() == CurrentRound.FIRST) {
+                game.setRound(CurrentRound.SECOND);
+                gameRepository.save(game);
             }
         }
-        turnRepository.save(turn);
-        
+        turnRepository.save(turn);  
     }
+
+    @Transactional
+    public void pretorVoteChange (VCType currentVoteType, VCType changedVoteType, Game game) {
+        Turn currentTurn = game.getTurn();
+        Integer currentLoyalVotes = currentTurn.getVotesLoyal();
+        Integer currentTraitorVotes = currentTurn.getVotesTraitor();
+        if (currentVoteType != changedVoteType) {
+            
+            if (currentVoteType == VCType.GREEN) {
+                currentTurn.setVotesLoyal(currentLoyalVotes-1);
+                currentTurn.setVotesTraitor(currentTraitorVotes+1);
+            }
+            else if (currentVoteType == VCType.RED) {
+                currentTurn.setVotesTraitor(currentTraitorVotes - 1);
+                currentTurn.setVotesLoyal(currentLoyalVotes + 1);
+            }
+            }
+            turnRepository.save(currentTurn);
+        }
 
 }

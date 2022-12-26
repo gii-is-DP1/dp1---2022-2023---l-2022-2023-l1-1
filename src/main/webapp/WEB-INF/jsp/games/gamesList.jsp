@@ -14,6 +14,8 @@
             <th>Public</th>
             <th>Number of players</th>
             <th>Date</th>
+            <th>Join</th>
+            <th>Spectate</th>
         </tr>
         </thead>
         <tbody>
@@ -30,6 +32,16 @@
                 </td>
                 <td>
                     <c:out value="${game.date}"/>
+                </td>
+                <td>
+                    <sec:authorize access="hasAuthority('player')">
+                        <a type="submit" class="glyphicon glyphicon-plus" href="/games/${game.id}/join"></a>
+                    </sec:authorize>
+                </td>
+                <td>
+                    <sec:authorize access="hasAuthority('player')">
+                        <a type="submit" class="glyphicon glyphicon-eye-open" href="/games/${game.id}/spectate"></a>
+                    </sec:authorize>
                 </td>
             </tr>
         </c:forEach>

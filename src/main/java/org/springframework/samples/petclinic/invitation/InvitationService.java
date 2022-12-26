@@ -10,7 +10,6 @@ import org.springframework.samples.petclinic.enums.InvitationType;
 import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
 import org.springframework.samples.petclinic.invitation.exceptions.NullRecipientException;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvitationService {
 
     private InvitationRepository invitationRepository;
-
-    private PlayerRepository playerRepository;
 
     @Autowired
     public InvitationService(InvitationRepository repo) {

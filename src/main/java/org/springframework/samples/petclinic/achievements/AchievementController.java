@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.achievements;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -95,7 +94,7 @@ public class AchievementController {
     }
 
 
-    @PostMapping("/{id}/edit")
+    @PostMapping("/{id}/edit") //NO EDITA BIEN: borra las propiedades y no edita el usuario y authorities, crea uno nuevo
     public ModelAndView saveAchievement(@PathVariable int id, @Valid Achievement achievement, BindingResult br){
         ModelAndView result = showAchievements();
         if (br.hasErrors()) {

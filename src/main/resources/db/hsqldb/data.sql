@@ -97,32 +97,24 @@ INSERT INTO players(id,online,playing,username) VALUES
 
 INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 (1,2,3,8),
-(2,5,3,12),
+(2,0,0,12),
 (3,5,3,12),
 (4,6,6,13),
 (5,0,0,13);
 
-INSERT INTO games(id,name,public_game,state,num_players,date,duration,winners,suffragium_card_id) VALUES
-(1,'Mi primera partida', 1, 'STARTING', 5, '2022-10-24', null, null, 1),
-(2,'Partida rapida', 0, 'IN_PROCESS', 6, '2022-10-27', null, null, 2),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'LOYALS', 3),
-(4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'LOYALS', 4),
-(5,'Testing decks', 1, 'STARTING', 7, '2022-11-27', null, null, 5);
+INSERT INTO turns(id,current_turn) VALUES 
+(1, 1),
+(2, 3),
+(3, 1),
+(4, 1),
+(5, 1);
 
-INSERT INTO rounds(id,current_round,game_id) VALUES 
-(1,'FIRST',1),
-(2,'FIRST',2),
-(3,'SECOND',3);
-
-INSERT INTO turns(id,current_turn,round_id) VALUES 
-(1, 5,1),
-(2, 6,2),
-(3, 8,3);
-
-INSERT INTO stages(id,current_stage,turn_id) VALUES 
-(1,'VOTING',1),
-(2,'SCORING',2),
-(3,'ENDOFTURN',3);
+INSERT INTO games(id,name,public_game,state,num_players,date,duration,round,turn_id,stage,winners,suffragium_card_id) VALUES
+(1,'Mi primera partida', 1, 'STARTING', 5, '2022-10-24', null, 'FIRST', 1, 'VOTING', null, 1),
+(2,'Partida rapida', 0, 'IN_PROCESS', 6, '2022-10-27', null, 'FIRST', 2, 'END_OF_TURN', null, 2),
+(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'FIRST', 3, 'VOTING', 'LOYALS', 3),
+(4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'FIRST', 4, 'VOTING', 'LOYALS', 4),
+(5,'Testing decks', 1, 'STARTING', 7, '2022-11-27', null, 'FIRST', 5, 'VOTING', null, null);
 
 INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 
 (1,true,false,2,1),
@@ -131,11 +123,10 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (5,false,false,2,5),
 (6,false,true,2,6),
 (7,false,false,2,7),
+
 (8,false,false,1,3),
 
 (10,false,false,3,1),
-
-(20,true,false,4,1),
 
 (50,true,false,5,1),
 (51,false,false,5,2),
@@ -169,19 +160,24 @@ INSERT INTO decks(id, role_cards,player_id,game_id) VALUES
 (7, 'EDIL', 3, 1);
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
-(3, 'LOYAL'),
+(1, 'LOYAL'),
+(1,'MERCHANT'),
+(2,'TRAITOR'),  
+(2,'TRAITOR'),
+(3,'LOYAL'),
+(3,'TRAITOR'),
+(4,'TRAITOR'),
 (4,'MERCHANT'),
-(4,'TRAITOR'),  
-(4,'LOYAL'),
-(7,'LOYAL'),
-(7,'TRAITOR');
+(5,'TRAITOR'),
+(5,'LOYAL'),
+(6,'LOYAL'),
+(6,'LOYAL');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
 (3,'GREEN'),
 (3,'RED'),
 (4,'GREEN'),
-(4,'RED'),
-(4, 'YELLOW');
+(4,'RED');;
 
 INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
 (1, 100.0, 1, 3),
