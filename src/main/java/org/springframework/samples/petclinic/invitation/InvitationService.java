@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.samples.petclinic.enums.InvitationType;
+import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
+import org.springframework.samples.petclinic.invitation.exceptions.NullRecipientException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,12 +69,47 @@ public class InvitationService {
         return res;
     }
 
-    @Transactional
-	public void saveInvitation(Invitation i, Player sender) throws DataAccessException {
-		i.setInvitationType(InvitationType.FRIENDSHIP);
-        i.setAccepted(false);
-        i.setSender(sender);
-        invitationRepository.save(i);
+    /* FUNCIÓN PARA SACAR LOGICA DE NEGOCIO DEL CONTROLADOR (/invitations/send), PERO DA NullPointerException.
+    @Transactional(readOnly = true)
+    public List<Player> getPlayersToInvite(Player sender) {
+        List<Player> players = playerRepository.findAll();
+        List<Player> senderFriends = getFriends(sender);
+        players.remove(sender);
+        players.removeAll(senderFriends);
+        return players;
+    }
+    */
+
+    @Transactional(readOnly = true) 
+    public Boolean invitationIsDuplicated(Invitation invitation, Player sender) {
+        Boolean res = false;
+        Player p1 = sender;
+        Player p2 = invitation.getRecipient();
+        List<Player> players = new ArrayList<>();
+        players.add(p1);
+        players.add(p2);
+        System.out.println(p1 + "=================");
+        List<Invitation> invitationsInDB = invitationRepository.findAll();
+        for(Invitation i: invitationsInDB) {
+            Player p1InDB = i.getSender();
+            Player p2InDB = i.getRecipient();
+            if(players.contains(p1InDB) && players.contains(p2InDB)) res = true;
+        }
+        return res;
+    }
+
+    @Transactional(rollbackFor = DuplicatedInvitationException.class)
+	public void saveInvitation(Invitation invitation, Player sender) throws DuplicatedInvitationException, NullRecipientException {
+        if(invitation.getRecipient() == null) {
+            throw new NullRecipientException();
+        } else if(invitationIsDuplicated(invitation, sender)) {
+            throw new DuplicatedInvitationException();
+        } else {
+            invitation.setInvitationType(InvitationType.FRIENDSHIP);
+            invitation.setAccepted(false);
+            invitation.setSender(sender);
+            invitationRepository.save(invitation);
+        }
 	}
 
     @Transactional
