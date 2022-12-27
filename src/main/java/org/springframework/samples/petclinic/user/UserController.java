@@ -95,13 +95,12 @@ public class UserController {
                 res.addObject("message", "Player successfully created!");
                 return res;
             } catch (DuplicatedUsernameException e) {
+                result.rejectValue("user.username", "This username already exists, please try again", 
+                "This username already exists, please try again");
                 res = new ModelAndView(CREATE_PLAYER);
-                res.addObject("message", "This username already exists, please try again");
                 return res;
             }
-			
 		}
-		
 	}
 
     @GetMapping("/{username}/edit")

@@ -38,6 +38,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 @RequestMapping("/games")
 public class GameController {
@@ -105,12 +108,13 @@ public class GameController {
 		// allow parameterless GET request for /games to return all records
 		if (game.getName() == null) {
 			game.setName(""); // empty string signifies broadest possible search
+			log.warn("Null string input changed to empty string");
 		}
 
 		// find games by name
 		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.FINISHED);
 		if (results.isEmpty()) {
-			// no games found
+			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_HISTORY);
 		}
@@ -133,6 +137,7 @@ public class GameController {
 	public ModelAndView processGamesHistoryByPlayerForm(@AuthenticationPrincipal UserDetails user, Game game, BindingResult result) {
 		if (game.getName() == null) {
 			game.setName("");
+			log.warn("Null string input changed to empty string");
 		}
 
 		Player player = playerService.getPlayerByUsername(user.getUsername());
@@ -140,6 +145,7 @@ public class GameController {
 		List<Game> l2 = this.playerInfoService.getGamesByPlayer(player);
 		List<Game> results = getListIntersection(l1, l2);
 		if (results.isEmpty()) {
+			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_PLAYER_HISTORY);
 		}
@@ -161,10 +167,12 @@ public class GameController {
 	public ModelAndView processGamesInProcessForm(Game game, BindingResult result) {
 		if (game.getName() == null) {
 			game.setName("");
+			log.warn("Null string input changed to empty string");
 		}
 
 		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.IN_PROCESS);
 		if (results.isEmpty()) {
+			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_IN_PROCESS);
 		}
@@ -186,10 +194,12 @@ public class GameController {
 	public ModelAndView processGamesStartingForm(Game game, BindingResult result) {
 		if (game.getName() == null) {
 			game.setName("");
+			log.warn("Null string input changed to empty string");
 		}
 
 		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.STARTING);
 		if (results.isEmpty()) {
+			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_STARTING);
 		}
@@ -213,6 +223,7 @@ public class GameController {
 	public String createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
 	@Valid Game game, BindingResult br, ModelMap model) {
 		if(br.hasErrors()) {
+			log.error("Input value errors");
 			return CREATE_GAME;
 		} else {
 			Turn turn = new Turn();
@@ -222,7 +233,8 @@ public class GameController {
 
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
-			
+			log.info("Game created");
+
 			model.put("game", game);
         	model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
         	return "redirect:/games/" + game.getId().toString() + "/lobby";
@@ -231,7 +243,7 @@ public class GameController {
 
     @GetMapping("/{gameId}/lobby")
     public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, HttpServletResponse response){
-		response.addHeader("Refresh", "2");
+		response.addHeader("Refresh", "3");
         ModelAndView res=new ModelAndView(GAME_LOBBY);
         Game game=gameService.getGameById(gameId);
         res.addObject("game", game);
@@ -262,7 +274,7 @@ public class GameController {
 
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
-        response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
+        response.addHeader("Refresh", "2");
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
@@ -288,7 +300,6 @@ public class GameController {
 		VoteCard selectedCard = voteCardService.getById(voteType);
 		List <VoteCard> changeOptions = voteCardService.getChangeOptions(gameService.getGameById(gameId), selectedCard);
 		
-
 		res.addObject("game", gameService.getGameById(gameId));
 		res.addObject("selectedCard", selectedCard);
 		res.addObject("changeOptions", changeOptions);
