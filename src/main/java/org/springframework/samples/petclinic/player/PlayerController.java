@@ -6,12 +6,16 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/players")
 public class PlayerController {
+
     private PlayerService playerService;
 
     private static final String PLAYER_LIST = "/users/playersList";
@@ -29,6 +34,11 @@ public class PlayerController {
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
     }
+
+    @InitBinder("player")
+	public void initPetBinder(WebDataBinder dataBinder) {
+		dataBinder.setValidator(new PlayerValidator());
+	}
 
     @GetMapping
     public String listAllPlayers(ModelMap model){
@@ -46,13 +56,21 @@ public class PlayerController {
     }
 
 	@PostMapping(value = "/register")
-	public String savePlayer(@Valid Player player, BindingResult result) {
+	public String savePlayer(@Valid Player player, BindingResult result) throws DuplicatedUsernameException {
 		if (result.hasErrors()) {
 			return PLAYER_REGISTRATION;
 		}
 		else {
-			playerService.savePlayer(player);
-			return "redirect:/";
+            try {
+                playerService.savePlayer(player);
+                return "redirect:/";
+            } catch (DuplicatedUsernameException e) {
+                result.rejectValue("user.username", "This username already exists, please try again", 
+                "This username already exists, please try again");
+                return PLAYER_REGISTRATION;
+            }
+			
+			
 		}
 	}
 
@@ -65,9 +83,9 @@ public class PlayerController {
     }
 
 	@PostMapping("/edit")
-    public ModelAndView editPlayer(@AuthenticationPrincipal UserDetails user, @Valid Player player, BindingResult br) {
+    public ModelAndView editPlayer(@Valid Player player, BindingResult br, @AuthenticationPrincipal UserDetails user) {
         ModelAndView res = new ModelAndView("welcome");
-        if (br.hasErrors()) {
+        if (br.hasFieldErrors()) {
             return new ModelAndView(UPDATE_PLAYER_PASSWORD, br.getModel());
         }
         Player playerToBeUpdated = playerService.getPlayerByUsername(user.getUsername()); 
