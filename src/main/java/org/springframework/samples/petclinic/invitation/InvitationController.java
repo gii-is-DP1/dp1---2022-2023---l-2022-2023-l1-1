@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
 import org.springframework.samples.petclinic.invitation.exceptions.NullRecipientException;

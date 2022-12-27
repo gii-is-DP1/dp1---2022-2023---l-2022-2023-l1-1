@@ -23,9 +23,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.player.PlayerValidator;
+import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -59,6 +62,11 @@ public class UserController {
 		dataBinder.setDisallowedFields("id");
 	}
 
+    @InitBinder("player")
+	public void initPetBinder(WebDataBinder dataBinder) {
+		dataBinder.setValidator(new PlayerValidator());
+	}
+
 	@GetMapping
     public String listAllUsers(ModelMap model){
         List<Player> allPlayers = playerService.getAll();
@@ -75,17 +83,25 @@ public class UserController {
     }
 
 	@PostMapping("/new")
-	public ModelAndView createPlayer(@Valid Player player, BindingResult result) {
+	public ModelAndView createPlayer(@Valid Player player, BindingResult result) throws DuplicatedUsernameException {
 		ModelAndView res = null;
 		if(result.hasErrors()) {
 			return new ModelAndView(CREATE_PLAYER);
 		}
 		else {
-			res = new ModelAndView("welcome");
-			playerService.savePlayer(player);
-			res.addObject("message", "Player successfully created!");
+            try {
+                res = new ModelAndView("welcome");
+                playerService.savePlayer(player);
+                res.addObject("message", "Player successfully created!");
+                return res;
+            } catch (DuplicatedUsernameException e) {
+                res = new ModelAndView(CREATE_PLAYER);
+                res.addObject("message", "This username already exists, please try again");
+                return res;
+            }
+			
 		}
-		return res;
+		
 	}
 
     @GetMapping("/{username}/edit")

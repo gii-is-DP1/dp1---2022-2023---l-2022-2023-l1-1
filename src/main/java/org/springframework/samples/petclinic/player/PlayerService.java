@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.UserService;
@@ -49,14 +50,30 @@ public class PlayerService {
 		return playerRepository.findPlayerByUsername(username);
 	}
 
-	@Transactional
-	public Player savePlayer(Player player) throws DataAccessException {
-		userService.saveUser(player.getUser());
-		authoritiesService.saveAuthorities(player.getUser().getUsername(), "player");
-		player.setOnline(false);
-		player.setPlaying(false);
-		playerRepository.save(player);
-		return player;
+	@Transactional(readOnly = true)
+	public List<String> getAllUsernames() {
+		return playerRepository.findAllUsernames();
+	}
+
+	@Transactional(readOnly = true)
+	private Boolean duplicatedUsername(String username) {
+        List<String> usernames = playerRepository.findAllUsernames();
+        return usernames.contains(username);
+    }
+
+	@Transactional(rollbackFor = DuplicatedUsernameException.class)
+	public Player savePlayer(Player player) throws DataAccessException, DuplicatedUsernameException {
+		if(duplicatedUsername(player.getUser().getUsername())){
+			throw new DuplicatedUsernameException();
+		} else {
+			userService.saveUser(player.getUser());
+			authoritiesService.saveAuthorities(player.getUser().getUsername(), "player");
+			player.setOnline(false);
+			player.setPlaying(false);
+			playerRepository.save(player);
+			return player;
+		}
+		
 	}
 
 	@Transactional

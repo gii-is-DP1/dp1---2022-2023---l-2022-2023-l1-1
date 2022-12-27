@@ -14,6 +14,9 @@ public interface PlayerRepository extends CrudRepository<Player, Integer> {
 
     Optional<Player> findById(Integer id);
 
-    @Query("SELECT p FROM Player p WHERE p.user.username LIKE :username%")
+    @Query("SELECT p FROM Player p WHERE p.user.username = ?1")
     public Player findPlayerByUsername(@Param("username") String username);
+
+    @Query("SELECT p.user.username FROM Player p")
+    public List<String> findAllUsernames();
 }
