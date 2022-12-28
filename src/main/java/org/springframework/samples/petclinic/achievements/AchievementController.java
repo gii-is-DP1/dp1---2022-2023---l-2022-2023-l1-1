@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 @RequestMapping("/achievements")
 public class AchievementController {
@@ -47,7 +50,7 @@ public class AchievementController {
         return result;
     }
 
-    @GetMapping("/player")
+    @GetMapping("/player") //PONER LA LOGICA DE NEGOCIO EN EL SERVICIO
     public ModelAndView showUserAchievements(@AuthenticationPrincipal UserDetails user) {
         //Añado aquí los logros (progresos) no existentes por jugador y los quito del create
         ModelAndView result=new ModelAndView(USER_ACHIEVEMENTS_VIEW);
@@ -65,7 +68,6 @@ public class AchievementController {
         for (Achievement achievement : achievementsNotFound) {
             progressService.addAchievementPlayer(achievement, pl);
         }
-        
         result.addObject("progress", progressService.getPlayerProgress(pl));
         return result;
     }
@@ -74,15 +76,16 @@ public class AchievementController {
     public ModelAndView deleteAchievement(@PathVariable int id, ModelMap model){
         String message;
         try{
-            achievementService.deleteAchievementById(id);  
+            achievementService.deleteAchievementById(id);
+            log.info("Achievement deleted");  
             message = "Removed successfully";      
         } catch(EmptyResultDataAccessException e) {
+            log.warn("Not existing achievement");
             message = "Achievement " + id + " does not exist";
         }
         model.put("message", message);
         model.put("messagetype", "info");
         return showAchievements();
-
     }
 
     @GetMapping("/{id}/edit")
@@ -94,15 +97,17 @@ public class AchievementController {
     }
 
 
-    @PostMapping("/{id}/edit") //NO EDITA BIEN: borra las propiedades y no edita el usuario y authorities, crea uno nuevo
+    @PostMapping("/{id}/edit")
     public ModelAndView saveAchievement(@PathVariable int id, @Valid Achievement achievement, BindingResult br){
         ModelAndView result = showAchievements();
         if (br.hasErrors()) {
+            log.error("Input value error");
             return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
         }
         Achievement achievementToBeUpdated=achievementService.getById(id);
         BeanUtils.copyProperties(achievement,achievementToBeUpdated,"id");
         achievementService.saveAchievement(achievementToBeUpdated);
+        log.info("Achievement edited");
         result.addObject("message", "Achievement edited succesfully!");
         return result;
     }
@@ -118,14 +123,15 @@ public class AchievementController {
     @PostMapping("/create")
     public ModelAndView saveNewAchievement(@Valid Achievement achievement, BindingResult br){
         ModelAndView result = null;
-       if (br.hasErrors()) {
-        return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
-       } else {
-        achievementService.saveAchievement(achievement);
-        result = showAchievements();
-        result.addObject("message", "Achievement saved succesfully!");
-       }
-
-       return result;
+        if (br.hasErrors()) {
+            log.error("Input value error");
+            return new ModelAndView(ACHIEVEMENTS_FORM, br.getModel());
+        } else {
+            achievementService.saveAchievement(achievement);
+            log.info("Achievement created");
+            result = showAchievements();
+            result.addObject("message", "Achievement saved succesfully!");
+        }
+        return result;
     }
 }

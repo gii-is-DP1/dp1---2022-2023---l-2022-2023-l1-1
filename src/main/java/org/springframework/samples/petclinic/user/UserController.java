@@ -40,12 +40,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  * @author Michael Isvy
  */
+
+@Slf4j
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -86,22 +90,24 @@ public class UserController {
 	public ModelAndView createPlayer(@Valid Player player, BindingResult result) throws DuplicatedUsernameException {
 		ModelAndView res = null;
 		if(result.hasErrors()) {
+            log.error("Input value error");
 			return new ModelAndView(CREATE_PLAYER);
 		}
 		else {
             try {
                 res = new ModelAndView("welcome");
                 playerService.savePlayer(player);
+                log.info("Player created");
                 res.addObject("message", "Player successfully created!");
                 return res;
             } catch (DuplicatedUsernameException e) {
+                log.warn("Username already exists");
+                result.rejectValue("user.username", "This username already exists, please try again", 
+                "This username already exists, please try again");
                 res = new ModelAndView(CREATE_PLAYER);
-                res.addObject("message", "This username already exists, please try again");
                 return res;
             }
-			
 		}
-		
 	}
 
     @GetMapping("/{username}/edit")
@@ -116,11 +122,13 @@ public class UserController {
     public ModelAndView editPlayer(@PathVariable("username")String username, @Valid Player player, BindingResult br) {
         ModelAndView res = new ModelAndView("welcome");
         if (br.hasErrors()) {
+            log.error("Input value error");
             return new ModelAndView(UPDATE_PLAYER_PASSWORD, br.getModel());
         }
         Player playerToBeUpdated = playerService.getPlayerByUsername(username); 
         BeanUtils.copyProperties(player, playerToBeUpdated,"id", "online", "playing", "progress", "user.username");
         playerService.saveEditedPlayer(playerToBeUpdated);
+        log.info("Player edited");
         res.addObject("message", "Player edited succesfully!");
         return res;
     }
@@ -132,12 +140,15 @@ public class UserController {
         if(!playerService.hasGamesPlayed(player)) {
             try {
                 playerService.deletePlayer(player);
+                log.info("Player deleted");
                 message = "User " + username + " successfully deleted";   
             } catch(EmptyResultDataAccessException e) {
+                log.warn("Not existing user");
                 message = "User " + username + " doesn't exist";
             }
         }
         else {
+            log.warn("This player has played any game and can't be deleted");
             message = "You can't delete a player who has played any game!";
         }
         model.put("message", message);

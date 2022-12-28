@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 @RequestMapping("/players")
 public class PlayerController {
@@ -58,19 +60,20 @@ public class PlayerController {
 	@PostMapping(value = "/register")
 	public String savePlayer(@Valid Player player, BindingResult result) throws DuplicatedUsernameException {
 		if (result.hasErrors()) {
+            log.error("Input value error");
 			return PLAYER_REGISTRATION;
 		}
 		else {
             try {
                 playerService.savePlayer(player);
+                log.info("Player created");
                 return "redirect:/";
             } catch (DuplicatedUsernameException e) {
+                log.warn("Username already exists");
                 result.rejectValue("user.username", "This username already exists, please try again", 
                 "This username already exists, please try again");
                 return PLAYER_REGISTRATION;
             }
-			
-			
 		}
 	}
 
@@ -86,11 +89,13 @@ public class PlayerController {
     public ModelAndView editPlayer(@Valid Player player, BindingResult br, @AuthenticationPrincipal UserDetails user) {
         ModelAndView res = new ModelAndView("welcome");
         if (br.hasFieldErrors()) {
+            log.error("Input value error");
             return new ModelAndView(UPDATE_PLAYER_PASSWORD, br.getModel());
         }
         Player playerToBeUpdated = playerService.getPlayerByUsername(user.getUsername()); 
         BeanUtils.copyProperties(player, playerToBeUpdated,"id", "online", "playing", "progress");
         playerService.saveEditedPlayer(playerToBeUpdated);
+        log.info("Player edited");
         res.addObject("message", "Password changed succesfully!");
         return res;
     }

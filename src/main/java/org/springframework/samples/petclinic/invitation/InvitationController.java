@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @RequestMapping("")
 public class InvitationController {
@@ -81,6 +83,7 @@ public class InvitationController {
         players.remove(sender);
         players.removeAll(senderFriends);
         if(br.hasErrors()) {
+            log.error("Input value error");
             Map<String, Object> map = br.getModel();
             map.put("players", players);
             map.put("invitation", invitation);
@@ -88,15 +91,18 @@ public class InvitationController {
         } else {
             try {
                 invitationService.saveInvitation(invitation, sender);
+                log.info("Invitation created");
                 result = showInvitationsByPlayer(user);
                 result.addObject("message", "Invitation sent succesfully!");
             } catch (NullRecipientException e) {
+                log.warn("Recipient not selected");
                 result = new ModelAndView(SEND_INVITATION);
                 result.addObject("players", players);
                 result.addObject("invitation", invitation);
                 result.addObject("message", "Please, select the player who you want to invite");
                 return result;
             } catch (DuplicatedInvitationException e) {
+                log.warn("Duplicated invitation");
                 result = new ModelAndView(SEND_INVITATION);
                 result.addObject("players", players);
                 result.addObject("invitation", invitation);
@@ -110,6 +116,7 @@ public class InvitationController {
     @GetMapping("/invitations/{id}/accept")
     public ModelAndView acceptInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         invitationService.acceptInvitationById(id);
+        log.info("Invitation accepted"); 
         model.put("message", "Invitation accepted succesfully!");
         return showInvitationsByPlayer(user);
     }
@@ -117,9 +124,11 @@ public class InvitationController {
     @GetMapping("/invitations/{id}/reject")
     public ModelAndView rejectInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         try{
-            invitationService.rejectInvitationById(id);  
+            invitationService.rejectInvitationById(id);
+            log.info("Invitation deleted"); 
             model.put("message", "Invitation rejected succesfully!");     
         } catch(EmptyResultDataAccessException e) {
+            log.warn("Not existing invitation");
             model.put("message", "Invitation " + id + " does not exist");
         }
         return showInvitationsByPlayer(user);
@@ -128,12 +137,14 @@ public class InvitationController {
     @GetMapping("/invitations/{id}/cancelFriendship")
     public ModelAndView cancelFriendship(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         try{
-            invitationService.rejectInvitationById(id);  
+            invitationService.rejectInvitationById(id);
+            log.info("Invitation deleted");   
             model.put("message", "Friendship cancelled succesfully!");     
         } catch(EmptyResultDataAccessException e) {
+            log.warn("Not existing invitation");
             model.put("message", "That's not your friend");
         }
-        return showInvitationsByPlayer(user);
+        return showFriends(user);
     }
 
 }
