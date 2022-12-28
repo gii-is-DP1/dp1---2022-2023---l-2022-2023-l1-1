@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.deck;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.BeanDefinitionDsl.Role;
@@ -11,6 +12,7 @@ import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,9 @@ public class DeckService {
 
     @Autowired
     private PlayerInfoRepository playerInfoRepository;
+
+    @Autowired
+    private PlayerRepository playerRepository;
 
     @Autowired
     private FactionCardRepository factionCardRepository;
@@ -193,6 +198,118 @@ public class DeckService {
             }
             rep.save(deckToUpdate);
         }
+    }
+
+    @Transactional
+    public void consulRotation (Game game) { //rota solo el consul (para segunda ronda, lo comentado creo que sobra)
+        List<Player> players = playerInfoRepository.findPlayersByGame(game);
+        Player consulPlayer = getDecks().stream()
+            .filter(x -> x.getGame() == game).filter(y -> y.getRoleCard() == RoleCard.CONSUL).findFirst().get().getPlayer();
+        Integer consulId = players.indexOf(consulPlayer);
+        Deck oldConsulDeck = getDeckByPlayerAndGame(consulPlayer, game);
+        Deck newConsulDeck = getDeckByPlayerAndGame(players.get((consulId + 1) % (players.size())), game);
+        /*Deck oldEdil1 = getDeckByPlayerAndGame(players.get((consulId + 2) % (players.size())), game);
+        Deck oldEdil2 = getDeckByPlayerAndGame(players.get((consulId + 3) % (players.size())), game);*/ //esto creo que al final sobra
+        oldConsulDeck.setRoleCard(RoleCard.NO_ROL);
+        newConsulDeck.setRoleCard(RoleCard.CONSUL);
+        rep.save(oldConsulDeck);
+        rep.save(newConsulDeck);
+
+    }
+
+    @Transactional
+    public List<Player> pretorCandidates (Game actualGame) {
+        
+        List<Player> candidates = playerInfoRepository.findPlayersByGame(actualGame);
+
+        Deck consulDeck = playerInfoRepository.findPlayersByGame(actualGame)
+            .stream().map(x -> getDeckByPlayerAndGame(x, actualGame))
+            .filter(y -> y.getRoleCard().equals(RoleCard.CONSUL)).findFirst().get();
+            
+            candidates.remove(consulDeck.getPlayer());
+            return candidates;
+    }
+
+    @Transactional
+    public List<Player> edil1Candidates (Game actualGame) {
+
+        List<Player> candidates = playerInfoRepository.findPlayersByGame(actualGame);
+
+        Deck consulDeck = playerInfoRepository.findPlayersByGame(actualGame)
+            .stream().map(x -> getDeckByPlayerAndGame(x, actualGame))
+            .filter(y -> y.getRoleCard().equals(RoleCard.CONSUL)).findFirst().get();
+
+        List<Deck> edilDecks = candidates.stream()
+            .map(x -> getDeckByPlayerAndGame(x, actualGame))
+            .filter(y -> y.getRoleCard().equals(RoleCard.EDIL)).collect(Collectors.toList());
+
+        candidates.remove(consulDeck.getPlayer());
+        edilDecks.forEach(x -> candidates.remove(x.getPlayer()));
+    
+        return candidates;
+    }
+
+    @Transactional
+    public List<Player> edil2Candidates (Game actualGame) {
+
+        if (actualGame.getNumPlayers() == 5) {
+            return pretorCandidates(actualGame);
+        }
+
+        else {
+        return edil1Candidates(actualGame);
+    }
+    }
+
+    @Transactional //NO SE QUE HACE ESTO AQUI, creo que sobra
+    public List<Player> pretorRotation (Game game, Player newPretor, List<Player> candidates) {
+        
+        Player oldPretor = getDecks().stream()
+            .filter(x -> x.getGame() == game).filter(y -> y.getRoleCard() == RoleCard.PRETOR).findFirst().get().getPlayer();
+
+        Deck  oldPretorDeck = getDeckByPlayerAndGame(oldPretor, game);
+        Deck newPretorDeck = getDeckByPlayerAndGame(newPretor, game);
+
+        oldPretorDeck.setRoleCard(RoleCard.NO_ROL);
+        newPretorDeck.setRoleCard(RoleCard.PRETOR);
+
+        saveDeck(oldPretorDeck);
+        saveDeck(newPretorDeck);
+
+        candidates.remove(newPretor);
+        return candidates;
+
+    }
+
+    @Transactional
+    public void rolesDesignationSecondRound (Game game, Integer pretorId, Integer edil1Id, Integer edil2Id) {
+        Deck newPretorDeck = getDeckByPlayerAndGame(playerRepository.findById(pretorId).get(), game);
+        Deck newEdil1Deck = getDeckByPlayerAndGame(playerRepository.findById(edil1Id).get(), game);
+        Deck newEdil2Deck = getDeckByPlayerAndGame(playerRepository.findById(edil2Id).get(), game);
+        List<VoteCard> votes = new ArrayList<>();
+        votes.add(voteCardRepository.findById(VCType.GREEN).get());
+        votes.add(voteCardRepository.findById(VCType.RED).get());
+        votes.add(voteCardRepository.findById(VCType.YELLOW).get());
+        
+        newPretorDeck.setRoleCard(RoleCard.PRETOR);
+        newEdil1Deck.setRoleCard(RoleCard.EDIL);
+        newEdil1Deck.setVoteCards(votes);
+        newEdil2Deck.setRoleCard(RoleCard.EDIL);
+        newEdil2Deck.setVoteCards(votes);
+
+        saveDeck(newPretorDeck);
+        saveDeck(newEdil1Deck);
+        saveDeck(newEdil2Deck);
+
+    }
+
+    public void clearDecks (Game game) {
+        List<Player> players = playerInfoRepository.findPlayersByGame(game);
+        players.removeIf(x -> getDeckByPlayerAndGame(x, game).getRoleCard() == RoleCard.CONSUL);
+
+        players.forEach(x -> getDeckByPlayerAndGame(x, game).setRoleCard(RoleCard.NO_ROL));
+        players.forEach(x -> clearVoteCards(getDeckByPlayerAndGame(x, game)));
+
     }
     
 }

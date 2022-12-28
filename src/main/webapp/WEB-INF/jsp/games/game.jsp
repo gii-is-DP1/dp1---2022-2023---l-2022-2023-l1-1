@@ -68,9 +68,17 @@
                                         <c:when test="${deck.player.id == currentPlayer.id}">
                                             <c:forEach var="factions" items="${deck.factionCards}">
                                                 <c:if test="${game.stage =='END_OF_TURN' && playerDeck.roleCard =='CONSUL'}">
-                                                    <a href="/games/${game.id}/edit/${factions.type}"> 
-                                                        <img src="${factions.card}" width="80" height="120"/>                            
-                                                    </a>
+                                                    <c:choose>
+                                                        <c:when test="${game.round =='FIRST' || game.round =='SECOND' && deck.factionCards.size() > 1}">
+                                                            <a href="/games/${game.id}/edit/${factions.type}"> 
+                                                                <img src="${factions.card}" width="80" height="120"/>                            
+                                                            </a>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img src="${factions.card}" width="80" height="120"/>
+                                                            <a class="btn btn-default" href="/games/${game.id}/rolesDesignation">Role designation</a>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:if>
                                                 <c:if test="${game.stage != 'END_OF_TURN' || playerDeck.roleCard != 'CONSUL'}">
                                                     <img src="${factions.card}" width="80" height="120"/>

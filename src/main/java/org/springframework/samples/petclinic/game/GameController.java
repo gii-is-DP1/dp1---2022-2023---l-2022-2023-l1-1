@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.deck.VoteCard;
@@ -18,6 +20,7 @@ import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
+import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
@@ -36,6 +39,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -52,6 +56,7 @@ public class GameController {
 	private static final String GAME_LOBBY = "/games/gameLobby";
 	private static final String GAME = "/games/game";
 	private static final String PRETOR_SELECTION = "games/pretorCardSelection";
+	private static final String ROLE_DESIGNATION = "games/rolesDesignation";
 
     @Autowired
     private GameService gameService;
@@ -315,13 +320,6 @@ public class GameController {
 			deckService.deckRotation(currentGame);
 			gameService.changeStage(currentGame, CurrentStage.VOTING);
 		}
-		/*else if (currentTurn.getCurrentTurn() > 1 && currentGame.getRound() == CurrentRound.SECOND) {
-			deckService.deckRotation(currentGame);
-			gameService.changeStage(currentGame, CurrentStage.VOTING);
-		}*/ 
-		//esto teoricamente deberia funcionar pero lo comento porque no lo he probado
-		//de todas formas hay que ver como planteamos la asignacion de roles en la segunda ronda asi que esto se cambiaria cuando la signacón este
-		
 		else {
 			gameService.changeStage(currentGame, CurrentStage.END_OF_TURN);
 		}
@@ -348,10 +346,46 @@ public class GameController {
         Deck deck = deckService.getDeckByPlayerAndGame(player, game); //cojo el mazo de este 
 
         deckService.updateFactionDeck(deck, factionType);
-		gameService.changeStage(game, CurrentStage.VOTING);
-		deckService.deckRotation(game);
+
+		if (game.getRound() == CurrentRound.FIRST) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
+			gameService.changeStage(game, CurrentStage.VOTING);
+			deckService.deckRotation(game);
+		}
+		else { //si no es primera ronda es que es primer turno de la segunda ronda (no hay eleccion de faccion fuera de esto)
+			deckService.consulRotation(game); //rota unicamente la carta de consul
+		}
+		
         return "redirect:/games/" + gameId.toString();
     }
 
-	
+	@GetMapping("/{gameId}/rolesDesignation")
+    public ModelAndView rolesDesignation(@PathVariable("gameId") Integer gameId) {
+		ModelAndView res = new ModelAndView(ROLE_DESIGNATION);
+		List<Player> pretorCandidates = deckService.pretorCandidates(gameService.getGameById(gameId));
+		List<Player> edil1Candidates = deckService.edil1Candidates(gameService.getGameById(gameId));
+		List<Player> edil2Candidates = deckService.edil2Candidates(gameService.getGameById(gameId));
+		Game currentGame = gameService.getGameById(gameId);
+
+		deckService.clearDecks(currentGame);
+
+		res.addObject("currentGame", currentGame);
+		res.addObject("pretorCandidates", pretorCandidates);
+		res.addObject("edil1Candidates", edil1Candidates);
+		res.addObject("edil2Candidates", edil2Candidates);
+		return res;
+	}
+
+	@GetMapping("/{gameId}/rolesDesignation/{pretorId}/{edil1Id}/{edil2Id}")
+    public String finalRolesDesignation(@PathVariable("gameId") Integer gameId, @PathVariable("pretorId") Integer pretorId,
+											@PathVariable("edil1Id") Integer edil1Id, @PathVariable("edil2Id") Integer edil2Id) {
+		
+		Game actualGame = gameService.getGameById(gameId);
+
+		deckService.rolesDesignationSecondRound(actualGame, pretorId, edil1Id, edil2Id);
+		gameService.changeStage(actualGame, CurrentStage.VOTING);
+
+
+		return "redirect:/games/" + gameId;
+		
+	}	
 }

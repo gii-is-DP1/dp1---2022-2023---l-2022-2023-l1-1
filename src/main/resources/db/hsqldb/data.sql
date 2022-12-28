@@ -64,7 +64,7 @@ INSERT INTO owners VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Wa
 INSERT INTO owners VALUES (11, 'Alvaro', 'Gonzalez', '2335 Independence La.', 'Waunakee', '6085555488', 'alvgonfri');
 INSERT INTO owners VALUES (12, 'David', 'Gonzalez', '638 Cardinal Ave.', 'Sun Prairie', '60855517450', 'davgonher1');
 
-INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
+INSERT INTO pets(id,name,birth_date ,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (2, 'Basil', '2012-08-06', 6, 2);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (3, 'Rosy', '2011-04-17', 2, 3);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (4, 'Jewel', '2010-03-07', 2, 3);
@@ -104,14 +104,14 @@ INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 
 INSERT INTO turns(id,current_turn) VALUES 
 (1, 1),
-(2, 3),
+(2, 1),
 (3, 1),
 (4, 1),
 (5, 1);
 
 INSERT INTO games(id,name,public_game,state,num_players,date,duration,round,turn_id,stage,winners,suffragium_card_id) VALUES
 (1,'Mi primera partida', 1, 'STARTING', 5, '2022-10-24', null, 'FIRST', 1, 'VOTING', null, 1),
-(2,'Partida rapida', 0, 'IN_PROCESS', 6, '2022-10-27', null, 'FIRST', 2, 'END_OF_TURN', null, 2),
+(2,'Partida rapida', 0, 'IN_PROCESS', 5, '2022-10-27', null, 'SECOND', 2, 'END_OF_TURN', null, 2),
 (3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'FIRST', 3, 'VOTING', 'LOYALS', 3),
 (4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'FIRST', 4, 'VOTING', 'LOYALS', 4),
 (5,'Testing decks', 1, 'STARTING', 7, '2022-11-27', null, 'FIRST', 5, 'VOTING', null, null);
@@ -165,7 +165,6 @@ INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES
 (2,'TRAITOR'),  
 (2,'TRAITOR'),
 (3,'LOYAL'),
-(3,'TRAITOR'),
 (4,'TRAITOR'),
 (4,'MERCHANT'),
 (5,'TRAITOR'),
