@@ -223,7 +223,7 @@ public class GameController {
 	public String createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
 	@Valid Game game, BindingResult br, ModelMap model) {
 		if(br.hasErrors()) {
-			log.error("Input value errors");
+			log.error("Input value error");
 			return CREATE_GAME;
 		} else {
 			Turn turn = new Turn();
@@ -257,6 +257,7 @@ public class GameController {
 		gameService.joinGame(game);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
 		playerInfoService.savePlayerInfo(joinedInfo, game, player);
+		log.info("Player joined");
 		model.put("game", game);
         model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
         return "redirect:/games/" + gameId.toString() + "/lobby";
@@ -267,6 +268,7 @@ public class GameController {
 		Game game=gameService.getGameById(gameId);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
 		playerInfoService.saveSpectatorInfo(spectatorInfo, game, player);
+		log.info("Spectator joined");
 		model.put("game", game);
         model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
         return "redirect:/games/" + gameId.toString() + "/lobby";
