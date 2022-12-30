@@ -42,13 +42,6 @@ public class PlayerController {
 		dataBinder.setValidator(new PlayerValidator());
 	}
 
-    @GetMapping
-    public String listAllPlayers(ModelMap model){
-        List<Player> allPlayers = playerService.getAll();
-        model.put("players", allPlayers);
-        return PLAYER_LIST;
-    }
-
     @GetMapping("/register")
     public ModelAndView playerRegistration() {
         ModelAndView res = new ModelAndView(PLAYER_REGISTRATION);

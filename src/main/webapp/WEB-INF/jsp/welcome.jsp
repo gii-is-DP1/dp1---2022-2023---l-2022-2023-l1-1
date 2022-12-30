@@ -10,6 +10,9 @@
 		<p>Log in or sing up to start playing</p>
 	</sec:authorize>
     <sec:authorize access="hasAuthority('player')">
+        
+        <h3><c:out value="Number of friends online: ${numFriendsOnline}"/></h3>
+        
         <a class="btn btn-default" href="/games/create">Create game</a>
         <a class="btn btn-default" href="/games/starting/find">Join a game</a>
         <a class="btn btn-default" href="/games/playerHistory/find">Your game history</a>
@@ -18,6 +21,6 @@
     <sec:authorize access="hasAuthority('admin')">
         <a class="btn btn-default" href="/games/history/find">Games history</a>
         <a class="btn btn-default" href="/games/inProcess/find">Games in process</a>
-        <a class="btn btn-default" href="/players">Manage players</a>
+        <a class="btn btn-default" href="/users">Manage players</a>
     </sec:authorize>
 </petclinic:layout>

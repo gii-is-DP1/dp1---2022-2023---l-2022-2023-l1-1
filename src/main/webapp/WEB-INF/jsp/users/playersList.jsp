@@ -13,6 +13,7 @@
             <th>Username</th>
             <th>Online</th>
             <th>Playing</th>
+            <th>Audit</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
@@ -28,6 +29,11 @@
                 </td>
                 <td>
                     <c:out value="${player.playing}"/>
+                </td>
+                <td>
+                    <a href="/users/${player.user.username}/audit">
+                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                    </a>
                 </td>
                 <td>
                     <a href="/users/${player.user.username}/edit">

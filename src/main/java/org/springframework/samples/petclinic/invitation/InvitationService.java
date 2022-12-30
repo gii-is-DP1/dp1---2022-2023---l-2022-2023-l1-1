@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.invitation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -49,6 +50,11 @@ public class InvitationService {
             }
         }
         return res;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Player> getFriendsOnline(Player player) {
+        return getFriends(player).stream().filter(f -> f.getOnline() == true).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
