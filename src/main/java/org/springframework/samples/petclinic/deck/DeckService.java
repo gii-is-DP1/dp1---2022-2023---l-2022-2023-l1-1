@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.deck;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.context.support.BeanDefinitionDsl.Role;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
+import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
@@ -98,10 +100,22 @@ public class DeckService {
         return res;
     }
 
-    public void clearVoteCards (Deck deck) {
+    public void clearDeckVoteCards (Deck deck) {
         deck.setVoteCards(new ArrayList<>());
         rep.save(deck);
 
+    }
+
+    @Transactional
+    public void clearEdilVoteCards (Game game) {
+        List <Deck> edilsDeck = rep.findAll().stream()
+            .filter(x -> x.getGame()  == game).filter(y -> y.getRoleCard() == RoleCard.EDIL).collect(Collectors.toList());
+        
+        edilsDeck.forEach(deck ->{
+            clearDeckVoteCards(deck);
+            rep.save(deck);
+
+        } );
     }
 
     @Transactional(readOnly = true)
@@ -115,9 +129,9 @@ public class DeckService {
     private static final Integer ANY_PLAYER = 0;
 
     @Transactional
-    public void assingDecksIfNeeded(Game game) {        
+    public void assingDecksIfNeeded(Game game) {        //esto esta cambiado
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
-        if(rep.findDecksByPlayerAndGame(players.get(ANY_PLAYER), game).isEmpty()) {
+        if(rep.findDecksByPlayerAndGame(players.get(ANY_PLAYER), game) == null) {
             List<FactionCard> factions = getFactionCards(players.size());
             List<VoteCard> votes = getFirstRoundVoteCards();
             Integer consul = (int) (Math.random() * (players.size()-1));
@@ -177,14 +191,14 @@ public class DeckService {
                 
             }
             else if (i == 2) { //edil1 pasa a pretor
-                clearVoteCards(deckToUpdate);
+                clearDeckVoteCards(deckToUpdate);
                 deckToUpdate.setRoleCard(RoleCard.PRETOR);
 
             }
             else { //los dos nuevos ediles
                 List<VoteCard> newVotes = new ArrayList<>();
                 if (deckToUpdate.getVoteCards().size() != 0) { //si tiene algun voto se lo quitamos
-                    clearVoteCards(deckToUpdate);
+                    clearDeckVoteCards(deckToUpdate);
                 }
                 if (deckToUpdate.getRoleCard() != RoleCard.EDIL) { //si no es ya edil le damos edil
                     deckToUpdate.setRoleCard(RoleCard.EDIL);
@@ -212,6 +226,9 @@ public class DeckService {
         Deck oldEdil2 = getDeckByPlayerAndGame(players.get((consulId + 3) % (players.size())), game);*/ //esto creo que al final sobra
         oldConsulDeck.setRoleCard(RoleCard.NO_ROL);
         newConsulDeck.setRoleCard(RoleCard.CONSUL);
+
+        clearEdilVoteCards(game);
+
         rep.save(oldConsulDeck);
         rep.save(newConsulDeck);
 
@@ -303,12 +320,13 @@ public class DeckService {
 
     }
 
+    @Transactional
     public void clearDecks (Game game) {
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
         players.removeIf(x -> getDeckByPlayerAndGame(x, game).getRoleCard() == RoleCard.CONSUL);
 
         players.forEach(x -> getDeckByPlayerAndGame(x, game).setRoleCard(RoleCard.NO_ROL));
-        players.forEach(x -> clearVoteCards(getDeckByPlayerAndGame(x, game)));
+        players.forEach(x -> clearDeckVoteCards(getDeckByPlayerAndGame(x, game)));
 
     }
     

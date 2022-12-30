@@ -20,6 +20,7 @@ import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
+import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
@@ -264,7 +265,7 @@ public class GameController {
         model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
         return "redirect:/games/" + gameId.toString() + "/lobby";
     }
-
+ 
     @GetMapping("/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
         response.addHeader("Refresh", "2"); //cambiar el valor por el numero de segundos que se tarda en refrescar la pagina
@@ -275,10 +276,20 @@ public class GameController {
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
 		Turn currentTurn = gameStarted.getTurn();
     	deckService.assingDecksIfNeeded(game);
+
+		Integer roleCardNumber = gameService.gameRoleCardNumber(game);
+//cambiar a finished
+
 		if(!playerInfoService.isSpectator(currentPlayer, gameStarted)){
 			Deck playerDeck = deckService.getDeckByPlayerAndGame(currentPlayer, game);
 			res.addObject("playerDeck", playerDeck);
-		} 
+		}
+
+		if (game.getState() == State.FINISHED) {
+			gameService.winnerFaction(game);
+		}
+
+		res.addObject("roleCardNumber", roleCardNumber);
 		res.addObject("turn", currentTurn);
 		res.addObject("currentPlayer", currentPlayer);
         res.addObject("game", gameStarted);
@@ -293,7 +304,6 @@ public class GameController {
 		VoteCard selectedCard = voteCardService.getById(voteType);
 		List <VoteCard> changeOptions = voteCardService.getChangeOptions(gameService.getGameById(gameId), selectedCard);
 		
-
 		res.addObject("game", gameService.getGameById(gameId));
 		res.addObject("selectedCard", selectedCard);
 		res.addObject("changeOptions", changeOptions);
@@ -301,8 +311,21 @@ public class GameController {
 		return res;
 	}
 
+	@GetMapping("/{gameId}/forcedVoteChange/{playerId}")
+	public String pretorSelection(@PathVariable("gameId") Integer gameId,@PathVariable("playerId") Integer playerId){
+		Game actualGame = gameService.getGameById(gameId);
+		Player voter = playerService.getPlayerById(playerId);
+		
+		voteCardService.forcedVoteChange(actualGame, voter);
+		System.out.println(deckService.getDeckByPlayerAndGame(voter, actualGame) + "esto");
+
+		return "redirect:/games/" + gameId.toString();
+
+	}
+
 	@GetMapping("/{gameId}/pretorSelection/{voteType}/{changedVoteType}")
-	public String pretorChange(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType, @PathVariable("changedVoteType") VCType changedVoteType) {
+	public String pretorChange(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType, 
+				@PathVariable("changedVoteType") VCType changedVoteType) {
 		Game game = gameService.getGameById(gameId);
 		turnService.pretorVoteChange(voteType, changedVoteType, gameService.getGameById(gameId));
 		gameService.changeStage(game, CurrentStage.SCORING);
@@ -315,14 +338,24 @@ public class GameController {
 	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId) {
 		Game currentGame = gameService.getGameById(gameId);
 		Turn currentTurn = currentGame.getTurn();
-		suffragiumCardService.updateVotes(currentGame.getSuffragiumCard(), currentTurn);
+		suffragiumCardService.updateVotes(currentGame.getSuffragiumCard(), currentTurn, gameId);
+
 		if (currentTurn.getCurrentTurn() == 1 && currentGame.getRound() == CurrentRound.FIRST ) {
 			deckService.deckRotation(currentGame);
 			gameService.changeStage(currentGame, CurrentStage.VOTING);
 		}
+
+		if (currentTurn.getCurrentTurn() != 1 && currentGame.getRound() == CurrentRound.SECOND) {
+			//si es cualquier turno de la segunda ronda distinto a 1, solo se rota el consul y se pasa a votacion
+			deckService.clearEdilVoteCards(currentGame);
+			deckService.consulRotation(currentGame);
+			gameService.changeStage(currentGame, CurrentStage.VOTING);
+
+		}
 		else {
 			gameService.changeStage(currentGame, CurrentStage.END_OF_TURN);
 		}
+		//si se hace change stage a voting y la partida esta en round 2 el estado deberia pasar a finished y ver fin de partida en el redirect a showgames
 		return "redirect:/games/" + gameId.toString();
 	}
 
@@ -336,6 +369,9 @@ public class GameController {
 		turnService.updateTurnVotes(currentTurn, voteType);
 		gameService.changeStageIfVotesCompleted(currentGame);
 		deckService.updateVotesDeck(deck, voteType);
+		if (currentGame.getStage() == CurrentStage.SCORING) {
+			updateSuffragiumCard(gameId); //como se cambia el stage arriba, si se cambiase a scoring pasamos diractamente a actualizar el sufragium
+		}
 		return "redirect:/games/" + gameId.toString();
 	}
 
@@ -346,13 +382,15 @@ public class GameController {
         Deck deck = deckService.getDeckByPlayerAndGame(player, game); //cojo el mazo de este 
 
         deckService.updateFactionDeck(deck, factionType);
+		gameService.changeStage(game, CurrentStage.VOTING);
 
 		if (game.getRound() == CurrentRound.FIRST) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
-			gameService.changeStage(game, CurrentStage.VOTING);
 			deckService.deckRotation(game);
 		}
 		else { //si no es primera ronda es que es primer turno de la segunda ronda (no hay eleccion de faccion fuera de esto)
+			deckService.clearEdilVoteCards(game); //borro los votos de los ediles
 			deckService.consulRotation(game); //rota unicamente la carta de consul
+			
 		}
 		
         return "redirect:/games/" + gameId.toString();
@@ -382,10 +420,11 @@ public class GameController {
 		Game actualGame = gameService.getGameById(gameId);
 
 		deckService.rolesDesignationSecondRound(actualGame, pretorId, edil1Id, edil2Id);
-		gameService.changeStage(actualGame, CurrentStage.VOTING);
 
 
 		return "redirect:/games/" + gameId;
 		
 	}	
+
+
 }
