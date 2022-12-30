@@ -57,6 +57,7 @@ public class UserController {
 	private static final String PLAYER_LIST = "/users/playersList";
 	private static final String CREATE_PLAYER = "/users/createPlayer";
     private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
+    private static final String PLAYER_AUDIT = "/users/playerAudit";
 
 	@Autowired
 	private PlayerService playerService;
@@ -135,7 +136,7 @@ public class UserController {
     }
 
 	@GetMapping("/{username}/delete")
-    public String deleteUser(@PathVariable("username") String username, ModelMap model){
+    public String deletePlayer(@PathVariable("username") String username, ModelMap model){
         String message;
         Player player = playerService.getPlayerByUsername(username);
         if(!playerService.hasGamesPlayed(player)) {
@@ -155,6 +156,15 @@ public class UserController {
         model.put("message", message);
      	model.put("messageType", "info");
      	return listAllUsers(model);
+    }
+
+    @GetMapping("/{username}/audit")
+    public String auditPlayer(@PathVariable("username") String username, ModelMap model) {
+        Player player = playerService.getPlayerByUsername(username);
+        List<String> revs = playerService.auditPlayer(player);
+        model.put("player", player);
+        model.put("revs", revs);
+        return PLAYER_AUDIT;
     }
 }
 
