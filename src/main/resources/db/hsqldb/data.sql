@@ -86,14 +86,14 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
 INSERT INTO players(id,online,playing,username) VALUES
-(1, TRUE, FALSE , 'alvgonfri'),
-(2, TRUE, FALSE , 'davgonher1'),
-(3, TRUE, FALSE, 'migmanalv'),
-(5, TRUE, FALSE , 'player1'),
-(6, TRUE, FALSE , 'player2'),
-(7, TRUE, FALSE , 'player3'),
-(8, TRUE, FALSE , 'player4'),
-(9, TRUE, FALSE , 'player5');
+(1, FALSE, FALSE , 'alvgonfri'),
+(2, FALSE, FALSE , 'davgonher1'),
+(3, FALSE, FALSE, 'migmanalv'),
+(5, FALSE, FALSE , 'player1'),
+(6, FALSE, FALSE , 'player2'),
+(7, FALSE, FALSE , 'player3'),
+(8, FALSE, FALSE , 'player4'),
+(9, FALSE, FALSE , 'player5');
 
 INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 (1,2,3,8),

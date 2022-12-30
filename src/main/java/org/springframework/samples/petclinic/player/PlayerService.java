@@ -1,14 +1,23 @@
 package org.springframework.samples.petclinic.player;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
+import org.springframework.samples.petclinic.user.User;
+import org.springframework.samples.petclinic.user.UserRepository;
 import org.springframework.samples.petclinic.user.UserService;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +28,16 @@ public class PlayerService {
     private PlayerRepository playerRepository;
 
 	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
 	private PlayerInfoRepository playerInfoRepository;
 
 	@Autowired
 	private DeckRepository deckRepository;
+
+	@Autowired
+	private SessionRegistry sessionRegistry;
 
     @Autowired
 	private UserService userService;
@@ -96,6 +111,27 @@ public class PlayerService {
 			res = true;
 		}
 		return res;
+	}
+
+	@Transactional
+	public void checkOnlineStatus() {
+		List<Object> principals = sessionRegistry.getAllPrincipals();
+		for(Object o: principals) {
+			List<SessionInformation> activeSessions = sessionRegistry.getAllSessions(o, false);
+			UserDetails userDetails = (UserDetails) o;
+			User user = userRepository.findById(userDetails.getUsername()).get();
+			List<User> playerUsers = userRepository.findUserWithAuthority("player");
+			if(playerUsers.contains(user)) {
+				Player player = playerRepository.findPlayerByUsername(userDetails.getUsername());
+				if(!activeSessions.isEmpty()) {
+					player.setOnline(true);
+				} else {
+					player.setOnline(false);
+				}
+				playerRepository.save(player);
+			}
+			
+		}
 	}
 
 }

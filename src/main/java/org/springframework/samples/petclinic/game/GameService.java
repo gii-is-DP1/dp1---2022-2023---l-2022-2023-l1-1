@@ -9,6 +9,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.State;
+import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnRepository;
@@ -23,6 +26,12 @@ public class GameService {
 
     @Autowired
     private TurnRepository turnRepository;
+
+    @Autowired
+    private PlayerInfoRepository playerInfoRepository;
+
+    @Autowired
+    private PlayerRepository playerRepository;
 
     @Autowired
     public GameService(GameRepository repo) {
@@ -61,9 +70,23 @@ public class GameService {
         if(game.getState() == State.STARTING) {
             game.setState(State.IN_PROCESS);
             game.setSuffragiumCard(suffragiumCard);
+            for(Player p: playerInfoRepository.findPlayersByGame(game)) {
+                checkPlayerIsPlaying(p);
+            }
         }
         return repo.save(game);
     }
+
+    @Transactional
+	public void checkPlayerIsPlaying(Player player) {
+		List<Game> gamesInProcess = playerInfoRepository.findGamesInProcessByPlayer(player);
+		if(!gamesInProcess.isEmpty()) {
+			player.setPlaying(true);
+		} else {
+			player.setPlaying(false);
+		}
+        playerRepository.save(player);
+	}
 
     @Transactional
     public void joinGame(Game game) throws DataAccessException {

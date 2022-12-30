@@ -54,6 +54,7 @@ public class InvitationController {
 
     @GetMapping("/friends")
     public ModelAndView showFriends(@AuthenticationPrincipal UserDetails user) {
+        playerService.checkOnlineStatus();
         ModelAndView result = new ModelAndView(FRIENDS_LIST);
         Player recipient = playerService.getPlayerByUsername(user.getUsername());
         result.addObject("friendsInvitations", invitationService.getFriendsInvitations(recipient));

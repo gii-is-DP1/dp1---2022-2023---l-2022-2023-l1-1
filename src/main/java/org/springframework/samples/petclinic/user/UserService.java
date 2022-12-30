@@ -44,6 +44,11 @@ public class UserService {
 		return user;
 	}
 
+	@Transactional(readOnly = true)
+	public List<User> getUsersWithAuthority(String authority) {
+		return userRepository.findUserWithAuthority(authority);
+	}
+
 	@Transactional
     public void saveUser(User user) throws DataAccessException {
         user.setEnabled(true);

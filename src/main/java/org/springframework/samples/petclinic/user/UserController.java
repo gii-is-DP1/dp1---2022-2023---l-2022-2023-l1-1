@@ -72,7 +72,8 @@ public class UserController {
 	}
 
 	@GetMapping
-    public String listAllUsers(ModelMap model){
+    public String listAllUsers(ModelMap model) {
+        playerService.checkOnlineStatus();
         List<Player> allPlayers = playerService.getAll();
         model.put("players", allPlayers);
         return PLAYER_LIST;
