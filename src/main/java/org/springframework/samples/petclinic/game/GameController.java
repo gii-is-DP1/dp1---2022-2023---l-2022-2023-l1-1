@@ -287,6 +287,11 @@ public class GameController {
 
 		if (game.getState() == State.FINISHED) {
 			gameService.winnerFaction(game);
+			List<Player> winnerPlayers = deckService.winnerPlayers(game, game.getWinners());
+			List<Player> losePlayers = deckService.loserPlayers(gameStarted, winnerPlayers);
+			res.addObject("winnerPlayers", winnerPlayers);
+			res.addObject("loserPlayers", losePlayers);
+
 		}
 
 		res.addObject("roleCardNumber", roleCardNumber);

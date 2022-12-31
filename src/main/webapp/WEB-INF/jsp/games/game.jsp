@@ -7,10 +7,27 @@
 
 <petclinic:layout pageName="game">
     <h1><c:out value="${game.name}"/></h1>
-    <h1><c:out value="${game.round} ROUND"/></h1>
-    <h1><c:out value="TURN ${turn.currentTurn}"/></h1>
-    <h1><c:out value="${game.stage} STAGE"/></h1>
-    ${game.suffragiumLimit}
+    <c:if test = "${game.state == 'IN_PROCESS'}">
+        <h1><c:out value="${game.round} ROUND"/></h1>
+        <h1><c:out value="TURN ${turn.currentTurn}"/></h1>
+        <h1><c:out value="${game.stage} STAGE"/></h1>
+    </c:if>
+
+
+    <c:if test = "${game.state == 'FINISHED'}">
+        <br>
+        <c:forEach items="${winnerPlayers}" var="winner">
+            <c:if test = "${winner == currentPlayer}">
+            <h1 style="color:rgb(45, 125, 4); font-size:75px;"> WINNER </h1>
+            </c:if>
+        </c:forEach>
+        <c:forEach items="${loserPlayers}" var="loser">
+            <c:if test = "${loser == currentPlayer}">
+                <h1 style="color:red; font-size:75px;"> LOSER </h1>
+            </c:if>
+        </c:forEach>
+        <br>
+    </c:if>
 
     <table id="suffragium" class="table table-striped">
         <h4>Suffragium</h4>
@@ -35,10 +52,10 @@
             </tr>   
         </tbody>
     </table>
-    <c:if test = "${game.stage =='VOTING' && playerDeck.roleCard =='CONSUL' && roleCardNumber != 4}">
-            <a class="btn btn-default" href="/games/${game.id}/rolesDesignation" height="120">Role designation</a>
-    </c:if>
     <c:if test = "${game.state == 'IN_PROCESS'}">
+        <c:if test = "${game.stage =='VOTING' && playerDeck.roleCard =='CONSUL' && roleCardNumber != 4}">
+            <a class="btn btn-default" href="/games/${game.id}/rolesDesignation" height="120">Role designation</a>
+        </c:if>
         <table id="decks" class="table table-striped">
             <h4>Decks</h4>
             <thead>
@@ -145,6 +162,44 @@
         </table>
     </c:if>
     <c:if test = "${game.state == 'FINISHED'}">
-    WINNER FACTION: ${game.winners}
+        <table>
+            <td>
+            <h1>WINNER FACTION:<br> ${game.winners}</h1>
+            <c:if test = "${game.winners == 'LOYALS'}">
+                <img src="/resources/images/Loyal.PNG" width="200" height="300"/>          
+            </c:if>
+            <c:if test = "${game.winners == 'TRAITORS'}">
+                <img src="/resources/images/Traitor.PNG" width="200" height="300"/>          
+            </c:if>
+            <c:if test = "${game.winners == 'MERCHANTS'}">
+                <img src="/resources/images/Merchant.PNG" width="200" height="300"/>          
+            </c:if>
+            </td>
+        <td>
+            <h1>WINNERS</h1>
+            <c:forEach items="${winnerPlayers}" var="winner">
+                ${winner.user.username} <span class="glyphicon glyphicon-arrow-right"></span> Selected faction: 
+                <c:forEach items="${winner.decks}" var="deck">
+                    <c:if test = "${deck.game == game}">
+                        ${deck.factionCards[0].type}<br>
+                    </c:if>
+                </c:forEach>
+            </c:forEach>
+        </td>
+        <td>
+            <h1>LOSERS</h1> 
+            <c:forEach items="${loserPlayers}" var="loser">
+                ${loser.user.username} <span class="glyphicon glyphicon-arrow-right"></span> Selected faction: 
+                <c:forEach items="${loser.decks}" var="deck">
+                    <c:if test = "${deck.game == game}">
+                        ${deck.factionCards[0].type}<br>
+                    </c:if>
+                </c:forEach>
+            </c:forEach>
+
+        </td>
+        </table>
+        <br>
+        <a class="btn btn-default" href="/">EXIT</a>
     </c:if>
 </petclinic:layout>

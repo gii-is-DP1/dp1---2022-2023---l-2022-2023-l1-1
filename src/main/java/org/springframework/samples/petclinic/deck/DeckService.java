@@ -11,6 +11,7 @@ import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
+import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
@@ -329,5 +330,34 @@ public class DeckService {
         players.forEach(x -> clearDeckVoteCards(getDeckByPlayerAndGame(x, game)));
 
     }
-    
+
+    @Transactional
+    public List<Player> winnerPlayers (Game game, Faction winnerFaction) {
+        FactionCard winnerFactionCard;
+
+        if (winnerFaction == Faction.LOYALS) {
+            winnerFactionCard = factionCardRepository.findById(FCType.LOYAL).get();
+        }
+        else if (winnerFaction == Faction.TRAITORS) {
+            winnerFactionCard = factionCardRepository.findById(FCType.TRAITOR).get();
+        }
+        else {
+            winnerFactionCard = factionCardRepository.findById(FCType.MERCHANT).get();
+        }
+
+        List<Player> winnerPlayers = getDecks().stream() //decks de un game se podria hacer por query (de hecho creo que se deberia)
+			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(winnerFactionCard))
+            .map(d -> d.getPlayer()).collect(Collectors.toList());
+
+            return winnerPlayers;
+    }
+
+    @Transactional
+    public List<Player> loserPlayers (Game game, List<Player> winnerPlayers) {
+        List<Player> loserPlayers = playerInfoRepository.findPlayersByGame(game);
+        winnerPlayers.forEach(p -> loserPlayers.remove(p));
+        return loserPlayers;
+
+    }
+
 }
