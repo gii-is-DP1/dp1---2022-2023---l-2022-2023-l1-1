@@ -350,12 +350,11 @@ public class GameController {
 			gameService.changeStage(currentGame, CurrentStage.VOTING);
 		}
 
-		if (currentTurn.getCurrentTurn() != 1 && currentGame.getRound() == CurrentRound.SECOND) {
+		else if (currentTurn.getCurrentTurn() != 1 && currentGame.getRound() == CurrentRound.SECOND) {
 			//si es cualquier turno de la segunda ronda distinto a 1, solo se rota el consul y se pasa a votacion
 			deckService.clearEdilVoteCards(currentGame);
 			deckService.consulRotation(currentGame);
 			gameService.changeStage(currentGame, CurrentStage.VOTING);
-
 		}
 		else {
 			gameService.changeStage(currentGame, CurrentStage.END_OF_TURN);
