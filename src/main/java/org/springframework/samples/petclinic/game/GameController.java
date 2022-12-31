@@ -275,6 +275,7 @@ public class GameController {
 		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
 		Turn currentTurn = gameStarted.getTurn();
+		List<PlayerInfo> gamePlayerInfos = playerInfoService.getPlayerInfosByGame(game);
     	deckService.assingDecksIfNeeded(game);
 
 		Integer roleCardNumber = gameService.gameRoleCardNumber(game);
@@ -294,13 +295,15 @@ public class GameController {
 
 		}
 
+		res.addObject("votesAssigned", deckService.votesAsigned(gamePlayerInfos));
 		res.addObject("roleCardNumber", roleCardNumber);
 		res.addObject("turn", currentTurn);
 		res.addObject("currentPlayer", currentPlayer);
         res.addObject("game", gameStarted);
-        res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+        res.addObject("playerInfos", gamePlayerInfos);
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
         return res;
+
     }
 
 	@GetMapping("/{gameId}/pretorSelection/{voteType}")
@@ -386,7 +389,6 @@ public class GameController {
         Deck deck = deckService.getDeckByPlayerAndGame(player, game); //cojo el mazo de este 
 
         deckService.updateFactionDeck(deck, factionType);
-		gameService.changeStage(game, CurrentStage.VOTING);
 
 		if (game.getRound() == CurrentRound.FIRST) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
 			deckService.deckRotation(game);
@@ -394,8 +396,8 @@ public class GameController {
 		else { //si no es primera ronda es que es primer turno de la segunda ronda (no hay eleccion de faccion fuera de esto)
 			deckService.clearEdilVoteCards(game); //borro los votos de los ediles
 			deckService.consulRotation(game); //rota unicamente la carta de consul
-			
 		}
+		gameService.changeStage(game, CurrentStage.VOTING);
 		
         return "redirect:/games/" + gameId.toString();
     }

@@ -16,6 +16,7 @@ import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -357,6 +358,15 @@ public class DeckService {
         List<Player> loserPlayers = playerInfoRepository.findPlayersByGame(game);
         winnerPlayers.forEach(p -> loserPlayers.remove(p));
         return loserPlayers;
+
+    }
+
+    @Transactional
+    public boolean votesAsigned (List<PlayerInfo> playerInfos) {
+        List <Deck> gameDecks= playerInfos.stream().map(x -> getDeckByPlayerAndGame(x.getPlayer(), x.getGame()))
+                                                                                    .collect(Collectors.toList());
+
+        return gameDecks.stream().anyMatch(x -> x.getVoteCards().size() != 0);
 
     }
 

@@ -53,7 +53,7 @@
         </tbody>
     </table>
     <c:if test = "${game.state == 'IN_PROCESS'}">
-        <c:if test = "${game.stage =='VOTING' && playerDeck.roleCard =='CONSUL' && roleCardNumber != 4}">
+        <c:if test = "${game.stage =='VOTING' && playerDeck.roleCard =='CONSUL' && votesAssigned == false}">
             <a class="btn btn-default" href="/games/${game.id}/rolesDesignation" height="120">Role designation</a>
         </c:if>
         <table id="decks" class="table table-striped">
