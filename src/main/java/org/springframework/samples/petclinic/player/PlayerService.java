@@ -165,7 +165,6 @@ public class PlayerService {
 		return res;
 	}
 
-	@Transactional(readOnly = true)
 	public String fromInstantToDate(Instant instant) {
 		Date date = Date.from(instant);
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
