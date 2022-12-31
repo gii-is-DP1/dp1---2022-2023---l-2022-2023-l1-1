@@ -1,8 +1,5 @@
 package org.springframework.samples.petclinic.game;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +42,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/games")
 public class GameController {
 
-    private static final String GAMES_LIST = "/games/gamesList";
+	private static final String GAMES_STARTING_LIST = "/games/gamesStartingList";
+	private static final String GAMES_IN_PROCESS_LIST = "/games/gamesInProcessList";
 	private static final String GAMES_FINISHED_LIST = "/games/gamesFinishedList";
     private static final String FIND_GAMES_HISTORY = "/games/findGamesHistory";
 	private static final String FIND_GAMES_PLAYER_HISTORY = "/games/findGamesPlayerHistory";
@@ -82,20 +80,6 @@ public class GameController {
         this.gameService = service;
     }
 
-	public static List<Game> getListIntersection(List<Game> firstList, List<Game> secondList) {
-        List<Game> resultList = new ArrayList<Game>();
-        List <Game> result = new ArrayList <Game> (firstList);  
-        HashSet <Game> othHash = new HashSet <Game> (secondList); 
-        Iterator <Game> iter = result.iterator();
-        while(iter.hasNext()) {
-            if(!othHash.contains(iter.next())) {  
-                iter.remove();            
-            }     
-        }
-        resultList = new ArrayList<Game>(result);
-        return resultList;
-    }
-
     @GetMapping(value = "/history/find")
 	public String gamesHistoryForm(Map<String, Object> model) {
 		model.put("game", new Game());
@@ -112,8 +96,9 @@ public class GameController {
 		}
 
 		// find games by name
-		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.FINISHED);
-		if (results.isEmpty()) {
+		List<Game> publicGames = this.gameService.getPublicGamesByNameAndState(game.getName(), State.FINISHED);
+		List<Game> privateGames = this.gameService.getPrivateGamesByNameAndState(game.getName(), State.FINISHED);
+		if (publicGames.isEmpty() && privateGames.isEmpty()) {
 			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_HISTORY);
@@ -122,7 +107,8 @@ public class GameController {
 			// games found
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
 			res.addObject("returnButton", "/games/history/find");
-            res.addObject("games", results); 
+            res.addObject("publicGames", publicGames); 
+			res.addObject("privateGames", privateGames); 
 			return res;
 		}
 	}
@@ -141,10 +127,9 @@ public class GameController {
 		}
 
 		Player player = playerService.getPlayerByUsername(user.getUsername());
-		List<Game> l1 = this.gameService.getGamesByNameAndState(game.getName(), State.FINISHED);
-		List<Game> l2 = this.playerInfoService.getGamesByPlayer(player);
-		List<Game> results = getListIntersection(l1, l2);
-		if (results.isEmpty()) {
+		List<Game> publicGames = gameService.getPlayerGamesHistory(game.getName(), player, true);
+		List<Game> privateGames = gameService.getPlayerGamesHistory(game.getName(), player, false);
+		if (publicGames.isEmpty() && privateGames.isEmpty()) {
 			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_PLAYER_HISTORY);
@@ -152,7 +137,8 @@ public class GameController {
 		else {
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
 			res.addObject("returnButton", "/games/playerHistory/find");
-            res.addObject("games", results); 
+            res.addObject("publicGames", publicGames); 
+			res.addObject("privateGames", privateGames);
 			return res;
 		}
 	}
@@ -170,16 +156,18 @@ public class GameController {
 			log.warn("Null string input changed to empty string");
 		}
 
-		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.IN_PROCESS);
-		if (results.isEmpty()) {
+		List<Game> publicGames = this.gameService.getPublicGamesByNameAndState(game.getName(), State.IN_PROCESS);
+		List<Game> privateGames = this.gameService.getPrivateGamesByNameAndState(game.getName(), State.IN_PROCESS);
+		if (publicGames.isEmpty() && privateGames.isEmpty()) {
 			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_IN_PROCESS);
 		}
 		else {
-			ModelAndView res = new ModelAndView(GAMES_LIST);
+			ModelAndView res = new ModelAndView(GAMES_IN_PROCESS_LIST);
 			res.addObject("returnButton", "/games/inProcess/find");
-            res.addObject("games", results); 
+            res.addObject("publicGames", publicGames); 
+			res.addObject("privateGames", privateGames);
 			return res;
 		}
 	}
@@ -191,22 +179,26 @@ public class GameController {
 	}
 
     @GetMapping(value = "/starting")
-	public ModelAndView processGamesStartingForm(Game game, BindingResult result) {
+	public ModelAndView processGamesStartingForm(Game game, BindingResult result, @AuthenticationPrincipal UserDetails user) {
 		if (game.getName() == null) {
 			game.setName("");
 			log.warn("Null string input changed to empty string");
 		}
 
-		List<Game> results = this.gameService.getGamesByNameAndState(game.getName(), State.STARTING);
-		if (results.isEmpty()) {
+		Player player = playerService.getPlayerByUsername(user.getUsername());
+		List<Game> publicGames = this.gameService.getPublicGamesByNameAndState(game.getName(), State.STARTING);
+		List<Game> friendsGames = this.gameService.getFriendGamesByNameAndState(game.getName(), State.STARTING, player);
+
+		if (publicGames.isEmpty() && friendsGames.isEmpty()) {
 			log.warn("No games found");
 			result.rejectValue("name", "notFound", "not found");
 			return new ModelAndView(FIND_GAMES_STARTING);
 		}
 		else {
-			ModelAndView res = new ModelAndView(GAMES_LIST);
+			ModelAndView res = new ModelAndView(GAMES_STARTING_LIST);
 			res.addObject("returnButton", "/games/starting/find");
-            res.addObject("games", results); 
+            res.addObject("publicGames", publicGames); 
+			res.addObject("friendsGames", friendsGames); 
 			return res;
 		}
 	}

@@ -1,8 +1,5 @@
 package org.springframework.samples.petclinic.player;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
