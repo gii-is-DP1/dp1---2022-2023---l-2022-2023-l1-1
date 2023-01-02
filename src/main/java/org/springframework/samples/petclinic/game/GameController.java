@@ -393,9 +393,11 @@ public class GameController {
 		if (game.getRound() == CurrentRound.FIRST) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
 			deckService.deckRotation(game);
 		}
+		
 		else { //si no es primera ronda es que es primer turno de la segunda ronda (no hay eleccion de faccion fuera de esto)
 			deckService.clearEdilVoteCards(game); //borro los votos de los ediles
 			deckService.consulRotation(game); //rota unicamente la carta de consul
+			gameService.changeStage(game, CurrentStage.VOTING);
 		}
 		gameService.changeStage(game, CurrentStage.VOTING);
 		

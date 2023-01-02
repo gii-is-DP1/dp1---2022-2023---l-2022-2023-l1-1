@@ -8,9 +8,7 @@
 <petclinic:layout pageName="game">
     <h1><c:out value="${game.name}"/></h1>
     <c:if test = "${game.state == 'IN_PROCESS'}">
-        <h1><c:out value="${game.round} ROUND"/></h1>
-        <h1><c:out value="TURN ${turn.currentTurn}"/></h1>
-        <h1><c:out value="${game.stage} STAGE"/></h1>
+        <h1>${game.round} ROUND | TURN ${turn.currentTurn} | ${game.stage} STAGE</h1>
     </c:if>
 
 
