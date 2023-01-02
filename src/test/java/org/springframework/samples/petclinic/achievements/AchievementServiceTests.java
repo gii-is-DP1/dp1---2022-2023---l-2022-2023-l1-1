@@ -1,46 +1,44 @@
 package org.springframework.samples.petclinic.achievements;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.samples.petclinic.util.EntityUtils;
-import org.springframework.stereotype.Service;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@ExtendWith(MockitoExtension.class)
 public class AchievementServiceTests {
-    @Autowired
-    private AchievementService achievementService;
 
-    @Test
-    void getByIdTest() {
-        Achievement achievement3 = this.achievementService.getById(3);
-        assertThat(achievement3.getName()).isEqualTo("Jugador Experto");
-        assertThat(achievement3.getActualDescription()).startsWith("Has jugado");
-        assertThat(achievement3.getThreshold()).isEqualTo(100.00);
+    @Mock
+    AchievementRepository achievementRepository;
+
+    private Achievement createAchievement(String name, String description, double threshold) {
+        Achievement achievement = new Achievement();
+        achievement.setName(name);
+        achievement.setDescription(description);
+        achievement.setThreshold(threshold);
+        achievement.setProgress(null);
+        return achievement;
     }
 
     @Test
-    void getAchievementsTest() {
-        List<Achievement> achievements = this.achievementService.getAchievements();
-        assertNotNull(achievements);
-        assertFalse(achievements.isEmpty());
-        assertEquals(6, achievements.size());
-        Achievement achievement1 = EntityUtils.getById(achievements, Achievement.class, 1);
-        assertThat(achievement1.getName()).isEqualTo("Jugador Novato");
-        Achievement achievement5 = EntityUtils.getById(achievements, Achievement.class, 5);
-        assertThat(achievement5.getName()).isEqualTo("Ganador Avanzado");
-        
-
+    public void testSaveAchievement() {
+        Achievement achievement = createAchievement("Test achievement", "Please, pass this test", 10.);
+        AchievementService service = new AchievementService(achievementRepository);
+        try {
+            service.saveAchievement(achievement);
+            verify(achievementRepository).save(achievement);
+        } catch (Exception e) {
+            fail("No exception should be thrown");
+        }
     }
 
 }

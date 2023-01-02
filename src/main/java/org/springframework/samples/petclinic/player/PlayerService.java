@@ -5,6 +5,11 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.samples.petclinic.deck.FactionCard;
+import org.springframework.samples.petclinic.deck.FactionCardRepository;
+import org.springframework.samples.petclinic.enums.Faction;
+import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
@@ -63,7 +68,7 @@ public class PlayerService {
 
 	@Transactional(readOnly = true)
 	public Player getPlayerByUsername(String username) {
-		return playerRepository.getPlayerByUsername(username);
+		return playerRepository.findPlayerByUsername(username);
 
 	}
 

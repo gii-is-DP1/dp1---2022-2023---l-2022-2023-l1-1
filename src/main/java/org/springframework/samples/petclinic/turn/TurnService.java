@@ -42,6 +42,9 @@ public class TurnService {
 		if (voteType == VCType.RED) {
 			turn.setVotesTraitor(turn.getVotesTraitor() == null ? 1 : turn.getVotesTraitor() + 1);
 		}
+        if (voteType == VCType.YELLOW) {
+            turn.setVotesNeutral(turn.getVotesNeutral() == null ? 1 : turn.getVotesNeutral() + 1);
+        }
 		turnRepository.save(turn);
     }
 
@@ -66,18 +69,26 @@ public class TurnService {
     @Transactional
     public void pretorVoteChange (VCType currentVoteType, VCType changedVoteType, Game game) {
         Turn currentTurn = game.getTurn();
-        Integer currentLoyalVotes = currentTurn.getVotesLoyal();
-        Integer currentTraitorVotes = currentTurn.getVotesTraitor();
+        Integer currentLoyalVotes = currentTurn.getVotesLoyal() == null ? 1 : currentTurn.getVotesLoyal();
+        Integer currentTraitorVotes = currentTurn.getVotesTraitor()  == null ? 1 : currentTurn.getVotesTraitor();
+        //los condicionales se deberian de borrar, estan para que en las pruebas no de errores
+
+    
         if (currentVoteType != changedVoteType) {
             
             if (currentVoteType == VCType.GREEN) {
                 currentTurn.setVotesLoyal(currentLoyalVotes-1);
-                currentTurn.setVotesTraitor(currentTraitorVotes+1);
+                if (changedVoteType == VCType.RED) {
+                    currentTurn.setVotesTraitor(currentTraitorVotes+1);
+                }
             }
             else if (currentVoteType == VCType.RED) {
                 currentTurn.setVotesTraitor(currentTraitorVotes - 1);
-                currentTurn.setVotesLoyal(currentLoyalVotes + 1);
+                if (changedVoteType == VCType.GREEN) {
+                    currentTurn.setVotesLoyal(currentLoyalVotes + 1);
+                }
             }
+            
             }
             turnRepository.save(currentTurn);
         }

@@ -21,7 +21,6 @@ import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
@@ -72,6 +71,9 @@ public class Game extends NamedEntity {
         }
         else if (players == 8) {
          res = 20;
+        }
+        else { //esto se borra, es para probar cosas
+            res = 2;
         }
         return res;
      }

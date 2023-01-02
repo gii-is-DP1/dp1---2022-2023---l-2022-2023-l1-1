@@ -8,7 +8,7 @@ import org.springframework.samples.petclinic.game.Game;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TurnRepository extends CrudRepository<Turn, Long>{
+public interface TurnRepository extends CrudRepository<Turn, Integer>{
 
     @Query("SELECT g FROM Game g WHERE g.turn LIKE :turn")
     public Game findGameByTurn(@Param("turn") Turn turn);

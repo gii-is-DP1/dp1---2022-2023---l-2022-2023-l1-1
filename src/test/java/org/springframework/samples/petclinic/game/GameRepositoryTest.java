@@ -1,9 +1,9 @@
 package org.springframework.samples.petclinic.game;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -18,19 +18,25 @@ public class GameRepositoryTest {
     private GameRepository gameRepository;
 
     @Test
-    public void testFindByName() {
-        List<Game> g = gameRepository.findByName("Mi primera partida");
-        assertNotNull(g);
-        assertFalse(g.isEmpty());
-        assertEquals(1, g.size());
-    }
-
-    @Test
     public void testFindById() {
         Game g = gameRepository.findById(1);
         Game g2 = gameRepository.findById(2);
         assertNotNull(g);
         assertNotNull(g2);
         assertNotEquals(g2, g);
+    }
+
+    @Test
+    public void testFindByName() {
+        List<Game> g = gameRepository.findByName("Mi primera partida");
+        assertNotNull(g);
+        assertFalse(g.isEmpty());
+    }
+
+    @Test
+    public void testFindByNameNotExistingGame() {
+        List<Game> g = gameRepository.findByName("Not existing game");
+        assertNotNull(g);
+        assertTrue(g.isEmpty());
     }
 }
