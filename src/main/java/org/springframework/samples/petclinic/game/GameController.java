@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.deck.VoteCard;
@@ -240,23 +241,33 @@ public class GameController {
 		response.addHeader("Refresh", "3");
         ModelAndView res=new ModelAndView(GAME_LOBBY);
         Game game=gameService.getGameById(gameId);
+		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		PlayerInfo currentPlayerInfo = playerInfoService.getPlayerInfoByGameAndPlayer(game, currentPlayer);
 		if(game.getState() == State.IN_PROCESS) {
+			log.info("Redirecting players from game " + game.getId());
 			return new ModelAndView("redirect:/games/" + game.getId().toString());
 		}
         res.addObject("game", game);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+		res.addObject("currentPlayerInfo", currentPlayerInfo);
         return res;
     }
 
 	@GetMapping("/{gameId}/join")
     public String joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
+		Player player=playerService.getPlayerByUsername(user.getUsername());
+		if(playerInfoService.getAllUsersByGame(game).contains(player)) {
+			log.warn("Player was already in the game");
+			model.put("message", "You are already in this game!");
+			return gamesStartingForm(model);
+		}
 		if(game.getNumPlayers() == MAX_PLAYERS) {
+			log.warn("Couldn't join because maximum number of players has been reached");
 			model.put("message", "This game has reached the maximum number of players!");
 			return gamesStartingForm(model);
 		}
 		gameService.joinGame(game);
-		Player player=playerService.getPlayerByUsername(user.getUsername());
 		playerInfoService.savePlayerInfo(joinedInfo, game, player);
 		log.info("Player joined");
 		model.put("game", game);
@@ -268,6 +279,11 @@ public class GameController {
     public String spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
+		if(playerInfoService.getAllUsersByGame(game).contains(player)) {
+			log.warn("Player was already in the game");
+			model.put("message", "You are already in this game!");
+			return gamesStartingForm(model);
+		}
 		playerInfoService.saveSpectatorInfo(spectatorInfo, game, player);
 		log.info("Spectator joined");
 		model.put("game", game);
@@ -276,13 +292,13 @@ public class GameController {
     }
 
     @GetMapping("/{gameId}")
-    public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
+    public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response) throws DataAccessException {
         response.addHeader("Refresh", "2");
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
-		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
 		Turn currentTurn = gameStarted.getTurn();
     	deckService.assingDecksIfNeeded(game);
 		if(!playerInfoService.isSpectator(currentPlayer, gameStarted)){

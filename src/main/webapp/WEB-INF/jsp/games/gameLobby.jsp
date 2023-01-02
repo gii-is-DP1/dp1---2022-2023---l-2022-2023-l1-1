@@ -10,7 +10,14 @@
         <c:out value="Number of players: ${game.numPlayers}/8"/>
     </td>
     <c:if test="${game.numPlayers >= 5 && game.numPlayers <= 8}">
-        <a class="btn btn-default" href="/games/${game.id}">Start game</a>
+        <c:choose>
+            <c:when test="${currentPlayerInfo.creator}">
+                <a class="btn btn-default" href="/games/${game.id}">Start game</a>
+            </c:when>
+            <c:otherwise>
+                <p>Waiting for the creator to start the game</p>
+            </c:otherwise>
+        </c:choose>
     </c:if>
     <c:if test="${game.numPlayers < 5}">
         <p>Waiting for more players to start the game</p>

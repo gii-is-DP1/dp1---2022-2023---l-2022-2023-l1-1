@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.invitation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,9 +63,9 @@ public class InvitationController {
     public ModelAndView showInvitationsByPlayer(@AuthenticationPrincipal UserDetails user){
         ModelAndView result = new ModelAndView(INVITATIONS_LIST);
         Player recipient = playerService.getPlayerByUsername(user.getUsername());
-        result.addObject("invitations", invitationService.getInvitationsReceivedByType(recipient, InvitationType.FRIENDSHIP));
-        result.addObject("playerInvitations", invitationService.getInvitationsReceivedByType(recipient, InvitationType.GAME_PLAYER));
-        result.addObject("spectatorInvitations", invitationService.getInvitationsReceivedByType(recipient, InvitationType.GAME_SPECTATOR));
+        result.addObject("invitations", invitationService.getFrienshipInvitationsReceived(recipient));
+        result.addObject("playerInvitations", invitationService.getValidGameInvitationsReceivedByType(recipient, InvitationType.GAME_PLAYER));
+        result.addObject("spectatorInvitations", invitationService.getValidGameInvitationsReceivedByType(recipient, InvitationType.GAME_SPECTATOR));
         return result;
     }
 
@@ -231,11 +230,19 @@ public class InvitationController {
     public String acceptGamePlayerInvitation(@PathVariable Integer gameId, @PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         Game game = gameService.getGameById(gameId);
         Player player=playerService.getPlayerByUsername(user.getUsername());
+        if(playerInfoService.getAllUsersByGame(game).contains(player)) {
+			log.warn("Player was already in the game");
+			model.put("message", "You are already in this game!");
+			model.put("invitations", invitationService.getFrienshipInvitationsReceived(player));
+            model.put("playerInvitations", invitationService.getValidGameInvitationsReceivedByType(player, InvitationType.GAME_PLAYER));
+            model.put("spectatorInvitations", invitationService.getValidGameInvitationsReceivedByType(player, InvitationType.GAME_SPECTATOR));
+			return INVITATIONS_LIST;
+		}
         if(game.getNumPlayers() == MAX_PLAYERS) {
 			model.put("message", "This game has reached the maximum number of players!");
-            model.put("invitations", invitationService.getInvitationsReceivedByType(player, InvitationType.FRIENDSHIP));
-            model.put("playerInvitations", invitationService.getInvitationsReceivedByType(player, InvitationType.GAME_PLAYER));
-            model.put("spectatorInvitations", invitationService.getInvitationsReceivedByType(player, InvitationType.GAME_SPECTATOR));
+            model.put("invitations", invitationService.getFrienshipInvitationsReceived(player));
+            model.put("playerInvitations", invitationService.getValidGameInvitationsReceivedByType(player, InvitationType.GAME_PLAYER));
+            model.put("spectatorInvitations", invitationService.getValidGameInvitationsReceivedByType(player, InvitationType.GAME_SPECTATOR));
 			return INVITATIONS_LIST;
 		}
         invitationService.acceptInvitationById(id);
@@ -250,6 +257,14 @@ public class InvitationController {
     public String acceptGameSpectatorInvitation(@PathVariable Integer gameId, @PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         Game game = gameService.getGameById(gameId);
         Player player=playerService.getPlayerByUsername(user.getUsername());
+        if(playerInfoService.getAllUsersByGame(game).contains(player)) {
+			log.warn("Player was already in the game");
+			model.put("message", "You are already in this game!");
+			model.put("invitations", invitationService.getFrienshipInvitationsReceived(player));
+            model.put("playerInvitations", invitationService.getValidGameInvitationsReceivedByType(player, InvitationType.GAME_PLAYER));
+            model.put("spectatorInvitations", invitationService.getValidGameInvitationsReceivedByType(player, InvitationType.GAME_SPECTATOR));
+			return INVITATIONS_LIST;
+		}
         invitationService.acceptInvitationById(id);
         log.info("Invitation accepted");
 		playerInfoService.saveSpectatorInfo(new PlayerInfo(), game, player);

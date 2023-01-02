@@ -32,14 +32,19 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Invitation> getInvitationsReceivedByType(Player recipient, InvitationType type) {
-        return invitationRepository.findInvitationsReceivedByType(recipient, type);
+    public List<Invitation> getFrienshipInvitationsReceived(Player recipient) {
+        return invitationRepository.findFriendshipInvitationsReceived(recipient);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Invitation> getValidGameInvitationsReceivedByType(Player recipient, InvitationType type) {
+        return invitationRepository.findValidGameInvitationsReceivedByType(recipient, type);
     }
 
     @Transactional(readOnly = true)
     public List<Player> getFriends(Player player) {
         List<Player> res = new ArrayList<>();
-        List<Invitation> invitationsReceived = invitationRepository.findInvitationsReceivedByType(player, InvitationType.FRIENDSHIP);
+        List<Invitation> invitationsReceived = invitationRepository.findFriendshipInvitationsReceived(player);
         List<Invitation> invitationsSent = invitationRepository.findInvitationsSentByType(player, InvitationType.FRIENDSHIP);
         for(Invitation i:invitationsReceived) {
             if(i.getAccepted()) {
@@ -62,7 +67,7 @@ public class InvitationService {
     @Transactional(readOnly = true)
     public List<Pair<Player, Invitation>> getFriendsInvitations(Player player) {
         List<Pair<Player, Invitation>> res = new ArrayList<>();
-        List<Invitation> invitationsReceived = invitationRepository.findInvitationsReceivedByType(player, InvitationType.FRIENDSHIP);
+        List<Invitation> invitationsReceived = invitationRepository.findFriendshipInvitationsReceived(player);
         List<Invitation> invitationsSent = invitationRepository.findInvitationsSentByType(player, InvitationType.FRIENDSHIP);
         for(Invitation i:invitationsReceived) {
             if(i.getAccepted()) {
