@@ -3,9 +3,13 @@ package org.springframework.samples.petclinic.game;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.EnumType;
 import javax.persistence.Table;
@@ -15,6 +19,7 @@ import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.State;
+import org.springframework.samples.petclinic.invitation.Invitation;
 import org.springframework.samples.petclinic.model.NamedEntity;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
@@ -54,6 +59,9 @@ public class Game extends NamedEntity {
 
     @OneToOne(optional = true)
     private SuffragiumCard suffragiumCard;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "game")
+    private List<Invitation> gameInvitations;
 
 
     public Integer getSuffragiumLimit() {

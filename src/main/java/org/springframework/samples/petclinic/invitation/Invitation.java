@@ -8,6 +8,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 import org.springframework.samples.petclinic.enums.InvitationType;
+import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.player.Player;
 
@@ -33,4 +34,7 @@ public class Invitation extends BaseEntity {
 
     @ManyToOne(optional = false)
     private Player recipient;
+
+    @ManyToOne(optional = true)
+    private Game game;
 }

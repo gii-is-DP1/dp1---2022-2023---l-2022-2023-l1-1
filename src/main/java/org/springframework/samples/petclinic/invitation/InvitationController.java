@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.invitation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -7,10 +8,16 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.samples.petclinic.enums.InvitationType;
+import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
+import org.springframework.samples.petclinic.invitation.exceptions.NullInvitationTypeException;
 import org.springframework.samples.petclinic.invitation.exceptions.NullRecipientException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -31,6 +38,7 @@ public class InvitationController {
     
     private static final String INVITATIONS_LIST = "invitations/invitationsList";
     private static final String SEND_INVITATION = "invitations/sendInvitation";
+    private static final String SEND_GAME_INVITATION = "invitations/sendGameInvitation";
     private static final String FRIENDS_LIST = "invitations/friendsList";
 
     @Autowired
@@ -38,6 +46,12 @@ public class InvitationController {
 
     @Autowired
     private PlayerService playerService;
+
+    @Autowired
+    private GameService gameService;
+
+    @Autowired
+    private PlayerInfoService playerInfoService;
 
     @Autowired
     public InvitationController(InvitationService iS) {
@@ -48,7 +62,9 @@ public class InvitationController {
     public ModelAndView showInvitationsByPlayer(@AuthenticationPrincipal UserDetails user){
         ModelAndView result = new ModelAndView(INVITATIONS_LIST);
         Player recipient = playerService.getPlayerByUsername(user.getUsername());
-        result.addObject("invitations", invitationService.getInvitationsReceived(recipient));
+        result.addObject("invitations", invitationService.getInvitationsReceivedByType(recipient, InvitationType.FRIENDSHIP));
+        result.addObject("playerInvitations", invitationService.getInvitationsReceivedByType(recipient, InvitationType.GAME_PLAYER));
+        result.addObject("spectatorInvitations", invitationService.getInvitationsReceivedByType(recipient, InvitationType.GAME_SPECTATOR));
         return result;
     }
 
@@ -76,7 +92,7 @@ public class InvitationController {
     }
 
     @PostMapping("/invitations/send")
-    public ModelAndView saveInvitation(@Valid Invitation invitation, BindingResult br, @AuthenticationPrincipal UserDetails user) throws DuplicatedInvitationException {
+    public ModelAndView saveInvitation(@Valid Invitation invitation, BindingResult br, @AuthenticationPrincipal UserDetails user) throws DuplicatedInvitationException, NullRecipientException {
         ModelAndView result = null;
         Player sender = playerService.getPlayerByUsername(user.getUsername());
         List<Player> players = playerService.getAll();
@@ -147,5 +163,91 @@ public class InvitationController {
         }
         return showFriends(user);
     }
+
+    @GetMapping("/gameInvitations/{gameId}/send")
+    public ModelAndView sendGameInvitation(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user) {
+        Invitation invitation = new Invitation();
+        Player sender = playerService.getPlayerByUsername(user.getUsername());
+        List<Player> friends = invitationService.getFriends(sender);
+        Game game = gameService.getGameById(gameId);
+        ModelAndView result = new ModelAndView(SEND_GAME_INVITATION);
+        result.addObject("friends", friends);
+        result.addObject("types", invitationService.getGameInvitationTypes());
+        result.addObject("invitation", invitation);
+        result.addObject("game", game);
+        return result;
+    }
+
+    @PostMapping("/gameInvitations/{gameId}/send")
+    public String saveGameInvitation(@Valid Invitation invitation, BindingResult br, @PathVariable("gameId") Integer gameId, ModelMap model, @AuthenticationPrincipal UserDetails user) throws DuplicatedInvitationException, NullRecipientException, NullInvitationTypeException {
+        Player sender = playerService.getPlayerByUsername(user.getUsername());
+        List<Player> friends = invitationService.getFriends(sender);
+        Game game = gameService.getGameById(gameId);
+        List<String> types = invitationService.getGameInvitationTypes();
+        if(br.hasErrors()) {
+            log.error("Input value error");
+            model.put("friends", friends);
+            model.put("types", types);
+            model.put("invitation", invitation);
+            model.put("game", game);
+            return SEND_GAME_INVITATION;
+        } else {
+            try {
+                invitationService.saveGameInvitation(invitation, sender, game);
+                log.info("Invitation created");
+                model.put("message", "Invitation sent succesfully!");
+                return "redirect:/games/" + game.getId().toString() + "/lobby";
+            } catch (NullRecipientException e) {
+                log.warn("Recipient not selected");
+                model.put("friends", friends);
+                model.put("types", types);
+                model.put("invitation", invitation);
+                model.put("game", game);
+                model.put("message", "Please, select the friend who you want to invite");
+                return SEND_GAME_INVITATION;
+            } catch (NullInvitationTypeException e) {
+                log.warn("Invitation type not selected");
+                model.put("friends", friends);
+                model.put("types", types);
+                model.put("invitation", invitation);
+                model.put("game", game);
+                model.put("message", "Please, select the invitation type");
+                return SEND_GAME_INVITATION;
+            } catch (DuplicatedInvitationException e) {
+                log.warn("Duplicated invitation");
+                model.put("friends", friends);
+                model.put("types", types);
+                model.put("invitation", invitation);
+                model.put("game", game);
+                model.put("message", "You have already invited this friend!");
+            return SEND_GAME_INVITATION;
+            }
+        }
+    }
+
+    @GetMapping("/gameInvitations/{gameId}/{id}/acceptPlayer")
+    public String acceptGamePlayerInvitation(@PathVariable Integer gameId, @PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
+        Game game = gameService.getGameById(gameId);
+        invitationService.acceptInvitationById(id);
+        log.info("Invitation accepted");
+        gameService.joinGame(game);
+		Player player=playerService.getPlayerByUsername(user.getUsername());
+		playerInfoService.savePlayerInfo(new PlayerInfo(), game, player);
+		log.info("Player joined"); 
+        return "redirect:/games/" + game.getId().toString() + "/lobby";
+    }
+
+    @GetMapping("/gameInvitations/{gameId}/{id}/acceptSpectator")
+    public String acceptGameSpectatorInvitation(@PathVariable Integer gameId, @PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
+        Game game = gameService.getGameById(gameId);
+        invitationService.acceptInvitationById(id);
+        log.info("Invitation accepted");
+        Player player=playerService.getPlayerByUsername(user.getUsername());
+		playerInfoService.saveSpectatorInfo(new PlayerInfo(), game, player);
+		log.info("Spectator joined");
+        return "redirect:/games/" + game.getId().toString() + "/lobby";
+    }
+
+
 
 }
