@@ -2,7 +2,9 @@ package org.springframework.samples.petclinic.suffragiumCard;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class SuffragiumCardService {
 
     private SuffragiumCardRepository suffragiumCardRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     public SuffragiumCardService(SuffragiumCardRepository repo) {
@@ -29,10 +34,17 @@ public class SuffragiumCardService {
     }
 
     @Transactional
-    public void updateVotes(SuffragiumCard card, Turn turn) {
+    public void updateVotes(SuffragiumCard card, Turn turn, Integer gameId) {
         SuffragiumCard cardToUpdate = suffragiumCardRepository.findById(card.getId()).get();
+        Game game = gameRepository.findById(gameId);
+        Integer limit = game.getSuffragiumLimit();
         cardToUpdate.setLoyalsVotes(cardToUpdate.getLoyalsVotes() + turn.getVotesLoyal());
         cardToUpdate.setTraitorsVotes(cardToUpdate.getTraitorsVotes() + turn.getVotesTraitor());
+    
+        if (card.getLoyalsVotes() >= limit || card.getTraitorsVotes() >= limit ) {
+            game.setState(State.FINISHED);
+            gameRepository.save(game);
+        }
         suffragiumCardRepository.save(cardToUpdate);
     }
 
