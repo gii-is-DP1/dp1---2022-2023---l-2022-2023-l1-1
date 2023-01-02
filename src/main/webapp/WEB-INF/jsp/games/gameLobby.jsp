@@ -15,6 +15,8 @@
     <c:if test="${game.numPlayers < 5}">
         <p>Waiting for more players to start the game</p>
     </c:if>
+    <p></p>
+    <a class="btn btn-default" href="/gameInvitations/${game.id}/send">Invite friend</a>
     <table id="creatorTable" class="table table-striped">
         <thead>
         <tr>
