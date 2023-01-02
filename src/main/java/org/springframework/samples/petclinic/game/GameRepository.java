@@ -12,10 +12,16 @@ public interface GameRepository extends CrudRepository<Game, Long>{
     
     List<Game> findAll(); 
 
-    @Query("SELECT DISTINCT g FROM Game g WHERE g.id LIKE :id")
+    @Query("SELECT DISTINCT g FROM Game g WHERE g.id = ?1")
 	public Game findById(@Param("id") Integer id);
 
     @Query("SELECT DISTINCT g FROM Game g WHERE g.name LIKE :name%")
 	public List<Game> findByName(@Param("name") String name);
+
+    @Query("SELECT DISTINCT g FROM Game g WHERE g.publicGame = 1 AND g.name LIKE :name%")
+	public List<Game> findPublicGamesByName(@Param("name") String name);
+
+    @Query("SELECT DISTINCT g FROM Game g WHERE g.publicGame = 0 AND g.name LIKE :name%")
+	public List<Game> findPrivateGamesByName(@Param("name") String name);
 
 }

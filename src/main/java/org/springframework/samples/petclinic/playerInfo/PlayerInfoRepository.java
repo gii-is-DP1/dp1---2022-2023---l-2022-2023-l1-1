@@ -20,6 +20,9 @@ public interface PlayerInfoRepository extends CrudRepository<PlayerInfo,Long>{
     @Query("SELECT pI.game FROM PlayerInfo pI WHERE pI.player =?1")
     public List<Game> findGamesByPlayer(@Param("player") Player player);
 
+    @Query("SELECT pI.game FROM PlayerInfo pI WHERE pI.player =?1 AND pI.game.state = 'IN_PROCESS'")
+    public List<Game> findGamesInProcessByPlayer(@Param("player") Player player);
+
     @Query("SELECT pI.player FROM PlayerInfo pI WHERE pI.game =?1 AND pI.spectator=0")
 	public List<Player> findPlayersByGame(@Param("game") Game game);
 

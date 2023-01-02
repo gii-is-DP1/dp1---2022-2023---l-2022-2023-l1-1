@@ -86,14 +86,14 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
 INSERT INTO players(id,online,playing,username) VALUES
-(1, TRUE, FALSE , 'alvgonfri'),
-(2, TRUE, FALSE , 'davgonher1'),
-(3, TRUE, FALSE, 'migmanalv'),
-(5, TRUE, FALSE , 'player1'),
-(6, TRUE, FALSE , 'player2'),
-(7, TRUE, FALSE , 'player3'),
-(8, TRUE, FALSE , 'player4'),
-(9, TRUE, FALSE , 'player5');
+(1, FALSE, FALSE , 'alvgonfri'),
+(2, FALSE, FALSE , 'davgonher1'),
+(3, FALSE, FALSE, 'migmanalv'),
+(5, FALSE, FALSE , 'player1'),
+(6, FALSE, FALSE , 'player2'),
+(7, FALSE, FALSE , 'player3'),
+(8, FALSE, FALSE , 'player4'),
+(9, FALSE, FALSE , 'player5');
 
 INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 (1,2,3,8),
@@ -109,12 +109,13 @@ INSERT INTO turns(id,current_turn) VALUES
 (4, 1),
 (5, 1);
 
-INSERT INTO games(id,name,public_game,state,num_players,date,duration,round,turn_id,stage,winners,suffragium_card_id) VALUES
-(1,'Mi primera partida', 1, 'STARTING', 5, '2022-10-24', null, 'FIRST', 1, 'VOTING', null, 1),
-(2,'Partida rapida', 0, 'IN_PROCESS', 5, '2022-10-27', null, 'SECOND', 2, 'VOTING', null, 2),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'FIRST', 3, 'VOTING', 'LOYALS', 3),
-(4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'FIRST', 4, 'VOTING', 'LOYALS', 4),
-(5,'Testing decks', 1, 'STARTING', 7, '2022-11-27', null, 'FIRST', 5, 'VOTING', null, null);
+INSERT INTO games(id,name,public_game,state,num_players,start_date,end_date,round,turn_id,stage,winners,suffragium_card_id) VALUES
+(1,'Mi primera partida', 0, 'STARTING', 5, null, null, 'FIRST', 1, 'VOTING', null, 1),
+(2,'Partida rapida', 1, 'IN_PROCESS', 6, '2022-10-27 10:00:00', null, 'FIRST', 2, 'END_OF_TURN', null, 2),
+(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30 10:00:00', '2022-10-30 11:00:00', 'FIRST', 3, 'VOTING', 'LOYALS', 3),
+(4,'New game', 1, 'FINISHED', 6, '2022-11-15 23:59:58', '2022-11-16 00:25:01', 'FIRST', 4, 'VOTING', 'LOYALS', 4),
+(5,'Testing decks', 1, 'STARTING', 7, null, null, 'FIRST', 5, 'VOTING', null, null);
+
 
 INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 
 (1,true,false,2,1),
@@ -126,7 +127,10 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 
 (8,false,false,1,3),
 
-(10,false,false,3,1),
+(30,false,false,3,1),
+(31,false,false,3,5),
+
+(40,true,false,4,1),
 
 (50,true,false,5,1),
 (51,false,false,5,2),

@@ -6,7 +6,6 @@ import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameRepository;
-import org.springframework.samples.petclinic.player.Player;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

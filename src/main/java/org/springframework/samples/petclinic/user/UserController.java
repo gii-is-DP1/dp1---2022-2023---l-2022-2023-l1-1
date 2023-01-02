@@ -15,16 +15,20 @@
  */
 package org.springframework.samples.petclinic.user;
 
-import java.util.ArrayList;
+
+
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.player.PlayerValidator;
+import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -36,91 +40,81 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  * @author Michael Isvy
  */
+
+@Slf4j
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
-	private static final String VIEWS_USER_LIST = "/users/usersList";
-	private static final String CREATE_USER = "/users/createUser";
-	private static final String CREATE_UPDATE_PLAYER = "/users/createOrUpdatePlayer";
+	private static final String PLAYER_LIST = "/users/playersList";
+	private static final String CREATE_PLAYER = "/users/createPlayer";
+    private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
+    private static final String PLAYER_AUDIT = "/users/playerAudit";
 
-	@Autowired
-    private UserService userService;
-	@Autowired
-	private AuthoritiesService authoritiesService;
 	@Autowired
 	private PlayerService playerService;
-
-	@Autowired
-	public UserController(UserService userService) {
-		this.userService = userService;
-	}
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
 
+    @InitBinder("player")
+	public void initPetBinder(WebDataBinder dataBinder) {
+		dataBinder.setValidator(new PlayerValidator());
+	}
+
 	@GetMapping
-    public String listAllUsers(ModelMap model){
-        Iterable<User> allUsers = userService.findAll();
-        model.put("users", allUsers);
-        return VIEWS_USER_LIST;
+    public String listAllUsers(ModelMap model) {
+        playerService.checkOnlineStatus();
+        List<Player> allPlayers = playerService.getAll();
+        model.put("players", allPlayers);
+        return PLAYER_LIST;
     }
 
 	@GetMapping("/new")
     public ModelAndView createPlayerForm() {
-        ModelAndView res = new ModelAndView(CREATE_UPDATE_PLAYER);
+        ModelAndView res = new ModelAndView(CREATE_PLAYER);
         Player player = new Player();       
         res.addObject("player", player);                                
         return res;
     }
 
 	@PostMapping("/new")
-	public ModelAndView createPlayer(@Valid Player player, BindingResult result) {
+	public ModelAndView createPlayer(@Valid Player player, BindingResult result) throws DuplicatedUsernameException {
 		ModelAndView res = null;
-		if (result.hasErrors()) {
-			return new ModelAndView(CREATE_UPDATE_PLAYER);
+		if(result.hasErrors()) {
+            log.error("Input value error");
+			return new ModelAndView(CREATE_PLAYER);
 		}
 		else {
-			res = new ModelAndView("welcome");
-			playerService.savePlayer(player);
-			res.addObject("message", "Player successfully created!");
+            try {
+                res = new ModelAndView("welcome");
+                playerService.savePlayer(player);
+                log.info("Player created");
+                res.addObject("message", "Player successfully created!");
+                return res;
+            } catch (DuplicatedUsernameException e) {
+                log.warn("Username already exists");
+                result.rejectValue("user.username", "This username already exists, please try again", 
+                "This username already exists, please try again");
+                res = new ModelAndView(CREATE_PLAYER);
+                return res;
+            }
 		}
-		return res;
 	}
-
-    /* 
-	@GetMapping("/{username}/edit")
-    public ModelAndView editPlayerForm(@PathVariable("username") String username) {
-		ModelAndView res = new ModelAndView(CREATE_USER);
-        User user = userService.getUserByUsername(username);       
-        res.addObject("user", user);
-        return res;
-    }
-
-	@PostMapping("/{username}/edit")
-    public ModelAndView editPlayer(@PathVariable("username")String username, @Valid User user, BindingResult br) {
-        ModelAndView res = new ModelAndView("welcome");
-        if (br.hasErrors()) {
-            return new ModelAndView(CREATE_USER, br.getModel());
-        }
-        User userToBeUpdated = userService.getUserByUsername(username); 
-        BeanUtils.copyProperties(user, userToBeUpdated,"id", "online", "playing");
-        userService.saveUser(userToBeUpdated);
-        res.addObject("message", "Player edited succesfully!");
-        return res;
-    }*/
 
     @GetMapping("/{username}/edit")
     public ModelAndView editPlayerForm(@PathVariable("username") String username) {
-		ModelAndView res = new ModelAndView(CREATE_UPDATE_PLAYER);
+		ModelAndView res = new ModelAndView(UPDATE_PLAYER_PASSWORD);
         Player player = playerService.getPlayerByUsername(username);        
         res.addObject("player", player);
         return res;
@@ -130,28 +124,47 @@ public class UserController {
     public ModelAndView editPlayer(@PathVariable("username")String username, @Valid Player player, BindingResult br) {
         ModelAndView res = new ModelAndView("welcome");
         if (br.hasErrors()) {
-            return new ModelAndView(CREATE_UPDATE_PLAYER, br.getModel());
+            log.error("Input value error");
+            return new ModelAndView(UPDATE_PLAYER_PASSWORD, br.getModel());
         }
         Player playerToBeUpdated = playerService.getPlayerByUsername(username); 
-        BeanUtils.copyProperties(player, playerToBeUpdated,"id", "online", "playing");
+        BeanUtils.copyProperties(player, playerToBeUpdated,"id", "online", "playing", "progress", "user.username");
         playerService.saveEditedPlayer(playerToBeUpdated);
+        log.info("Player edited");
         res.addObject("message", "Player edited succesfully!");
         return res;
     }
 
 	@GetMapping("/{username}/delete")
-    public String removeUser(@PathVariable("username") String username, ModelMap model){
+    public String deletePlayer(@PathVariable("username") String username, ModelMap model){
         String message;
-
-        try{
-            userService.removeUser(username);
-            message = "User " + username + " successfully deleted";   
-        }catch (EmptyResultDataAccessException e){
-            message = "User " + username + " doesn't exist";
+        Player player = playerService.getPlayerByUsername(username);
+        if(!playerService.hasGamesPlayed(player)) {
+            try {
+                playerService.deletePlayer(player);
+                log.info("Player deleted");
+                message = "User " + username + " successfully deleted";   
+            } catch(EmptyResultDataAccessException e) {
+                log.warn("Not existing user");
+                message = "User " + username + " doesn't exist";
+            }
+        }
+        else {
+            log.warn("This player has played any game and can't be deleted");
+            message = "You can't delete a player who has played any game!";
         }
         model.put("message", message);
      	model.put("messageType", "info");
      	return listAllUsers(model);
+    }
+
+    @GetMapping("/{username}/audit")
+    public String auditPlayer(@PathVariable("username") String username, ModelMap model) {
+        Player player = playerService.getPlayerByUsername(username);
+        List<String> revs = playerService.auditPlayer(player);
+        model.put("player", player);
+        model.put("revs", revs);
+        return PLAYER_AUDIT;
     }
 }
 
