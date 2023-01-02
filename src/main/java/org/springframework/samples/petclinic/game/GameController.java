@@ -236,10 +236,13 @@ public class GameController {
 	}
 
     @GetMapping("/{gameId}/lobby")
-    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, HttpServletResponse response){
+    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
 		response.addHeader("Refresh", "3");
         ModelAndView res=new ModelAndView(GAME_LOBBY);
         Game game=gameService.getGameById(gameId);
+		if(game.getState() == State.IN_PROCESS) {
+			return new ModelAndView("redirect:/games/" + game.getId().toString());
+		}
         res.addObject("game", game);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
         return res;
