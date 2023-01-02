@@ -54,6 +54,8 @@ public class GameController {
 	private static final String GAME = "/games/game";
 	private static final String PRETOR_SELECTION = "games/pretorCardSelection";
 
+	private static final Integer MAX_PLAYERS = 8;
+
     @Autowired
     private GameService gameService;
 
@@ -246,6 +248,10 @@ public class GameController {
 	@GetMapping("/{gameId}/join")
     public String joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
+		if(game.getNumPlayers() == MAX_PLAYERS) {
+			model.put("message", "This game has reached the maximum number of players!");
+			return gamesStartingForm(model);
+		}
 		gameService.joinGame(game);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
 		playerInfoService.savePlayerInfo(joinedInfo, game, player);

@@ -41,6 +41,8 @@ public class InvitationController {
     private static final String SEND_GAME_INVITATION = "invitations/sendGameInvitation";
     private static final String FRIENDS_LIST = "invitations/friendsList";
 
+    private static final Integer MAX_PLAYERS = 8;
+
     @Autowired
     private InvitationService invitationService;
 
@@ -228,10 +230,17 @@ public class InvitationController {
     @GetMapping("/gameInvitations/{gameId}/{id}/acceptPlayer")
     public String acceptGamePlayerInvitation(@PathVariable Integer gameId, @PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         Game game = gameService.getGameById(gameId);
+        Player player=playerService.getPlayerByUsername(user.getUsername());
+        if(game.getNumPlayers() == MAX_PLAYERS) {
+			model.put("message", "This game has reached the maximum number of players!");
+            model.put("invitations", invitationService.getInvitationsReceivedByType(player, InvitationType.FRIENDSHIP));
+            model.put("playerInvitations", invitationService.getInvitationsReceivedByType(player, InvitationType.GAME_PLAYER));
+            model.put("spectatorInvitations", invitationService.getInvitationsReceivedByType(player, InvitationType.GAME_SPECTATOR));
+			return INVITATIONS_LIST;
+		}
         invitationService.acceptInvitationById(id);
         log.info("Invitation accepted");
         gameService.joinGame(game);
-		Player player=playerService.getPlayerByUsername(user.getUsername());
 		playerInfoService.savePlayerInfo(new PlayerInfo(), game, player);
 		log.info("Player joined"); 
         return "redirect:/games/" + game.getId().toString() + "/lobby";
@@ -240,13 +249,15 @@ public class InvitationController {
     @GetMapping("/gameInvitations/{gameId}/{id}/acceptSpectator")
     public String acceptGameSpectatorInvitation(@PathVariable Integer gameId, @PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         Game game = gameService.getGameById(gameId);
+        Player player=playerService.getPlayerByUsername(user.getUsername());
         invitationService.acceptInvitationById(id);
         log.info("Invitation accepted");
-        Player player=playerService.getPlayerByUsername(user.getUsername());
 		playerInfoService.saveSpectatorInfo(new PlayerInfo(), game, player);
 		log.info("Spectator joined");
         return "redirect:/games/" + game.getId().toString() + "/lobby";
     }
+
+    
 
 
 
