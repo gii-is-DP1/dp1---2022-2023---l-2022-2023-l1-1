@@ -67,6 +67,12 @@ public class UserService {
 		this.userRepository.deleteById(username);
 	}
 
+	@Transactional
+	public Integer matchesPlayedForUser(User user) throws DataAccessException {
+		return playerService.findbyUsernameMatchFinished(user.getUsername()).size();
+
+	}
+
 	/* 
 
 	@Transactional

@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +53,21 @@ public class PlayerService {
 	public Player getPlayerByUsername(String username) {
 		return playerRepository.getPlayerByUsername(username);
 
+	}
+
+	@Transactional
+	public List<Player> findbyUsernameMatchFinished(String username) throws DataAccessException {
+		List<Player> players = playerRepository.findByUsername(username);
+		List<Player> result = new ArrayList<Player>();
+		/* 
+		for(Player p : players){
+			if(p.getMatch().isFinished()){
+				result.add(p);
+			}
+
+		}
+		*/
+		return result;
 	}
 
 }
