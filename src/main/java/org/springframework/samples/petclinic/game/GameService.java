@@ -3,16 +3,23 @@ package org.springframework.samples.petclinic.game;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
+import org.springframework.samples.petclinic.enums.Faction;
+import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.invitation.InvitationService;
 import org.springframework.samples.petclinic.player.Player;
@@ -34,6 +41,10 @@ public class GameService {
     private TurnRepository turnRepository;
 
     @Autowired
+    private DeckRepository deckRepository;
+
+
+    @Autowired
     private PlayerInfoRepository playerInfoRepository;
 
     @Autowired
@@ -41,6 +52,10 @@ public class GameService {
 
     @Autowired
     private InvitationService invitationService;
+
+    @Autowired
+    private DeckService deckService;
+
 
     @Autowired
     public GameService(GameRepository repo) {
@@ -169,8 +184,13 @@ public class GameService {
             game.setStage(CurrentStage.VETO);
             repo.save(game);
         }
+        else if(game.getTurn().getVoteCount() > TOTAL_VOTES_NUMBER) {
+            game.setStage(CurrentStage.SCORING);
+            repo.save(game);
+        }
     }
 
+    
     private static final Integer NEW_TURN_INITIAL_VOTES = 0;
 
     @Transactional
@@ -183,11 +203,69 @@ public class GameService {
         if(game.getTurn().getCurrentTurn() > game.getNumPlayers()) {
             turnToChange.setCurrentTurn(1);
             turnRepository.save(turnToChange);
-            if(game.getRound() == CurrentRound.FIRST)
+            if(game.getRound() == CurrentRound.FIRST){
                 game.setRound(CurrentRound.SECOND);
+            }
+            else if (game.getRound() == CurrentRound.SECOND) {
+                game.setState(State.FINISHED);
+                game.setEndDate(Date.from(Instant.now()));
+                playerInfoRepository.findPlayersByGame(game).forEach(p -> checkPlayerIsPlaying(p));
+            }
         }
         turnRepository.save(turnToChange);
         repo.save(game);
+    }
+
+    @Transactional
+    public Integer gameRoleCardNumber (Game game) {
+        Integer res = deckRepository.findAll().stream()
+            .filter(x -> x.getGame() == game).filter(y -> y.getRoleCard() != RoleCard.NO_ROL).collect(Collectors.toList()).size();
+        return res;
+    }
+
+    @Transactional
+    public void winnerFaction (Game game) {
+        Integer loyalVotes = game.getSuffragiumCard().getLoyalsVotes();
+        Integer traitorVotes = game.getSuffragiumCard().getTraitorsVotes();
+        Integer voteLimit = game.getSuffragiumLimit();
+        Faction winner;
+
+        if (loyalVotes >= voteLimit || traitorVotes >= voteLimit) { //conspiracion fallida
+            if (loyalVotes >= voteLimit) {
+                winner = Faction.TRAITORS; //si supera leales gana traidor
+            }
+            else {
+                winner = Faction.LOYALS; //si no, esque ha superado traidor y gana leales
+            }
+            //EN ESTE CASO SI NO HAY FACCION RIVAL GANARIA MERCADER A VER COMO SE PONE ESO
+        }
+
+        else { //idus de marzo
+            if ((loyalVotes + 1) < traitorVotes) {
+                winner =  Faction.TRAITORS;
+            }
+
+            else if ((traitorVotes + 1) < loyalVotes) {
+                winner = Faction.LOYALS;
+            }
+            
+            else {
+                winner =  Faction.MERCHANTS;
+            }
+        }
+        game.setWinners(winner);
+        repo.save(game);
+    }
+
+    @Transactional
+    Map<Game,List<Player>> winnersByGame () {
+        Map<Game,List<Player>> res = new HashMap<>();
+        List<Game> games = repo.findAll();
+        games.forEach(g -> {
+            List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+            res.put(g, winners);
+        });
+        return res;
     }
     
 }
