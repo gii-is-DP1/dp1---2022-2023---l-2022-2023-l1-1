@@ -64,7 +64,7 @@ INSERT INTO owners VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Wa
 INSERT INTO owners VALUES (11, 'Alvaro', 'Gonzalez', '2335 Independence La.', 'Waunakee', '6085555488', 'alvgonfri');
 INSERT INTO owners VALUES (12, 'David', 'Gonzalez', '638 Cardinal Ave.', 'Sun Prairie', '60855517450', 'davgonher1');
 
-INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
+INSERT INTO pets(id,name,birth_date ,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (2, 'Basil', '2012-08-06', 6, 2);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (3, 'Rosy', '2011-04-17', 2, 3);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (4, 'Jewel', '2010-03-07', 2, 3);
@@ -104,7 +104,7 @@ INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 
 INSERT INTO turns(id,current_turn) VALUES 
 (1, 1),
-(2, 3),
+(2, 5),
 (3, 1),
 (4, 1),
 (5, 1);
@@ -115,6 +115,7 @@ INSERT INTO games(id,name,public_game,state,num_players,start_date,end_date,roun
 (3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30 10:00:00', '2022-10-30 11:00:00', 'FIRST', 3, 'VOTING', 'LOYALS', 3),
 (4,'New game', 1, 'FINISHED', 6, '2022-11-15 23:59:58', '2022-11-16 00:25:01', 'FIRST', 4, 'VOTING', 'LOYALS', 4),
 (5,'Testing decks', 1, 'STARTING', 7, null, null, 'FIRST', 5, 'VOTING', null, null);
+
 
 INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 
 (1,true,false,2,1),
@@ -164,23 +165,17 @@ INSERT INTO decks(id, role_cards,player_id,game_id) VALUES
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
 (1, 'LOYAL'),
-(1,'MERCHANT'),
-(2,'TRAITOR'),  
 (2,'TRAITOR'),
-(3,'LOYAL'),
-(3,'TRAITOR'),
-(4,'TRAITOR'),
+(3,'MERCHANT'),
 (4,'MERCHANT'),
 (5,'TRAITOR'),
-(5,'LOYAL'),
-(6,'LOYAL'),
 (6,'LOYAL');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
-(3,'GREEN'),
-(3,'RED'),
+(3, 'YELLOW'),
+(3, 'RED'),
 (4,'GREEN'),
-(4,'RED');;
+(4,'RED');
 
 INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
 (1, 100.0, 1, 3),
