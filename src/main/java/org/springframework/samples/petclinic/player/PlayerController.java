@@ -28,7 +28,6 @@ public class PlayerController {
 
     private PlayerService playerService;
 
-    private static final String PLAYER_LIST = "/users/playersList";
     private static final String PLAYER_REGISTRATION = "/players/playerRegistration";
     private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
 
@@ -36,6 +35,11 @@ public class PlayerController {
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
     }
+
+    @InitBinder
+	public void setAllowedFields(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("id");
+	}
 
     @InitBinder("player")
 	public void initPetBinder(WebDataBinder dataBinder) {

@@ -125,7 +125,6 @@ public class GameService {
         if(game.getState() == State.STARTING) {
             game.setState(State.IN_PROCESS);
             Date date = Date.from(Instant.now());
-            System.out.println(date);
             game.setStartDate(date);
             game.setSuffragiumCard(suffragiumCard);
             for(Player p: playerInfoRepository.findPlayersByGame(game)) {
