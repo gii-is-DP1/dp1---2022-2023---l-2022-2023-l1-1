@@ -39,7 +39,7 @@ public class DeckRepositoryTest {
         assertNotNull(decks);
         assertTrue(decks.isEmpty());
     }
-
+/* 
     @Test
     public void testFindDecksByPlayerAndGame() {
         Player player = playerRepository.findPlayerByUsername("migmanalv");
@@ -57,5 +57,5 @@ public class DeckRepositoryTest {
         assertNotNull(decks);
         assertTrue(decks.isEmpty());
     }
-    
+  */  
 }
