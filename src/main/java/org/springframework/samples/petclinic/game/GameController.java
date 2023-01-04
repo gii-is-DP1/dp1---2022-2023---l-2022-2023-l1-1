@@ -147,6 +147,8 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
+			res.addObject("gamesWinners", gameService.winnersByGame());
+			res.addObject("player", player);
 			res.addObject("returnButton", "/games/playerHistory/find");
             res.addObject("publicGames", publicGames); 
 			res.addObject("privateGames", privateGames);
@@ -401,14 +403,13 @@ public class GameController {
 
         deckService.updateFactionDeck(deck, factionType);
 
-		if (game.getRound() == CurrentRound.FIRST) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
+		if (game.getRound() == CurrentRound.FIRST && game.getTurn().getCurrentTurn() != game.getNumPlayers()) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
 			deckService.deckRotation(game);
 		}
 		
 		else { //si no es primera ronda es que es primer turno de la segunda ronda (no hay eleccion de faccion fuera de esto)
 			deckService.clearEdilVoteCards(game); //borro los votos de los ediles
 			deckService.consulRotation(game); //rota unicamente la carta de consul
-			gameService.changeStage(game, CurrentStage.VOTING);
 		}
 		gameService.changeStage(game, CurrentStage.VOTING);
 		

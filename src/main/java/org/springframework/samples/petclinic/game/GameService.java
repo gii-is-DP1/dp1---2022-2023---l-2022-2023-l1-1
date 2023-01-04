@@ -3,15 +3,18 @@ package org.springframework.samples.petclinic.game;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
@@ -40,6 +43,8 @@ public class GameService {
     @Autowired
     private DeckRepository deckRepository;
 
+
+    @Autowired
     private PlayerInfoRepository playerInfoRepository;
 
     @Autowired
@@ -47,6 +52,9 @@ public class GameService {
 
     @Autowired
     private InvitationService invitationService;
+
+    @Autowired
+    private DeckService deckService;
 
 
     @Autowired
@@ -200,6 +208,8 @@ public class GameService {
             }
             else if (game.getRound() == CurrentRound.SECOND) {
                 game.setState(State.FINISHED);
+                game.setEndDate(Date.from(Instant.now()));
+                playerInfoRepository.findPlayersByGame(game).forEach(p -> checkPlayerIsPlaying(p));
             }
         }
         turnRepository.save(turnToChange);
@@ -245,6 +255,17 @@ public class GameService {
         }
         game.setWinners(winner);
         repo.save(game);
+    }
+
+    @Transactional
+    Map<Game,List<Player>> winnersByGame () {
+        Map<Game,List<Player>> res = new HashMap<>();
+        List<Game> games = repo.findAll();
+        games.forEach(g -> {
+            List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+            res.put(g, winners);
+        });
+        return res;
     }
     
 }
