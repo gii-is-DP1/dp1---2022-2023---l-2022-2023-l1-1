@@ -29,6 +29,11 @@ public class PlayerInfoService {
     }
 
     @Transactional(readOnly = true)
+    public PlayerInfo getPlayerInfoByGameAndPlayer(Game game, Player player) {
+        return repo.findPlayerInfoByGameAndPlayer(game, player);
+    }
+
+    @Transactional(readOnly = true)
     public List<Game> getGamesByPlayer(Player player) {
         return repo.findGamesByPlayer(player);
     }
@@ -36,6 +41,11 @@ public class PlayerInfoService {
     @Transactional(readOnly = true)
     public List<Player> getPlayersByGame(Game game) {
         return repo.findPlayersByGame(game);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Player> getAllUsersByGame(Game game) {
+        return repo.findAllUsersByGame(game);
     }
 
     @Transactional(readOnly = true)

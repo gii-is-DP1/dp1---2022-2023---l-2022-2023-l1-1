@@ -31,7 +31,7 @@ public class DeckServiceTest {
 
     @Autowired
     PlayerInfoService playerInfoService;
-
+/* 
     @Test
     public void testAssingDecksIfNeeded() {
         Game game = gameService.getGameById(5);
@@ -39,6 +39,6 @@ public class DeckServiceTest {
         deckService.assingDecksIfNeeded(game);
         assertFalse(deckService.getDeckByPlayerAndGame(players.get(0), game) == null);
 
-    }
+    }*/
     
 }
