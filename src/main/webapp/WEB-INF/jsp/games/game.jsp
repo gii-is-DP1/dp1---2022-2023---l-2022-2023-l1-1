@@ -45,17 +45,21 @@
                     <img src="/resources/images/TraitorSwordIcon.jpg" width="30" height="20"/> 
                 </td>
                 <td>
-                    <b><c:out value="${game.suffragiumLimit}"/></b>
+                    <b><c:out value="${suffragiumCard.voteLimit}"/></b>
                 </td>
             </tr>   
         </tbody>
     </table>
     <c:if test = "${game.state == 'IN_PROCESS'}">
+        <h1>Waiting for: 
+        <c:forEach items="${activePlayers}" var="activePlayer">
+            <c:out value="${activePlayer} "/>
+        </c:forEach>
+        </h1>
         <c:if test = "${game.stage =='VOTING' && playerDeck.roleCard =='CONSUL' && votesAssigned == false}">
             <a class="btn btn-default" href="/games/${game.id}/rolesDesignation" height="120">Role designation</a>
         </c:if>
         <table id="decks" class="table table-striped">
-            <h4>Decks</h4>
             <thead>
             <tr>
                 <th>Player</th>
@@ -164,7 +168,7 @@
             <thead>
                 <tr>
                     <th>WINNER FACTION</th>
-                    <th>WINENRS</th>
+                    <th>WINNERS</th>
                     <th>LOSERS</th>
                     
                 </tr>

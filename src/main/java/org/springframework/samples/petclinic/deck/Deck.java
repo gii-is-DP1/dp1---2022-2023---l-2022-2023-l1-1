@@ -50,11 +50,11 @@ public class Deck extends BaseEntity {
             return "/resources/images/Edil.png";
 
         }
-        if (this.roleCard == RoleCard.PRETOR) {
+        else if (this.roleCard == RoleCard.PRETOR) {
             return "/resources/images/Pretor.png";
 
         }
-        if (this.roleCard == RoleCard.CONSUL) {
+        else if (this.roleCard == RoleCard.CONSUL) {
             return "/resources/images/Consul.png";
 
         }

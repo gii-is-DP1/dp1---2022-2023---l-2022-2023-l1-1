@@ -13,6 +13,7 @@ import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
@@ -23,7 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DeckService {
 
-    DeckRepository rep;
+    @Autowired
+    private DeckRepository rep;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private PlayerInfoRepository playerInfoRepository;
@@ -349,7 +354,16 @@ public class DeckService {
 			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(winnerFactionCard))
             .map(d -> d.getPlayer()).collect(Collectors.toList());
 
-            return winnerPlayers;
+        if (winnerPlayers.size() == 0) {
+            game.setWinners(Faction.MERCHANTS); //si no hay ganadores ganan merchants y obtengo winner player de merchants
+            gameRepository.save(game);
+            winnerPlayers = getDecks().stream() //decks de un game se podria hacer por query (de hecho creo que se deberia)
+			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(factionCardRepository.findById(FCType.MERCHANT).get()))
+            .map(d -> d.getPlayer()).collect(Collectors.toList());
+        }
+
+        return winnerPlayers;
+    
     }
 
     @Transactional
@@ -357,9 +371,9 @@ public class DeckService {
         List<Player> loserPlayers = playerInfoRepository.findPlayersByGame(game);
         winnerPlayers.forEach(p -> loserPlayers.remove(p));
         return loserPlayers;
-
     }
 
+    
     @Transactional
     public boolean votesAsigned (List<PlayerInfo> playerInfos) {
         List <Deck> gameDecks= playerInfos.stream().map(x -> getDeckByPlayerAndGame(x.getPlayer(), x.getGame()))
