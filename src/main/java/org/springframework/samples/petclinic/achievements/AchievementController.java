@@ -1,12 +1,16 @@
 package org.springframework.samples.petclinic.achievements;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
+
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.util.Pair;
+import org.springframework.samples.petclinic.enums.AchievementType;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.progress.Progress;
@@ -55,19 +59,10 @@ public class AchievementController {
         //Añado aquí los logros (progresos) no existentes por jugador y los quito del create
         ModelAndView result=new ModelAndView(USER_ACHIEVEMENTS_VIEW);
         Player pl = playerService.getPlayerByUsername(user.getUsername());
-
-        List <Achievement> achievementsNotFound = achievementService.getAchievements();
         List <Progress> actualPlayerProgress = progressService.getPlayerProgress(pl);
 
-        for (Progress progress : actualPlayerProgress) {
-            if (achievementsNotFound.contains(progress.getAchievement())) {
-                achievementsNotFound.remove(progress.getAchievement());
-            }
-        }
-
-        for (Achievement achievement : achievementsNotFound) {
-            progressService.addAchievementPlayer(achievement, pl);
-        }
+        List<Pair<Achievement,Double>> achievementsProgression = progressService.achievementProgress(actualPlayerProgress);
+        result.addObject("progressions", achievementsProgression);
         result.addObject("progress", progressService.getPlayerProgress(pl));
         return result;
     }
@@ -92,6 +87,7 @@ public class AchievementController {
     public ModelAndView editAchievement(@PathVariable int id, ModelMap model){
         Achievement achievement=achievementService.getById(id);        
         ModelAndView result=new ModelAndView(ACHIEVEMENTS_FORM);
+            result.addObject("types", List.of(achievement.getType()));
             result.addObject("achievement", achievement);
             return result;
     }
@@ -117,6 +113,7 @@ public class AchievementController {
         Achievement achievement=new Achievement();
         ModelAndView result=new ModelAndView(ACHIEVEMENTS_FORM);
         result.addObject("achievement", achievement);
+        result.addObject("types", achievementService.getAllTypes());
         return result;
     }
 

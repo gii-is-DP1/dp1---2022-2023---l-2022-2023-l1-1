@@ -25,11 +25,23 @@
                     <c:out value="${progress.achievement.actualDescription}"/>
                 </td>
                 <td>
-                    <c:out value="${progress.completedPercentage}%"/>
+                    <c:forEach items="${progressions}" var="progression"> 
+                    <c:if test= "${progress.achievement == progression.getFirst()}">
+                        <fmt:formatNumber type="number" maxFractionDigits="2" value="${progression.getSecond()}" />%
+                    </c:if>
+                </c:forEach>
                 </td>
                 <td>
-                    <c:if test="${progress.completed}"> <span style="color:rgb(0, 165, 33);font-weight:bold"><c:out value="Completed"/> </span></c:if>
-                    <c:if test="${progress.completed == false}"> <span style="color:rgb(227, 166, 0);font-weight:bold"><c:out value="In progress"/> </span></c:if>
+                    <c:forEach items="${progressions}" var="progression"> 
+                    <c:if test= "${progress.achievement == progression.getFirst()}">
+                        <c:if test= "${progression.getSecond() == 100.0}">
+                            <span style="color:rgb(0, 165, 33);font-weight:bold"><c:out value="Completed"/> </span>
+                        </c:if>
+                        <c:if test= "${progression.getSecond() != 100.0}">
+                            <span style="color:rgb(204, 147, 4);font-weight:bold"><c:out value="In progress"/> </span>
+                        </c:if>
+                    </c:if>
+                </c:forEach>
                 </td>
             </tr>
         </c:forEach>
