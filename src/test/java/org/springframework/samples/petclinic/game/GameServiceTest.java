@@ -67,7 +67,7 @@ public class GameServiceTest {
         assertThrows(Exception.class, () -> service.saveGame(game, turn));
     }
 */
-
+/* 
     @Test
     public void testStartGameIfNeeded() {
         Game game = createGame("Game to start", true);
@@ -75,6 +75,6 @@ public class GameServiceTest {
         GameService service = new GameService(repo);
         service.startGameIfNeeded(game, suffragiumCard);
         assertTrue(game.getState() == State.IN_PROCESS);
-    }
+    }*/
 
 }

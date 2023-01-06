@@ -139,6 +139,7 @@ public class PlayerService {
 	@Transactional(readOnly = true)
 	public List<String> auditPlayer(Player player) {
 		List<String> res = new ArrayList<>();
+		List<String> updates = new ArrayList<>();
 		List<Revision<Integer, Player>> revs = playerRepository.findRevisions(player.getId()).get().collect(Collectors.toList());
 		for(Revision<Integer, Player> r: revs) {
 			Instant instant = r.getRevisionInstant().get().atZone(ZoneId.systemDefault()).toInstant();
@@ -146,14 +147,15 @@ public class PlayerService {
 				res.add("Player created at " + fromInstantToDate(instant));
 			} 
 			else if(r.getMetadata().getRevisionType() == org.springframework.data.history.RevisionMetadata.RevisionType.UPDATE) {
-				if(player.getPlaying() == true) {
-					res.add("Started playing a game at " + fromInstantToDate(instant));
+				if(updates.size() % 2 == 0) {
+					updates.add("Started playing a game at " + fromInstantToDate(instant));
 				} 
-				else if(player.getPlaying() == false) {
-					res.add("Finished playing a game at " + fromInstantToDate(instant));
+				else {
+					updates.add("Finished playing a game at " + fromInstantToDate(instant));
 				}
 			}
 		}
+		res.addAll(updates);
 		return res;
 	}
 
