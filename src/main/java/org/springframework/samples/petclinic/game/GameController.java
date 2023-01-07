@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.comment.Comment;
+import org.springframework.samples.petclinic.comment.CommentService;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.deck.FactionCard;
@@ -44,7 +46,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("/games")
@@ -87,6 +91,9 @@ public class GameController {
 
 	@Autowired
 	private StageService stageService;
+
+	@Autowired
+	private CommentService commentService;
 
     @Autowired
     public GameController(GameService service) {
@@ -272,11 +279,12 @@ public class GameController {
     public ModelAndView joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo){
 		ModelAndView res=new ModelAndView(GAME_LOBBY);
 		Game game=gameService.getGameById(gameId);
-		Game game2=gameService.joinGame(game);
+		Player joinedPlayer=joinedInfo.getPlayer();
+		gameService.joinGame(game, joinedPlayer);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
-		PlayerInfo playerInfo=playerInfoService.saveJoinedPlayerInfo(joinedInfo, game2, player);
+		PlayerInfo playerInfo=playerInfoService.saveJoinedPlayerInfo(joinedInfo, game, player);
 		res.addObject(playerInfo);
-        return showLobby(game2.getId());
+        return showLobby(game.getId());
     }
 
 	@Transactional
@@ -284,11 +292,12 @@ public class GameController {
     public ModelAndView spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo){
 		ModelAndView res=new ModelAndView(GAME_LOBBY);
 		Game game=gameService.getGameById(gameId);
-		Game game2=gameService.joinGame(game);
+		Player spectator=spectatorInfo.getPlayer();
+		gameService.joinGame(game, spectator);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
-		PlayerInfo playerInfo=playerInfoService.saveSpectatorPlayerInfo(spectatorInfo, game2, player);
+		PlayerInfo playerInfo=playerInfoService.saveSpectatorPlayerInfo(spectatorInfo, game, player);
 		res.addObject(playerInfo);
-        return showLobby(game2.getId());
+        return showLobby(game.getId());
     }
 
 	@Transactional
@@ -353,4 +362,30 @@ public class GameController {
 		stageService.changeStage(stage, CurrentStage.VOTING);
         return "redirect:/games/" + gameId.toString();
     }
+
+/* */
+
+	@RequestMapping("/{gameId}/comment")
+    public ModelAndView sendComment(@PathVariable("gameId") Integer gameId,@AuthenticationPrincipal UserDetails user,@RequestParam(value="comment",required = false) String message,HttpServletResponse response) {
+    	response.addHeader("Refresh", "2");
+    	// Game game = gameService.getGameById(gameId);
+        Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+    	if(message!=null) {
+    		Comment comment = new Comment();
+            comment.setSender(currentPlayer.toString()); //?
+            comment.setMessage(message);
+            commentService.save(comment, currentPlayer);
+        }
+    	
+        RedirectView redirectView = new RedirectView("/{gameId}");
+        redirectView.setExposePathVariables(false);
+        return new ModelAndView(redirectView);
+    }
+
+
+
+
+
+
+
 }

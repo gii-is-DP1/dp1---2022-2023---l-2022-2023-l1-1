@@ -23,6 +23,16 @@ public class PlayerInfoService {
     }
 
     @Transactional(readOnly = true)
+    public Game getPlayerInfoById(Integer id){
+        return repo.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public void deletePlayerInfo(Long id) {
+        repo.deleteById(id);;
+    }
+
+    @Transactional(readOnly = true)
     public List<PlayerInfo> getPlayerInfosByGame(Game game) {
         return repo.findPlayerInfosByGame(game);
     }
@@ -43,19 +53,30 @@ public class PlayerInfoService {
 
     @Transactional
     public PlayerInfo saveJoinedPlayerInfo(PlayerInfo joinedInfo, Game game, Player player) {
-        joinedInfo.setCreator(false);
-        joinedInfo.setSpectator(false);
-        joinedInfo.setPlayer(player);
-        joinedInfo.setGame(game);
+        List<Player> players=repo.findPlayersByGame(game);
+        if(!players.contains(player)){
+            joinedInfo.setCreator(false);
+            joinedInfo.setSpectator(false);
+            joinedInfo.setPlayer(player);
+            joinedInfo.setGame(game);
+        }
         return repo.save(joinedInfo);
     }
 
     @Transactional
     public PlayerInfo saveSpectatorPlayerInfo(PlayerInfo spectatorInfo, Game game, Player player) {
-        spectatorInfo.setCreator(false);
-        spectatorInfo.setSpectator(true);
-        spectatorInfo.setPlayer(player);
-        spectatorInfo.setGame(game);
+        List<Player> players=repo.findPlayersByGame(game);
+        if(!players.contains(player)){
+            spectatorInfo.setCreator(false);
+            spectatorInfo.setSpectator(true);
+            spectatorInfo.setPlayer(player);
+            spectatorInfo.setGame(game);
+        }
         return repo.save(spectatorInfo);
     }
+
+    @Transactional
+	public void removePlayerInfo(PlayerInfo playerInfo){
+		this.repo.delete(playerInfo);
+	}
 }
