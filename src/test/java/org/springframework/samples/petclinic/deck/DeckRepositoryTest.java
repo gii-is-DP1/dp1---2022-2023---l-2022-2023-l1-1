@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.deck;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -26,36 +27,38 @@ public class DeckRepositoryTest {
     @Autowired
     private GameRepository gameRepository;
 
+    private static final Integer PLAYER_WITH_DECKS_ID = 3;
+    private static final Integer PLAYER_WITHOUT_DECKS_ID = 9;
+    private static final Integer TEST_GAME_ID = 2;
+
     @Test
     public void testFindPlayerDecks() {
-        List<Deck> decks = deckRepository.findPlayerDecks(3);
+        List<Deck> decks = deckRepository.findPlayerDecks(PLAYER_WITH_DECKS_ID);
         assertNotNull(decks);
         assertFalse(decks.isEmpty());
     }
 
     @Test
     public void testFindPlayerDecksNotExistingDecks() {
-        List<Deck> decks = deckRepository.findPlayerDecks(9);
+        List<Deck> decks = deckRepository.findPlayerDecks(PLAYER_WITHOUT_DECKS_ID);
         assertNotNull(decks);
         assertTrue(decks.isEmpty());
     }
-/* 
+ 
     @Test
     public void testFindDecksByPlayerAndGame() {
         Player player = playerRepository.findPlayerByUsername("migmanalv");
-        Game game = gameRepository.findById(2);
-        List<Deck> decks = deckRepository.findDecksByPlayerAndGame(player, game);
-        assertNotNull(decks);
-        assertFalse(decks.isEmpty());
+        Game game = gameRepository.findById(TEST_GAME_ID);
+        Deck deck = deckRepository.findDeckByPlayerAndGame(player, game);
+        assertNotNull(deck);
     }
 
     @Test
     public void testFindDecksByPlayerAndGameNotExistingDecks() {
         Player player = playerRepository.findPlayerByUsername("player5");
-        Game game = gameRepository.findById(2);
-        List<Deck> decks = deckRepository.findDecksByPlayerAndGame(player, game);
-        assertNotNull(decks);
-        assertTrue(decks.isEmpty());
+        Game game = gameRepository.findById(TEST_GAME_ID);
+        Deck deck = deckRepository.findDeckByPlayerAndGame(player, game);
+        assertNull(deck);
     }
-  */  
+   
 }

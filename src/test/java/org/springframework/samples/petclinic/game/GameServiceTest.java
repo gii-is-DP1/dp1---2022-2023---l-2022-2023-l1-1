@@ -1,31 +1,82 @@
 package org.springframework.samples.petclinic.game;
 
+
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Disabled;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.samples.petclinic.deck.Deck;
+import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.enums.CurrentRound;
+import org.springframework.samples.petclinic.enums.CurrentStage;
+import org.springframework.samples.petclinic.enums.Faction;
+import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.enums.State;
+import org.springframework.samples.petclinic.invitation.InvitationService;
+import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
+import org.springframework.samples.petclinic.turn.TurnRepository;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class GameServiceTest {
     
     @Mock
-    GameRepository repo;
+    GameRepository gameRepository;
+
+    @Mock
+    PlayerInfoRepository playerInfoRepository;
+
+    @Mock
+    PlayerRepository playerRepository;
+
+    @Mock
+    TurnRepository turnRepository;
+
+    @Mock
+    DeckRepository deckRepository;
+
+    @Mock 
+    InvitationService invitationService;
+
+    @Mock
+    DeckService deckService;
+
+    Game game;
+    Game gameInProcess;
+    Game gameFinished;
+    Player p1;
+    Player p2;
 
     private Game createGame(String name, Boolean publicGame) {
         Game game = new Game();
         game.setName(name);
         game.setPublicGame(publicGame);
         game.setState(State.STARTING);
+        game.setNumPlayers(1);
+        game.setStartDate(Date.from(Instant.now()));
         return game;
     }
 
@@ -46,35 +97,262 @@ public class GameServiceTest {
         return card;
     }
 
+    @BeforeEach
+    public void config() {
+        game = createGame("Test game", true);
+        gameInProcess = createGame("Test game in process", true);
+        gameInProcess.setState(State.IN_PROCESS);
+        gameFinished = createGame("Test game finished", true);
+        gameFinished.setState(State.FINISHED);
+        List<Game> games = new ArrayList<>();
+        List<Game> gamesInProcess = new ArrayList<>();
+        List<Game> gamesFinished = new ArrayList<>();
+        games.add(game);
+        gamesInProcess.add(gameInProcess);
+        gamesFinished.add(gameFinished);
+        when(gameRepository.findByName(anyString())).thenReturn(games).thenReturn(new ArrayList<>()).thenReturn(gamesFinished);
+        when(gameRepository.findPublicGamesByName(anyString())).thenReturn(games).thenReturn(new ArrayList<>());
+        when(gameRepository.findPrivateGamesByName(anyString())).thenReturn(games).thenReturn(new ArrayList<>());
+        when(gameRepository.findAll()).thenReturn(games);
+
+        p1 = new Player();
+        p2 = new Player();
+        List<Player> players = new ArrayList<>();
+        players.add(p2);
+        when(invitationService.getFriends(any(Player.class))).thenReturn(players);
+
+        when(playerInfoRepository.findPlayersByGame(any(Game.class))).thenReturn(players);
+        when(playerInfoRepository.findGamesByPlayer(any(Player.class))).thenReturn(gamesFinished);
+        when(playerInfoRepository.findGamesInProcessByPlayer(any(Player.class))).thenReturn(gamesInProcess);
+
+        when(playerRepository.save(any(Player.class))).thenReturn(p1);
+
+        when(turnRepository.save(any(Turn.class))).thenReturn(new Turn());
+
+        Deck deck = new Deck();
+        deck.setGame(game);
+        deck.setRoleCard(RoleCard.CONSUL);
+        List<Deck> decks = new ArrayList<>();
+        decks.add(deck);
+        when(deckRepository.findAll()).thenReturn(decks);
+
+        List<Player> winners = new ArrayList<>();
+        winners.add(p1);
+        when(deckService.winnerPlayers(any(Game.class), any(Faction.class))).thenReturn(winners);
+    }
+
     @Test
-    public void testSaveGameSuccessful() {
+    public void testGetGamesByNameAndState() {
+        GameService service = new GameService(gameRepository);
+        List<Game> games = service.getGamesByNameAndState("Test game", State.STARTING);
+        assertNotNull(games);
+        assertFalse(games.isEmpty());
+    }
+
+    @Test
+    public void testGetGamesByNameAndStateNotExistingGames() {
+        GameService service = new GameService(gameRepository);
+        service.getGamesByNameAndState("jasdbjfahl", State.STARTING); // aux call to getGamesByNameAndState() in order to get the first return of when(findByName()) in config()
+        List<Game> games = service.getGamesByNameAndState("jasdbjfahl", State.STARTING);
+        assertNotNull(games);
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    public void testGetPublicGamesByNameAndState() {
+        GameService service = new GameService(gameRepository);
+        List<Game> games = service.getPublicGamesByNameAndState("Test game", State.STARTING);
+        assertNotNull(games);
+        assertFalse(games.isEmpty());
+    }
+
+    @Test
+    public void testGetPublicGamesByNameAndStateNotExistingGames() {
+        GameService service = new GameService(gameRepository);
+        service.getPublicGamesByNameAndState("jasdbjfahl", State.STARTING); // aux call to getPublicGamesByNameAndState() in order to get the first return of when(findByName()) in config()
+        List<Game> games = service.getPublicGamesByNameAndState("jasdbjfahl", State.STARTING);
+        assertNotNull(games);
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    public void testGetPrivateGamesByNameAndState() {
+        GameService service = new GameService(gameRepository);
+        List<Game> games = service.getPrivateGamesByNameAndState("Test game", State.STARTING);
+        assertNotNull(games);
+        assertFalse(games.isEmpty());
+    }
+
+    @Test
+    public void testGetPrivateGamesByNameAndStateNotExistingGames() {
+        GameService service = new GameService(gameRepository);
+        service.getPrivateGamesByNameAndState("jasdbjfahl", State.STARTING); // aux call to getPrivateGamesByNameAndState() in order to get the first return of when(findByName()) in config()
+        List<Game> games = service.getPrivateGamesByNameAndState("jasdbjfahl", State.STARTING);
+        assertNotNull(games);
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    public void testGetFriendGamesByNameAndState() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        List<Game> games = service.getFriendGamesByNameAndState("Test game", State.STARTING, new Player());
+        assertNotNull(games);
+        assertFalse(games.isEmpty());
+    }
+
+    @Test
+    public void testGetFriendGamesByNameAndStateNotExistingGames() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        service.getFriendGamesByNameAndState("jasdbjfahl", State.STARTING, new Player()); // aux call to getFriendGamesByNameAndState() in order to get the first return of when(findByName()) in config()
+        List<Game> games = service.getFriendGamesByNameAndState("jasdbjfahl", State.STARTING, new Player());
+        assertNotNull(games);
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    public void testGetPlayerGamesHistory() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        service.getGamesByNameAndState("jasdbjfahl", State.STARTING); // aux call to getGamesByNameAndState() in order to get the first return of when(findByName()) in config()
+        service.getGamesByNameAndState("jasdbjfahl", State.STARTING); // aux call to getGamesByNameAndState() in order to get the second return of when(findByName()) in config()
+        List<Game> games = service.getPlayerGamesHistory("Test game finished", p1, true);
+        assertNotNull(games);
+        assertFalse(games.isEmpty());
+    }
+
+    @Test
+    public void testGetPlayerGamesHistoryNotExistingPrivateGames() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        service.getGamesByNameAndState("jasdbjfahl", State.STARTING); // aux call to getGamesByNameAndState() in order to get the first return of when(findByName()) in config()
+        service.getGamesByNameAndState("jasdbjfahl", State.STARTING); // aux call to getGamesByNameAndState() in order to get the second return of when(findByName()) in config()
+        List<Game> games = service.getPlayerGamesHistory("Test game finished", p1, false);
+        assertNotNull(games);
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    public void testSaveGame() {
         Game game = createGame("Test game", true);
         Turn turn = createTurn(0, 0, 0);
-        GameService service = new GameService(repo);
+        GameService service = new GameService(gameRepository);
         try {
             service.saveGame(game, turn);
         } catch (Exception e) {
             fail("no exception should be thrown");
         }
     }
-
- /* 
-    @Test
-    public void testSaveGameUnsuccessfulDueToName() {
-        Game game = createGame("g", true);
-        Turn turn = createTurn(0, 0, 0);
-        GameService service = new GameService(repo);
-        assertThrows(Exception.class, () -> service.saveGame(game, turn));
-    }
-*/
-/* 
+ 
     @Test
     public void testStartGameIfNeeded() {
         Game game = createGame("Game to start", true);
         SuffragiumCard suffragiumCard = createSuffragiumCard(0, 0, 15);
-        GameService service = new GameService(repo);
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
         service.startGameIfNeeded(game, suffragiumCard);
-        assertTrue(game.getState() == State.IN_PROCESS);
+        assertTrue(game.getState() == State.IN_PROCESS);        
+    }
+
+    @Test
+    public void testCheckPlayerIsPlaying() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        service.checkPlayerIsPlaying(p1);
+        assertTrue(p1.getPlaying());        
+    }
+
+    @Test
+    public void testJoinGame() {
+        GameService service = new GameService(gameRepository);
+        service.joinGame(game);
+        assertTrue(game.getNumPlayers()==2);        
+    }
+
+    @Test
+    public void testChangeStage() {
+        GameService service = new GameService(gameRepository);
+        service.changeStage(game, CurrentStage.END_OF_TURN);
+        assertTrue(game.getStage() == CurrentStage.END_OF_TURN);        
+    }
+
+    @Test
+    public void testChangeStageIfVotesCompletedToVeto() {
+        game.setTurn(createTurn(1, 1, 0));
+        GameService service = new GameService(gameRepository);
+        service.changeStageIfVotesCompleted(game);
+        assertTrue(game.getStage() == CurrentStage.VETO);        
+    }
+
+    @Test
+    public void testChangeStageIfVotesCompletedToScoring() {
+        game.setTurn(createTurn(2, 1, 0));
+        GameService service = new GameService(gameRepository);
+        service.changeStageIfVotesCompleted(game);
+        assertTrue(game.getStage() == CurrentStage.SCORING);        
+    }
+
+    @Test
+    public void testChangeStageIfVotesCompletedNoChange() {
+        game.setStage(CurrentStage.VOTING);
+        game.setTurn(createTurn(0, 0, 0));
+        GameService service = new GameService(gameRepository);
+        service.changeStageIfVotesCompleted(game);
+        assertTrue(game.getStage() == CurrentStage.VOTING);        
+    }
+
+    @Test
+    public void testChangeTurnAndRoundToNewTurn() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setTurn(createTurn(1, 1, 0));
+        game.setNumPlayers(5);
+        service.changeTurnAndRound(game);
+        assertTrue(game.getTurn().getCurrentTurn() == 2);        
+    }
+
+    @Test
+    public void testChangeTurnAndRoundToNewTurnAndRound() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        Turn turn = createTurn(1, 1, 0);
+        turn.setCurrentTurn(5);
+        game.setTurn(turn);
+        game.setRound(CurrentRound.FIRST);
+        game.setNumPlayers(5);
+        service.changeTurnAndRound(game);
+        assertTrue(game.getTurn().getCurrentTurn() == 1); 
+        assertTrue(game.getRound() == CurrentRound.SECOND);       
+    }
+
+    @Test
+    public void testChangeTurnAndRoundGameFinished() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        Turn turn = createTurn(1, 1, 0);
+        turn.setCurrentTurn(5);
+        game.setTurn(turn);
+        game.setRound(CurrentRound.SECOND);
+        game.setNumPlayers(5);
+        service.changeTurnAndRound(game);
+        assertTrue(game.getState() == State.FINISHED);      
+    }
+
+    @Test
+    public void testGameRoleCardNumber() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        Integer number = service.gameRoleCardNumber(game);
+        assertTrue(number == 1);        
+    }
+
+    @Test
+    public void testWinnerFaction() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setNumPlayers(5);
+        game.setSuffragiumCard(createSuffragiumCard(13, 2, 13));
+        service.winnerFaction(game);
+        assertTrue(game.getWinners() == Faction.TRAITORS);  
+    }
+/* 
+    @Test
+    public void testWinnersByGame() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        Map<Game, List<Player>> winners = service.winnersByGame();
+        assertTrue(winners.get(game).contains(p1));  
     }*/
+    
+    
 
 }
