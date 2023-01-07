@@ -22,10 +22,8 @@ public class TurnService {
     DeckService deckService;
 
     @Autowired
-    public TurnService (TurnRepository turnRepository, GameRepository gameRepository, DeckService deckService) {
+    public TurnService (TurnRepository turnRepository) {
         this.turnRepository = turnRepository;
-        this.gameRepository = gameRepository;
-        this.deckService = deckService;
     }
 
     @Transactional
