@@ -1,8 +1,5 @@
 package org.springframework.samples.petclinic.invitation;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,7 +17,6 @@ import org.springframework.samples.petclinic.achievements.AchievementRepository;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.game.GameService;
-import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoService;
@@ -31,8 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.samples.petclinic.deck.DeckRepository;
 import org.springframework.samples.petclinic.deck.FactionCardRepository;
 import org.springframework.samples.petclinic.deck.VoteCardRepository;
-import org.springframework.samples.petclinic.deck.VoteCardService;
-import org.springframework.samples.petclinic.invitation.InvitationRepository;
 import org.springframework.samples.petclinic.owner.OwnerRepository;
 import org.springframework.samples.petclinic.pet.PetRepository;
 import org.springframework.samples.petclinic.pet.VisitRepository;
@@ -49,13 +43,145 @@ import org.springframework.samples.petclinic.turn.TurnRepository;
             excludeAutoConfiguration = SecurityConfiguration.class)
 public class InvitationControllerTest {
 
-    private static final Integer TEST_PLAYER_ID = 1;
+    private static final Integer TEST_INVITATION_ID = 1;
+    private static final Integer TEST_GAME_ID = 1;
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private InvitationService invitationService;
+ 
+    @WithMockUser
+    @Test
+    public void testShowInvitationsByPlayer() throws Exception {
+        mockMvc.perform(get("/invitations"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/invitationsList"))
+        .andExpect(model().attributeExists("invitations"))
+        .andExpect(model().attributeExists("playerInvitations"))
+        .andExpect(model().attributeExists("spectatorInvitations"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testShowFriends() throws Exception {
+        mockMvc.perform(get("/friends"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/friendsList"))
+        .andExpect(model().attributeExists("friendsInvitations"));
+    }
+ 
+    @WithMockUser
+    @Test
+    public void testSendInvitation() throws Exception {
+        mockMvc.perform(get("/invitations/send"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/sendInvitation"))
+        .andExpect(model().attributeExists("players"))
+        .andExpect(model().attributeExists("invitation"));
+    }
+ 
+    @WithMockUser
+    @Test
+    public void testSaveInvitationSuccessful() throws Exception {
+        mockMvc.perform(post("/invitations/send")
+        .with(csrf())
+        .param("recipient", "player1")
+        .param("message", "Testing invitations"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/invitationsList"))
+        .andExpect(model().attributeExists("invitations"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testSaveInvitationUnsuccesfulDueToShortMessage() throws Exception {
+        mockMvc.perform(post("/invitations/send")
+        .with(csrf())
+        .param("recipient", "player1")
+        .param("message", "a"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/sendInvitation"))
+        .andExpect(model().attributeExists("players"))
+        .andExpect(model().attributeExists("invitation"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testAcceptInvitation() throws Exception {
+        mockMvc.perform(get("/invitations/"+TEST_INVITATION_ID+"/accept"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/invitationsList"))
+        .andExpect(model().attributeExists("message"))
+        .andExpect(model().attributeExists("invitations"))
+        .andExpect(model().attributeExists("playerInvitations"))
+        .andExpect(model().attributeExists("spectatorInvitations"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testRejectInvitation() throws Exception {
+        mockMvc.perform(get("/invitations/"+TEST_INVITATION_ID+"/reject"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/invitationsList"))
+        .andExpect(model().attributeExists("message"))
+        .andExpect(model().attributeExists("invitations"))
+        .andExpect(model().attributeExists("playerInvitations"))
+        .andExpect(model().attributeExists("spectatorInvitations"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testCancelFriendship() throws Exception {
+        mockMvc.perform(get("/invitations/"+TEST_INVITATION_ID+"/cancelFriendship"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/friendsList"))
+        .andExpect(model().attributeExists("message"))
+        .andExpect(model().attributeExists("friendsInvitations"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testSendGameInvitation() throws Exception {
+        mockMvc.perform(get("/gameInvitations/"+TEST_GAME_ID+"/send"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("invitations/sendGameInvitation"))
+        .andExpect(model().attributeExists("friends"))
+        .andExpect(model().attributeExists("types"))
+        .andExpect(model().attributeExists("invitation"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testSaveGameInvitation() throws Exception {
+        mockMvc.perform(post("/gameInvitations/{gameId}/send", TEST_GAME_ID)
+        .with(csrf())
+        .param("recipient", "player1")
+        .param("invitationType", "GAME_PLAYER")
+        .param("message", "Testing invitations"))
+        .andExpect(status().isOk());
+    }
+
+    @WithMockUser
+    @Test
+    public void testAcceptGamePlayerInvitation() throws Exception {
+        mockMvc.perform(get("/gameInvitations/{gameId}/{id}/acceptPlayer", TEST_GAME_ID, TEST_INVITATION_ID))
+        .andExpect(status().isOk());
+    }
+
+    @WithMockUser
+    @Test
+    public void testAcceptGameSpectatorInvitation() throws Exception {
+        mockMvc.perform(get("/gameInvitations/{gameId}/{id}/acceptSpectator", TEST_GAME_ID, TEST_INVITATION_ID))
+        .andExpect(status().isOk());
+    }
+
+    /* 
+    The following MockBeans are necessary to make controller tests work correctly, since we're using the annotation
+    "@EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)" in "PetclinicApplication.java".
+    This anotation is required to access audit information about players, but forces us to create the MockBeans.
+    */
 
     @MockBean
     private PlayerService playerService;
@@ -116,37 +242,4 @@ public class InvitationControllerTest {
 
     @MockBean
     private VisitRepository visitRepository;
- 
-    @WithMockUser
-    @Test
-    public void testShowInvitationsByPlayer() throws Exception {
-        mockMvc.perform(get("/invitations"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("invitations/invitationsList"))
-        .andExpect(model().attributeExists("invitations"));
-    }
-/* 
-    @WithMockUser
-    @Test
-    public void testSendInvitation() throws Exception {
-        mockMvc.perform(get("/invitations/send"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("invitations/sendInvitation"))
-        .andExpect(model().attributeExists("players"))
-        .andExpect(model().attributeExists("invitation"));
-    }*/
-/* 
-    @WithMockUser
-    @Test
-    public void testSaveInvitation() throws Exception {
-        mockMvc.perform(post("/invitations/send", null)
-        .with(csrf())
-        .param("recipient", "2")
-        .param("message", "Testing invitations"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("invitations/invitationsList"))
-        .andExpect(model().attributeExists("invitations"));
-
-        verify(invitationService).saveInvitation(any(Invitation.class), any(Player.class));    
-    }*/
 }

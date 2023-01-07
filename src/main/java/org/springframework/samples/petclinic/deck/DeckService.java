@@ -2,14 +2,12 @@ package org.springframework.samples.petclinic.deck;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
-import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
@@ -49,7 +47,7 @@ public class DeckService {
 
     @Transactional(readOnly = true)
     public Deck getDeckByPlayerAndGame(Player player, Game game) {
-        return rep.findPlayerDecks(player.getId()).stream().filter(x -> x.getGame().getId() == game.getId()).findFirst().get();
+        return rep.findDeckByPlayerAndGame(player, game);
     }
 
     @Transactional
@@ -59,10 +57,13 @@ public class DeckService {
 
     @Transactional
     public void updateFactionDeck (Deck deck, FCType factionCard) {
+        System.out.println("11");
         List<FactionCard> chosenFaction = new ArrayList<>();
         FactionCard cardChosen = factionCardRepository.findById(factionCard).get();
         chosenFaction.add(cardChosen);
+        System.out.println("22");
         Deck deckToUpdate = rep.findById(deck.getId()).get();
+        System.out.println("33");
         deckToUpdate.setFactionCards(chosenFaction);
         rep.save(deckToUpdate);
     }
@@ -137,7 +138,7 @@ public class DeckService {
     @Transactional
     public void assingDecksIfNeeded(Game game) {        //esto esta cambiado
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
-        if(rep.findDecksByPlayerAndGame(players.get(ANY_PLAYER), game) == null) {
+        if(rep.findDeckByPlayerAndGame(players.get(ANY_PLAYER), game) == null) {
             List<FactionCard> factions = getFactionCards(players.size());
             List<VoteCard> votes = getFirstRoundVoteCards();
             Integer consul = (int) (Math.random() * (players.size()-1));
@@ -350,7 +351,7 @@ public class DeckService {
             winnerFactionCard = factionCardRepository.findById(FCType.MERCHANT).get();
         }
 
-        List<Player> winnerPlayers = getDecks().stream() //decks de un game se podria hacer por query (de hecho creo que se deberia)
+        List<Player> winnerPlayers = getDecks().stream()
 			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(winnerFactionCard))
             .map(d -> d.getPlayer()).collect(Collectors.toList());
 
