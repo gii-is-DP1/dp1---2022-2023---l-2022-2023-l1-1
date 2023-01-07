@@ -340,6 +340,7 @@ public class GameController {
 
 		}
 
+		res.addObject("activePlayers", gameService.activePlayers(game));
 		res.addObject("votesAssigned", deckService.votesAsigned(gamePlayerInfos));
 		res.addObject("roleCardNumber", roleCardNumber);
 		res.addObject("turn", currentTurn);
