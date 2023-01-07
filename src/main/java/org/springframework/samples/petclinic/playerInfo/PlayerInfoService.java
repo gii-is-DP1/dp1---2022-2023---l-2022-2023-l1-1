@@ -61,6 +61,12 @@ public class PlayerInfoService {
             joinedInfo.setGame(game);
         }
         return repo.save(joinedInfo);
+    public PlayerInfo savePlayerInfo(PlayerInfo playerInfo, Game game, Player player) {
+        playerInfo.setCreator(false);
+        playerInfo.setSpectator(false);
+        playerInfo.setPlayer(player);
+        playerInfo.setGame(game);
+        return repo.save(playerInfo);
     }
 
     @Transactional
@@ -72,6 +78,11 @@ public class PlayerInfoService {
             spectatorInfo.setPlayer(player);
             spectatorInfo.setGame(game);
         }
+    public PlayerInfo saveSpectatorInfo(PlayerInfo spectatorInfo, Game game, Player player) {
+        spectatorInfo.setCreator(false);
+        spectatorInfo.setSpectator(true);
+        spectatorInfo.setPlayer(player);
+        spectatorInfo.setGame(game);
         return repo.save(spectatorInfo);
     }
 
