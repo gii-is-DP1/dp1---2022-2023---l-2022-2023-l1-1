@@ -39,6 +39,7 @@ public class DeckServiceTest {
 
     @Mock
     private FactionCardRepository factionCardRepository;
+
 /* 
     @Test
     public void testUpdateFactionDeck() {
@@ -53,6 +54,7 @@ public class DeckServiceTest {
         System.out.println("================================="+deck.getFactionCards());
         assertTrue(deck.getFactionCards().contains(loyalCard));
     }*/
+
 
    /*  @Test
     public void testAssingDecksIfNeeded() {

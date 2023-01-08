@@ -364,7 +364,7 @@ public class GameServiceTest {
         service.winnerFaction(game);
         assertTrue(game.getWinners() == Faction.TRAITORS);  
     }
-
+    
     @Test
     public void testWinnerFactionLoyalsIdesOfMarch() {
         GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
