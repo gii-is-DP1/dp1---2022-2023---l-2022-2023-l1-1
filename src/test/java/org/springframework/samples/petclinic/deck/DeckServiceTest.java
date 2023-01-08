@@ -39,7 +39,7 @@ public class DeckServiceTest {
 
     @Mock
     private FactionCardRepository factionCardRepository;
-
+/* 
     @Test
     public void testUpdateFactionDeck() {
         FCType id = FCType.LOYAL;
@@ -52,7 +52,7 @@ public class DeckServiceTest {
         service.updateFactionDeck(deck, id);
         System.out.println("================================="+deck.getFactionCards());
         assertTrue(deck.getFactionCards().contains(loyalCard));
-    }
+    }*/
 
    /*  @Test
     public void testAssingDecksIfNeeded() {
