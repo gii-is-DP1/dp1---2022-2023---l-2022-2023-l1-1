@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.game;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +11,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 
@@ -26,6 +28,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckRepository;
 import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.deck.VoteCard;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
@@ -38,6 +41,7 @@ import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnRepository;
+import org.springframework.samples.petclinic.user.User;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -69,6 +73,7 @@ public class GameServiceTest {
     Game gameFinished;
     Player p1;
     Player p2;
+    Deck deck;
 
     private Game createGame(String name, Boolean publicGame) {
         Game game = new Game();
@@ -116,7 +121,13 @@ public class GameServiceTest {
         when(gameRepository.findAll()).thenReturn(games);
 
         p1 = new Player();
+        User u1 = new User();
+        u1.setUsername("player1");
+        p1.setUser(u1);
         p2 = new Player();
+        User u2 = new User();
+        u2.setUsername("player2");
+        p2.setUser(u2);
         List<Player> players = new ArrayList<>();
         players.add(p2);
         when(invitationService.getFriends(any(Player.class))).thenReturn(players);
@@ -129,7 +140,7 @@ public class GameServiceTest {
 
         when(turnRepository.save(any(Turn.class))).thenReturn(new Turn());
 
-        Deck deck = new Deck();
+        deck = new Deck();
         deck.setGame(game);
         deck.setRoleCard(RoleCard.CONSUL);
         List<Deck> decks = new ArrayList<>();
@@ -338,21 +349,99 @@ public class GameServiceTest {
     }
 
     @Test
-    public void testWinnerFaction() {
+    public void testWinnerFactionLoyalsFailedConspiracy() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setNumPlayers(5);
+        game.setSuffragiumCard(createSuffragiumCard(1, 13, 13));
+        service.winnerFaction(game);
+        assertTrue(game.getWinners() == Faction.LOYALS);  
+    }
+    @Test
+    public void testWinnerFactionTraitorsFailedConspiracy() {
         GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
         game.setNumPlayers(5);
         game.setSuffragiumCard(createSuffragiumCard(13, 2, 13));
         service.winnerFaction(game);
         assertTrue(game.getWinners() == Faction.TRAITORS);  
     }
-/* 
+    
+    @Test
+    public void testWinnerFactionLoyalsIdesOfMarch() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setNumPlayers(5);
+        game.setSuffragiumCard(createSuffragiumCard(12, 6, 13));
+        service.winnerFaction(game);
+        assertTrue(game.getWinners() == Faction.LOYALS);  
+    }
+
+    @Test
+    public void testWinnerFactionTraitorsIdesOfMarch() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setNumPlayers(5);
+        game.setSuffragiumCard(createSuffragiumCard(7, 11, 13));
+        service.winnerFaction(game);
+        assertTrue(game.getWinners() == Faction.TRAITORS);  
+    }
+
+    @Test
+    public void testWinnerFactionMerchantsIdesOfMarch() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setNumPlayers(5);
+        game.setSuffragiumCard(createSuffragiumCard(8, 9, 13));
+        service.winnerFaction(game);
+        assertTrue(game.getWinners() == Faction.MERCHANTS);  
+    }
+ 
     @Test
     public void testWinnersByGame() {
+        game.setWinners(Faction.LOYALS);
         GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
-        Map<Game, List<Player>> winners = service.winnersByGame();
-        assertTrue(winners.get(game).contains(p1));  
-    }*/
+        Map<Game, List<Player>> winners2 = service.winnersByGame();
+        assertTrue(winners2.get(game).contains(p1));  
+    }
     
+    @Test
+    public void testActivePlayersConsulInVoting() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setStage(CurrentStage.VOTING);
+        when(deckService.votesAsigned(anyList())).thenReturn(false);
+        when(deckRepository.findDeckByPlayerAndGame(any(Player.class), any(Game.class))).thenReturn(deck);
+        List<String> usernames = service.activePlayers(game);
+        assertTrue(usernames.contains("player2"));        
+    }
+
+    @Test
+    public void testActivePlayersEdil() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setStage(CurrentStage.VOTING);
+        when(deckService.votesAsigned(anyList())).thenReturn(true);
+        deck.setRoleCard(RoleCard.EDIL);
+        List<VoteCard> voteCards = new ArrayList<>();
+        voteCards.add(new VoteCard());
+        voteCards.add(new VoteCard());
+        deck.setVoteCards(voteCards);
+        when(deckRepository.findDeckByPlayerAndGame(any(Player.class), any(Game.class))).thenReturn(deck);
+        List<String> usernames = service.activePlayers(game);
+        assertTrue(usernames.contains("player2"));        
+    }
     
+    @Test
+    public void testActivePlayersPretor() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setStage(CurrentStage.VETO);
+        deck.setRoleCard(RoleCard.PRETOR);
+        when(deckRepository.findDeckByPlayerAndGame(any(Player.class), any(Game.class))).thenReturn(deck);
+        List<String> usernames = service.activePlayers(game);
+        assertTrue(usernames.contains("player2"));        
+    }
+
+    @Test
+    public void testActivePlayersConsulInEndOfTurn() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        game.setStage(CurrentStage.END_OF_TURN);
+        when(deckRepository.findDeckByPlayerAndGame(any(Player.class), any(Game.class))).thenReturn(deck);
+        List<String> usernames = service.activePlayers(game);
+        assertTrue(usernames.contains("player2"));        
+    }
 
 }

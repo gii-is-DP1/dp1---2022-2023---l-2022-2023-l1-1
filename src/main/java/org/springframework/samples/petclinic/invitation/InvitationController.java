@@ -197,7 +197,7 @@ public class InvitationController {
                 invitationService.saveGameInvitation(invitation, sender, game);
                 log.info("Invitation created");
                 model.put("message", "Invitation sent succesfully!");
-                return "redirect:/games/" + game.getId().toString() + "/lobby";
+                return "redirect:/games/" + gameId.toString() + "/lobby";
             } catch (NullRecipientException e) {
                 log.warn("Recipient not selected");
                 model.put("friends", friends);

@@ -59,7 +59,6 @@ public class GameService {
         this.repo = repo;
     }
 
-    @Autowired
     public GameService(GameRepository repo, PlayerInfoRepository playerInfoRepository, PlayerRepository playerRepository, TurnRepository turnRepository, DeckRepository deckRepository, InvitationService invitationService, DeckService deckService) {
         this.repo = repo;
         this.playerInfoRepository = playerInfoRepository;
@@ -244,7 +243,6 @@ public class GameService {
             else {
                 winner = Faction.LOYALS; //si no, esque ha superado traidor y gana leales
             }
-            //EN ESTE CASO SI NO HAY FACCION RIVAL GANARIA MERCADER A VER COMO SE PONE ESO
         }
 
         else { //idus de marzo
@@ -268,7 +266,6 @@ public class GameService {
     public Map<Game,List<Player>> winnersByGame () {
         Map<Game,List<Player>> res = new HashMap<>();
         List<Game> games = repo.findAll();
-        System.out.println("aqui" + games.size());
         games.forEach(g -> {
             List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
             res.put(g, winners);
@@ -282,25 +279,25 @@ public class GameService {
         if (game.getStage() == CurrentStage.VOTING) {
             if (!deckService.votesAsigned(playerInfoRepository.findPlayerInfosByGame(game))) {
                 activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
             }
             else {
             activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.EDIL && deckRepository.findDecksByPlayerAndGame(p, game).getVoteCards().size() > 1)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.EDIL && deckRepository.findDeckByPlayerAndGame(p, game).getVoteCards().size() > 1)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
             }
 
         }
         else if (game.getStage() == CurrentStage.VETO) {
              activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.PRETOR)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.PRETOR)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
 
         }
         else if (game.getStage() == CurrentStage.END_OF_TURN) {
             activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
         }
         return activePlayers;
