@@ -8,6 +8,7 @@ import org.hibernate.query.criteria.internal.ValueHandlerFactory.IntegerValueHan
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
@@ -88,6 +89,48 @@ public class PlayerService {
 		for (Game g:allFinishedGames){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player)){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+
+	@Transactional
+	public Double findUserWinsAsTraitor(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		Faction traitor = Faction.TRAITORS;
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player) && g.getWinners() == traitor){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+
+	@Transactional
+	public Double findUserWinsAsLoyal(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		Faction loyal = Faction.LOYALS;
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player) && g.getWinners() == loyal){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+
+	@Transactional
+	public Double findUserWinsAsMerchant(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		Faction merchant = Faction.MERCHANTS;
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player) && g.getWinners() == merchant){
 				result = result + 1.;
 			}
 		}

@@ -60,6 +60,30 @@
             <th>Global minimum time played</th>
             <td><c:out value="${statistics.get(12)} minutes" /></td>
         </tr>
+        <tr>
+            <th>Wins with Loyal as faction</th>
+            <td><c:out value="${statistics.get(13)} times" /></td>
+        </tr>
+        <tr>
+            <th>% wins with Loyal as faction</th>
+            <td><c:out value="${statistics.get(14)} %" /></td>
+        </tr>
+        <tr>
+            <th>Wins with Merchant as faction</th>
+            <td><c:out value="${statistics.get(15)} times" /></td>
+        </tr>
+        <tr>
+            <th>% wins with Merchant as faction</th>
+            <td><c:out value="${statistics.get(16)} %" /></td>
+        </tr>
+        <tr>
+            <th>Wins with Traitor as faction</th>
+            <td><c:out value="${statistics.get(17)} times" /></td>
+        </tr>
+        <tr>
+            <th>% wins with Traitor as faction</th>
+            <td><c:out value="${statistics.get(18)} %" /></td>
+        </tr>
     
         
         
