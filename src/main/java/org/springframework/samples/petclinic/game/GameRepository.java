@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.samples.petclinic.enums.State;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,5 +17,8 @@ public interface GameRepository extends CrudRepository<Game, Long>{
 
     @Query("SELECT DISTINCT g FROM Game g WHERE g.name LIKE :name%")
 	public List<Game> findByName(@Param("name") String name);
+
+    @Query("SELECT g FROM Game g WHERE g.state = :state")
+    public List<Game> findByState(@Param("state") State state);
 
 }

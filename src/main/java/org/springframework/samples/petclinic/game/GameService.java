@@ -72,5 +72,9 @@ public class GameService {
         repo.save(game);
     }
 
+    @Transactional
+    public List<Game> getGamesByState(State state){
+        return repo.findByState(state);
+    }
     
 }

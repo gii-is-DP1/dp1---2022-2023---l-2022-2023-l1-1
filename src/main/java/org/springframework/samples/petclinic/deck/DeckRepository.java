@@ -19,4 +19,5 @@ public interface DeckRepository extends CrudRepository<Deck, Integer> {
     @Query("SELECT d FROM Deck d WHERE d.player=:player AND d.game=:game")
     public List<Deck> findDecksByPlayerAndGame(@Param("player") Player player, @Param("game") Game game);
     
+    
 }
