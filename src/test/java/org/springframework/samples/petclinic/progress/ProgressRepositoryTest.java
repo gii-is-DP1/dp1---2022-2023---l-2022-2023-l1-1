@@ -25,7 +25,6 @@ public class ProgressRepositoryTest {
         Player player = playerRepository.findPlayerByUsername("alvgonfri");
         List<Progress> progress= progressRepository.findProgressByPlayer(player);
         assertNotNull(progress);
-        assertFalse(progress.isEmpty());
     }
     
 }

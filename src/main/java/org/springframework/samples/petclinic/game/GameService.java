@@ -260,7 +260,6 @@ public class GameService {
     Map<Game,List<Player>> winnersByGame () {
         Map<Game,List<Player>> res = new HashMap<>();
         List<Game> games = repo.findAll();
-        System.out.println("aqui" + games.size());
         games.forEach(g -> {
             List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
             res.put(g, winners);

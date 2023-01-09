@@ -371,8 +371,6 @@ public class GameController {
 		Player voter = playerService.getPlayerById(playerId);
 		
 		voteCardService.forcedVoteChange(actualGame, voter);
-		System.out.println(deckService.getDeckByPlayerAndGame(voter, actualGame) + "esto");
-
 		return "redirect:/games/" + gameId.toString();
 
 	}
