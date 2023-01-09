@@ -26,8 +26,41 @@
         </tr>
         <tr>
             <th>Loss %</th>
-            <td><c:out value="${statistics.get(3)} %" /></td>
+            <td><c:out value="${statistics.get(4)} %" /></td>
         </tr>
+        <tr>
+            <th>Total time played</th>
+            <td><c:out value="${statistics.get(5)} minutes" /></td>
+        </tr>
+        <tr>
+            <th>Global time played</th>
+            <td><c:out value="${statistics.get(6)} minutes" /></td>
+        </tr>
+        <tr>
+            <th>Average time played</th>
+            <td><c:out value="${statistics.get(7)} minutes" /></td>
+        </tr>
+        <tr>
+            <th>Global average time played</th>
+            <td><c:out value="${statistics.get(8)} minutes" /></td>
+        </tr>
+        <tr>
+            <th>Maximum time played</th>
+            <td><c:out value="${statistics.get(9)} minutes" /></td>
+        </tr>
+        <tr>
+            <th>Global maximum time played</th>
+            <td><c:out value="${statistics.get(10)} minutes" /></td>
+        </tr>
+        <tr>
+            <th>Minimum time played</th>
+            <td><c:out value="${statistics.get(11)} minutes" /></td>
+        </tr>
+        <tr>
+            <th>Global minimum time played</th>
+            <td><c:out value="${statistics.get(12)} minutes" /></td>
+        </tr>
+    
         
         
     

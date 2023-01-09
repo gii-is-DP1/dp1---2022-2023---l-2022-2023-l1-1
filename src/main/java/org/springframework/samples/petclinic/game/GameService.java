@@ -10,6 +10,7 @@ import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
+import org.springframework.samples.petclinic.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +76,35 @@ public class GameService {
     @Transactional
     public List<Game> getGamesByState(State state){
         return repo.findByState(state);
+    }
+
+    @Transactional
+	public Double getGlobalTimePlaying(List<Game> allFinishedGames) {
+		Double result = 0.;
+		for (Game g:allFinishedGames){
+		    result = result + g.getDuration();
+	    }
+		return result;
+	}
+
+    @Transactional
+    public Double getGlobalMaxTimePlaying(List<Game> allFinishedGames) {
+        Double result = 0.;
+		for (Game g:allFinishedGames){
+            if (g.getDuration() > result)
+		    result = g.getDuration();
+	    }
+		return result;
+    }
+
+    @Transactional
+    public Double getGlobalMinTimePlaying(List<Game> allFinishedGames) {
+        Double result = 999999999999999999999999999999999999999999999999999.;
+		for (Game g:allFinishedGames){
+            if (g.getDuration() < result)
+		    result = g.getDuration();
+	    }
+		return result;
     }
     
 }

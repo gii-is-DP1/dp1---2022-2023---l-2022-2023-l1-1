@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.query.criteria.internal.ValueHandlerFactory.IntegerValueHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
+import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +26,12 @@ public class PlayerService {
 
     @Autowired
 	private AuthoritiesService authoritiesService;
+
+	@Autowired
+	private DeckService deckService;
+
+	@Autowired
+	private PlayerInfoRepository playerInfoRepository;
 
 	@Autowired
 	public PlayerService(PlayerRepository playerRepository) {
@@ -69,5 +80,54 @@ public class PlayerService {
 		*/
 		return result;
 	}
+
+	@Transactional
+	public Double findUserWins(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player)){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+	@Transactional
+	public Double getTotalTimePlaying(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		for (Game g:allFinishedGames){
+			List<Player> players = playerInfoRepository.findPlayersByGame(g);
+			if (players.contains(player)){
+				result = result + g.getDuration();
+			}
+		}
+		return result;
+	}
+
+	public Double getMinTimePlaying(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		for (Game g:allFinishedGames){
+			List<Player> players = playerInfoRepository.findPlayersByGame(g);
+			if (players.contains(player) && g.getDuration() > result){
+				result = g.getDuration();
+			}
+		}
+		return result;
+	}
+
+    public Double getMaxTimePlaying(User user, List<Game> allFinishedGames) {
+        Double result = 999999999999999999999999999999999999999999999999999.;
+		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		for (Game g:allFinishedGames){
+			List<Player> players = playerInfoRepository.findPlayersByGame(g);
+			if (players.contains(player) && g.getDuration() < result){
+				result = g.getDuration();
+			}
+		}
+		return result;
+    }
 
 }
