@@ -118,9 +118,7 @@ public class StatisticsService {
             PerLos = loss*100/gamesPlayed;
         }
         Double averageTimePlaying = timePlaying/gamesPlayed;
-        System.out.println("111111111111111111");
         Double maxTimePlaying = playerService.getMaxTimePlaying(user, allFinishedGames);
-        System.out.println("2222222222222222222");
         Double minTimePlaying = playerService.getMinTimePlaying(user, allFinishedGames);
         Double globalTimePlaying = gameService.getGlobalTimePlaying(allFinishedGames);
         Double globalAverageTimePlaying = globalTimePlaying/allFinishedGames.size();

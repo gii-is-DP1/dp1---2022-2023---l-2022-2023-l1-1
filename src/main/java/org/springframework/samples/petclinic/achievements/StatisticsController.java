@@ -24,15 +24,12 @@ public class StatisticsController {
 
     @Autowired
     private UserService userService;
-    private ProgressService progressService;
-    private PlayerService playerService;
+    @Autowired
     private StatisticsService statisticsService;
 
     @Autowired
-    public StatisticsController(StatisticsService statisticsService, ProgressService progressService, PlayerService playerService){
+    public StatisticsController(StatisticsService statisticsService){
         this.statisticsService = statisticsService;
-        this.progressService = progressService;
-        this.playerService = playerService;
     }
 
     @GetMapping(path="/statistics")
