@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.progress.ProgressService;
 import org.springframework.samples.petclinic.user.User;
@@ -24,6 +25,7 @@ public class StatisticsController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private StatisticsService statisticsService;
 
@@ -34,7 +36,7 @@ public class StatisticsController {
 
     @GetMapping(path="/statistics")
 	public String StatisticsList(ModelMap modelMap, @AuthenticationPrincipal UserDetails user) {
-		User userp = userService.findUser(user.getUsername());
+		User userp = userService.getUserByUsername(user.getUsername());
 		modelMap.addAttribute("statistics", statisticsService.listStatistics(userp));
 		//modelMap.addAttribute("user", user);
         
@@ -43,10 +45,11 @@ public class StatisticsController {
 
     @GetMapping(path="/ranking")
 	public String RankingList(ModelMap modelMap) {
-        Map<User,Double> ranking = statisticsService.listRankingUserVictory();
+        Map<Player, Double> ranking = statisticsService.listRankingUserVictory();
         List<Integer> positions = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
 		modelMap.addAttribute("rankingMap", ranking);
+        System.out.println(ranking);
 		modelMap.addAttribute("rankingNumbers", positions);
-		return STATISTICS_VIEW;	
+		return RANKING_VIEW;	
 	}
 }
