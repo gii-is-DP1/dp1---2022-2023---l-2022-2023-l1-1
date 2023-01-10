@@ -376,10 +376,9 @@ public class DeckService {
 
     
     @Transactional
-    public boolean votesAsigned (List<PlayerInfo> playerInfos) {
-        List <Deck> gameDecks= playerInfos.stream().map(x -> getDeckByPlayerAndGame(x.getPlayer(), x.getGame()))
-                                                                                    .collect(Collectors.toList());
-
+    public boolean votesAsigned (Game game) {
+        List<Player> players = playerInfoRepository.findPlayersByGame(game);
+        List<Deck> gameDecks= players.stream().map(x -> getDeckByPlayerAndGame(x, game)).collect(Collectors.toList());
         return gameDecks.stream().anyMatch(x -> x.getVoteCards().size() != 0);
 
     }

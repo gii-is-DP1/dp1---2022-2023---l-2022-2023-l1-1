@@ -277,7 +277,7 @@ public class GameService {
     List<String> activePlayers (Game game) {
         List <String> activePlayers = null;
         if (game.getStage() == CurrentStage.VOTING) {
-            if (!deckService.votesAsigned(playerInfoRepository.findPlayerInfosByGame(game))) {
+            if (!deckService.votesAsigned(game)) {
                 activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
                 .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());

@@ -46,7 +46,7 @@ public class DeckRepositoryTest {
     }
  
     @Test
-    public void testFindDecksByPlayerAndGame() {
+    public void testFindDeckByPlayerAndGame() {
         Player player = playerRepository.findPlayerByUsername("migmanalv");
         Game game = gameRepository.findById(TEST_GAME_ID);
         Deck deck = deckRepository.findDeckByPlayerAndGame(player, game);
@@ -54,7 +54,7 @@ public class DeckRepositoryTest {
     }
 
     @Test
-    public void testFindDecksByPlayerAndGameNotExistingDecks() {
+    public void testFindDeckByPlayerAndGameNotExistingDecks() {
         Player player = playerRepository.findPlayerByUsername("player5");
         Game game = gameRepository.findById(TEST_GAME_ID);
         Deck deck = deckRepository.findDeckByPlayerAndGame(player, game);
