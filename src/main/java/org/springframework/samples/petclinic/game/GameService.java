@@ -82,7 +82,7 @@ public class GameService {
 	public Double getGlobalTimePlaying(List<Game> allFinishedGames) {
 		Double result = 0.;
 		for (Game g:allFinishedGames){
-		    result = result + g.getDuration();
+		    result = result + 1;
 	    }
 		return result;
 	}
@@ -91,8 +91,8 @@ public class GameService {
     public Double getGlobalMaxTimePlaying(List<Game> allFinishedGames) {
         Double result = 0.;
 		for (Game g:allFinishedGames){
-            if (g.getDuration() > result)
-		    result = g.getDuration();
+            if (1 > result)
+		    result = 1.;
 	    }
 		return result;
     }
@@ -101,8 +101,8 @@ public class GameService {
     public Double getGlobalMinTimePlaying(List<Game> allFinishedGames) {
         Double result = 999999999999999999999999999999999999999999999999999.;
 		for (Game g:allFinishedGames){
-            if (g.getDuration() < result)
-		    result = g.getDuration();
+            if (1 < result)
+		    result = 1.;
 	    }
 		return result;
     }

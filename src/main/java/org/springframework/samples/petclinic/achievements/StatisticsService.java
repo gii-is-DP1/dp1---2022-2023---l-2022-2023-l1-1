@@ -17,7 +17,9 @@ import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StatisticsService {
 
     @Autowired
@@ -94,11 +96,17 @@ public class StatisticsService {
     @Transactional
     public List<Double> listStatistics(User user) throws DataAccessException{
         List<Double> list =new ArrayList<Double>();
+        
 		Double gamesPlayed = (double) userService.matchesPlayedForUser(user);
+        
         List<Game> allFinishedGames = gameService.getGamesByState(State.FINISHED);
+        
         Double victory = playerService.findUserWins(user, allFinishedGames);
+        
         Double loss = gamesPlayed-victory;
+        
         Double timePlaying = playerService.getTotalTimePlaying(user, allFinishedGames);
+        
         Double PerWin;
         Double PerLos;
         if (gamesPlayed==0.0){
@@ -110,7 +118,9 @@ public class StatisticsService {
             PerLos = loss*100/gamesPlayed;
         }
         Double averageTimePlaying = timePlaying/gamesPlayed;
+        System.out.println("111111111111111111");
         Double maxTimePlaying = playerService.getMaxTimePlaying(user, allFinishedGames);
+        System.out.println("2222222222222222222");
         Double minTimePlaying = playerService.getMinTimePlaying(user, allFinishedGames);
         Double globalTimePlaying = gameService.getGlobalTimePlaying(allFinishedGames);
         Double globalAverageTimePlaying = globalTimePlaying/allFinishedGames.size();

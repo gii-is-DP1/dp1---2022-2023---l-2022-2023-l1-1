@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/statistics")
 public class StatisticsController {
 
     private final String STATISTICS_VIEW="/statistics/statistics";
     private final String RANKING_VIEW="/statistics/ranking";
 
+    @Autowired
     private UserService userService;
     private ProgressService progressService;
     private PlayerService playerService;

@@ -2,12 +2,15 @@ package org.springframework.samples.petclinic.deck;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
+import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,9 @@ public class DeckService {
 
     @Autowired
     private VoteCardRepository voteCardRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     public DeckService(DeckRepository rep) {
@@ -130,6 +136,36 @@ public class DeckService {
             }
         }
         
+    }
+
+    @Transactional
+    public List<Player> winnerPlayers (Game game, Faction winnerFaction) {
+        FactionCard winnerFactionCard;
+
+        if (winnerFaction == Faction.LOYALS) {
+            winnerFactionCard = factionCardRepository.findById(FCType.LOYAL).get();
+        }
+        else if (winnerFaction == Faction.TRAITORS) {
+            winnerFactionCard = factionCardRepository.findById(FCType.TRAITOR).get();
+        }
+        else {
+            winnerFactionCard = factionCardRepository.findById(FCType.MERCHANT).get();
+        }
+
+        List<Player> winnerPlayers = getDecks().stream()
+			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(winnerFactionCard))
+            .map(d -> d.getPlayer()).collect(Collectors.toList());
+
+        if (winnerPlayers.size() == 0) {
+            game.setWinners(Faction.MERCHANTS); //si no hay ganadores ganan merchants y obtengo winner player de merchants
+            gameRepository.save(game);
+            winnerPlayers = getDecks().stream() //decks de un game se podria hacer por query (de hecho creo que se deberia)
+			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(factionCardRepository.findById(FCType.MERCHANT).get()))
+            .map(d -> d.getPlayer()).collect(Collectors.toList());
+        }
+
+        return winnerPlayers;
+    
     }
     
 }

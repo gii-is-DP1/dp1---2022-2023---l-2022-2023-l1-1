@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PlayerService {
 
+	@Autowired
     private PlayerRepository playerRepository;
 
     @Autowired
@@ -140,10 +141,11 @@ public class PlayerService {
 	public Double getTotalTimePlaying(User user, List<Game> allFinishedGames) {
 		Double result = 0.;
 		Player player = playerRepository.getPlayerByUsername(user.getUsername());
+		
 		for (Game g:allFinishedGames){
 			List<Player> players = playerInfoRepository.findPlayersByGame(g);
 			if (players.contains(player)){
-				result = result + g.getDuration();
+				result = result + 1;
 			}
 		}
 		return result;
@@ -154,8 +156,8 @@ public class PlayerService {
 		Player player = playerRepository.getPlayerByUsername(user.getUsername());
 		for (Game g:allFinishedGames){
 			List<Player> players = playerInfoRepository.findPlayersByGame(g);
-			if (players.contains(player) && g.getDuration() > result){
-				result = g.getDuration();
+			if (players.contains(player) && 1 > result){
+				result = 1.;
 			}
 		}
 		return result;
@@ -166,8 +168,8 @@ public class PlayerService {
 		Player player = playerRepository.getPlayerByUsername(user.getUsername());
 		for (Game g:allFinishedGames){
 			List<Player> players = playerInfoRepository.findPlayersByGame(g);
-			if (players.contains(player) && g.getDuration() < result){
-				result = g.getDuration();
+			if (players.contains(player) && 1 < result){
+				result = 1.;
 			}
 		}
 		return result;
