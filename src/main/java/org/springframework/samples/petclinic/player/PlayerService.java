@@ -189,12 +189,12 @@ public class PlayerService {
 	}
 
 	@Transactional
-	public Double findWinsByPlayer(Player player, List<Game> allFinishedGames) {
-		Double result = 0.;
+	public Integer findWinsByPlayer(Player player, List<Game> allFinishedGames) {
+		Integer result = 0;
 		for (Game g:allFinishedGames){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player)){
-				result = result + 1.;
+				result = result + 1;
 			}
 		}
 		return result;

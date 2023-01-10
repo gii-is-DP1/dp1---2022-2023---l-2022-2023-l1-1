@@ -21,6 +21,14 @@ INSERT INTO users(username,password,enabled) VALUES ('player4','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (11,'player4','player');
 INSERT INTO users(username,password,enabled) VALUES ('player5','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (12,'player5','player');
+INSERT INTO users(username,password,enabled) VALUES ('player6','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (13,'player6','player');
+INSERT INTO users(username,password,enabled) VALUES ('player7','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (14,'player7','player');
+INSERT INTO users(username,password,enabled) VALUES ('player8','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (15,'player8','player');
+INSERT INTO users(username,password,enabled) VALUES ('player9','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (16,'player9','player');
 
 -- One vet user, named vet1 with passwor v3t
 INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
@@ -93,13 +101,17 @@ INSERT INTO players(id,online,playing,username) VALUES
 (6, FALSE, FALSE , 'player2'),
 (7, FALSE, FALSE , 'player3'),
 (8, FALSE, FALSE , 'player4'),
-(9, FALSE, FALSE , 'player5');
+(9, FALSE, FALSE , 'player5'),
+(10, FALSE, FALSE , 'player6'),
+(11, FALSE, FALSE , 'player7'),
+(12, FALSE, FALSE , 'player8'),
+(13, FALSE, FALSE , 'player9');
 
 INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 (1,2,3,8),
 (2,0,0,12),
 (3,5,3,12),
-(4,6,6,13),
+(4,9,6,13),
 (5,0,0,13);
 
 INSERT INTO turns(id,current_turn) VALUES 
@@ -131,6 +143,7 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (31,false,false,3,5),
 
 (40,true,false,4,1),
+(41,false,false,4,5),
 
 (50,true,false,5,1),
 (51,false,false,5,2),
@@ -161,7 +174,10 @@ INSERT INTO decks(id, role_cards,player_id,game_id) VALUES
 (4, 'EDIL',3,2),
 (5, 'NO_ROL',6,2),
 (6, 'NO_ROL',7,2),
-(7, 'EDIL', 3, 1);
+(7, 'EDIL', 3, 1),
+
+(40, 'NO_ROL', 1, 4),
+(41, 'EDIL', 5, 4);
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
 (1, 'LOYAL'),
@@ -169,7 +185,9 @@ INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES
 (3,'MERCHANT'),
 (4,'MERCHANT'),
 (5,'TRAITOR'),
-(6,'LOYAL');
+(6,'LOYAL'),
+(40,'LOYAL'),
+(41,'LOYAL');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
 (3, 'YELLOW'),

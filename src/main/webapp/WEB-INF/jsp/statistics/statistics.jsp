@@ -6,7 +6,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <petclinic:layout pageName="statistics">
-    <h2>Statistics</h2>
+    <h1>Statistics</h1>
     <table class="table table-striped">
         <tr>
             <th>Games played</th>

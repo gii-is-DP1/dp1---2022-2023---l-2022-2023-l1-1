@@ -4,18 +4,31 @@
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%! int x = 5; %>
 
 <petclinic:layout pageName="ranking">
-    <h2>Ranking</h2>
+    <h1>Ranking</h1>
+    <h3>Top 10 players by number of victories</h3>
     <table class="table table-striped">
-
-        <c:forEach items="${rankingMap}" var="entry">
+        <thead>
             <tr>
-                <th>Rank </th>
-                <td><c:out value="Player: ${entry.key.user.username}" /></td>
-                <td><c:out value="Victories: ${entry.value}" /></td>
+                <th>Player</th>
+                <th>Victories</th>
             </tr>
-        </c:forEach>
+        </thead>
+        <tbody>
+            
+            <c:forEach items="${rankingMap}" var="entry">
+                <tr>
+                    <td>
+                        <c:out value="${entry.key.user.username}"/>
+                    </td>
+                    <td>
+                        <c:out value="${entry.value}"/>
+                    </td>
+                </tr>
+            </c:forEach>
+        </tbody>
     </table>
 
 </petclinic:layout>
