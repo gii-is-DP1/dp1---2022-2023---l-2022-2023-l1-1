@@ -15,6 +15,8 @@ import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.progress.Progress;
 import org.springframework.samples.petclinic.progress.ProgressService;
+import org.springframework.samples.petclinic.user.User;
+import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -36,6 +38,8 @@ public class AchievementController {
     private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/achievementsList";
     private final String ACHIEVEMENTS_FORM="/achievements/createOrUpdateAchievementForm";
     private final String USER_ACHIEVEMENTS_VIEW="/achievements/playerAchievements";
+
+	private UserService userService;
     private AchievementService achievementService;
     private ProgressService progressService;
     private PlayerService playerService;
@@ -131,4 +135,7 @@ public class AchievementController {
         }
         return result;
     }
+
+
+   
 }

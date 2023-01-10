@@ -404,7 +404,7 @@ public class GameServiceTest {
     public void testActivePlayersConsulInVoting() {
         GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
         game.setStage(CurrentStage.VOTING);
-        when(deckService.votesAsigned(anyList())).thenReturn(false);
+        when(deckService.votesAsigned(any(Game.class))).thenReturn(false);
         when(deckRepository.findDeckByPlayerAndGame(any(Player.class), any(Game.class))).thenReturn(deck);
         List<String> usernames = service.activePlayers(game);
         assertTrue(usernames.contains("player2"));        
@@ -414,7 +414,7 @@ public class GameServiceTest {
     public void testActivePlayersEdil() {
         GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
         game.setStage(CurrentStage.VOTING);
-        when(deckService.votesAsigned(anyList())).thenReturn(true);
+        when(deckService.votesAsigned(any(Game.class))).thenReturn(true);
         deck.setRoleCard(RoleCard.EDIL);
         List<VoteCard> voteCards = new ArrayList<>();
         voteCards.add(new VoteCard());
