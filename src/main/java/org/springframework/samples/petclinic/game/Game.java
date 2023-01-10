@@ -1,25 +1,30 @@
 package org.springframework.samples.petclinic.game;
 
-import java.time.Duration;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.EnumType;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Range;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.State;
+import org.springframework.samples.petclinic.invitation.Invitation;
 import org.springframework.samples.petclinic.model.NamedEntity;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
+import org.springframework.samples.petclinic.turn.Turn;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
@@ -28,36 +33,35 @@ import lombok.Setter;
 @Table(name = "games")
 public class Game extends NamedEntity {
     
-    @NonNull
+    @NotNull
     private Boolean publicGame;
 
     @Enumerated(EnumType.STRING)
     private State state;
 
-    //@Range(min = 5, max = 8) tiene que estar entre 5 y 8 solo si State == In process
     private Integer numPlayers; 
 
-    @NonNull
-    private LocalDate date;
+    private Date startDate;
     
-    private Double duration;
+    private Date endDate;
 
-    @NonNull
     @Enumerated(EnumType.STRING)
     private CurrentRound round;
 
-    @NonNull
-    private Integer turn;
+    @OneToOne(optional = true)
+    private Turn turn;
 
-    @NonNull
     @Enumerated(EnumType.STRING)
     private CurrentStage stage;
 
     @Enumerated(EnumType.STRING)
     private Faction winners;
 
-    @OneToOne (optional=true)
+    @OneToOne(optional = true)
     private SuffragiumCard suffragiumCard;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "game")
+    private List<Invitation> gameInvitations;
 
 
     public Integer getSuffragiumLimit() {
@@ -75,6 +79,15 @@ public class Game extends NamedEntity {
         else if (players == 8) {
          res = 20;
         }
+        else { //esto se borra, es para probar cosas
+            res = 2;
+        }
         return res;
+     }
+
+     public Integer getDuration() {
+        Instant startInstant = startDate.toInstant();
+        Instant endInstant = endDate.toInstant();
+        return (int) ChronoUnit.MINUTES.between(startInstant, endInstant);
      }
 }

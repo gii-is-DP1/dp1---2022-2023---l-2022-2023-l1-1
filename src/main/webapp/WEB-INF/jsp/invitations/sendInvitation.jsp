@@ -17,7 +17,6 @@
                     <petclinic:selectField label="To" name="recipient" names="${players}" size="5"/>
                 </div>
                 <petclinic:inputField label="Message" name="message"/>
-                
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">

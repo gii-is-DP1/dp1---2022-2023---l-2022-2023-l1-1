@@ -64,7 +64,7 @@ INSERT INTO owners VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Wa
 INSERT INTO owners VALUES (11, 'Alvaro', 'Gonzalez', '2335 Independence La.', 'Waunakee', '6085555488', 'alvgonfri');
 INSERT INTO owners VALUES (12, 'David', 'Gonzalez', '638 Cardinal Ave.', 'Sun Prairie', '60855517450', 'davgonher1');
 
-INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
+INSERT INTO pets(id,name,birth_date ,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (2, 'Basil', '2012-08-06', 6, 2);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (3, 'Rosy', '2011-04-17', 2, 3);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (4, 'Jewel', '2010-03-07', 2, 3);
@@ -86,28 +86,36 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
 INSERT INTO players(id,online,playing,username) VALUES
-(1, TRUE, FALSE , 'alvgonfri'),
-(2, TRUE, FALSE , 'davgonher1'),
-(3, TRUE, FALSE, 'migmanalv'),
-(5, TRUE, FALSE , 'player1'),
-(6, TRUE, FALSE , 'player2'),
-(7, TRUE, FALSE , 'player3'),
-(8, TRUE, FALSE , 'player4'),
-(9, TRUE, FALSE , 'player5');
+(1, FALSE, FALSE , 'alvgonfri'),
+(2, FALSE, FALSE , 'davgonher1'),
+(3, FALSE, FALSE, 'migmanalv'),
+(5, FALSE, FALSE , 'player1'),
+(6, FALSE, FALSE , 'player2'),
+(7, FALSE, FALSE , 'player3'),
+(8, FALSE, FALSE , 'player4'),
+(9, FALSE, FALSE , 'player5');
 
 INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 (1,2,3,8),
-(2,5,3,12),
+(2,0,0,12),
 (3,5,3,12),
 (4,6,6,13),
 (5,0,0,13);
 
-INSERT INTO games(id,name,public_game,state,num_players,date,duration,round,turn,stage,winners,suffragium_card_id) VALUES
-(1,'Mi primera partida', 1, 'STARTING', 5, '2022-10-24', null, 'FIRST', 1, 'VOTING', null, 1),
-(2,'Partida rapida', 0, 'IN_PROCESS', 6, '2022-10-27', null, 'FIRST', 1, 'VOTING', null, 2),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30', null, 'FIRST', 1, 'VOTING', 'LOYALS', 3),
-(4,'New game', 0, 'FINISHED', 6, '2022-11-15', null, 'FIRST', 1, 'VOTING', 'LOYALS', 4),
-(5,'Testing decks', 1, 'STARTING', 7, '2022-11-27', null, 'FIRST', 1, 'VOTING', null, null);
+INSERT INTO turns(id,current_turn) VALUES 
+(1, 1),
+(2, 5),
+(3, 1),
+(4, 1),
+(5, 1);
+
+INSERT INTO games(id,name,public_game,state,num_players,start_date,end_date,round,turn_id,stage,winners,suffragium_card_id) VALUES
+(1,'Mi primera partida', 0, 'STARTING', 5, null, null, 'FIRST', 1, 'VOTING', null, 1),
+(2,'Partida rapida', 1, 'STARTING', 6, '2022-10-27 10:00:00', null, 'FIRST', 2, 'END_OF_TURN', null, 2),
+(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30 10:00:00', '2022-10-30 11:00:00', 'FIRST', 3, 'VOTING', 'LOYALS', 3),
+(4,'New game', 1, 'FINISHED', 6, '2022-11-15 23:59:58', '2022-11-16 00:25:01', 'FIRST', 4, 'VOTING', 'LOYALS', 4),
+(5,'Testing decks', 1, 'STARTING', 7, null, null, 'FIRST', 5, 'VOTING', null, null);
+
 
 INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 
 (1,true,false,2,1),
@@ -116,11 +124,13 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (5,false,false,2,5),
 (6,false,true,2,6),
 (7,false,false,2,7),
+
 (8,false,false,1,3),
 
-(10,false,false,3,1),
+(30,false,false,3,1),
+(31,false,false,3,5),
 
-(20,true,false,4,1),
+(40,true,false,4,1),
 
 (50,true,false,5,1),
 (51,false,false,5,2),
@@ -154,19 +164,18 @@ INSERT INTO decks(id, role_cards,player_id,game_id) VALUES
 (7, 'EDIL', 3, 1);
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
-(3, 'LOYAL'),
+(1, 'LOYAL'),
+(2,'TRAITOR'),
+(3,'MERCHANT'),
 (4,'MERCHANT'),
-(4,'TRAITOR'),  
-(4,'LOYAL'),
-(7,'LOYAL'),
-(7,'TRAITOR');
+(5,'TRAITOR'),
+(6,'LOYAL');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
-(3,'GREEN'),
-(3,'RED'),
+(3, 'YELLOW'),
+(3, 'RED'),
 (4,'GREEN'),
-(4,'RED'),
-(4, 'YELLOW');
+(4,'RED');
 
 INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
 (1, 100.0, 1, 3),
@@ -188,9 +197,11 @@ INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
 (17, 25.0, 5, 1),
 (18, 50.0, 6, 1);
 
-INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
-('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3),
-('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1),
-('FRIENDSHIP', 'I am player1', FALSE, 5, 1),
-('FRIENDSHIP', 'I am player2', TRUE, 6, 1);
+INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id,game_id) VALUES
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3, null),
+('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1, null),
+('FRIENDSHIP', 'I am player1', FALSE, 5, 1, null),
+('FRIENDSHIP', 'I am player2', TRUE, 6, 1, null),
+('FRIENDSHIP', 'I am alvgonfri', TRUE, 1, 9, null),
+('GAME_PLAYER', 'Join my game!', FALSE, 1, 9, 5);
 

@@ -7,7 +7,7 @@
 <petclinic:layout pageName="friends">
     <h2>Friends</h2>
     <div>
-        <a class="btn btn-default" href="/invitations/send">Send invitation</a>
+        <a class="btn btn-default" href="/invitations/send">Send friendship invitation</a>
     </div>
     <table id="invitationsTable" class="table table-striped">
         <thead>

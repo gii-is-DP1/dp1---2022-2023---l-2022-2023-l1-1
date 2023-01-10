@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PlayerInfoService {
 
+    @Autowired
     private PlayerInfoRepository repo; 
 
     @Autowired
@@ -28,8 +29,29 @@ public class PlayerInfoService {
     }
 
     @Transactional(readOnly = true)
+    public PlayerInfo getPlayerInfoByGameAndPlayer(Game game, Player player) {
+        return repo.findPlayerInfoByGameAndPlayer(game, player);
+    }
+
+    @Transactional(readOnly = true)
     public List<Game> getGamesByPlayer(Player player) {
         return repo.findGamesByPlayer(player);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Player> getPlayersByGame(Game game) {
+        return repo.findPlayersByGame(game);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Player> getAllUsersByGame(Game game) {
+        return repo.findAllUsersByGame(game);
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean isSpectator(Player player, Game game) {
+        List<Player> players = repo.findPlayersByGame(game);
+        return !players.contains(player);
     }
 
     @Transactional
@@ -41,4 +63,21 @@ public class PlayerInfoService {
         repo.save(creatorInfo);
     }
 
+    @Transactional
+    public PlayerInfo savePlayerInfo(PlayerInfo playerInfo, Game game, Player player) {
+        playerInfo.setCreator(false);
+        playerInfo.setSpectator(false);
+        playerInfo.setPlayer(player);
+        playerInfo.setGame(game);
+        return repo.save(playerInfo);
+    }
+
+    @Transactional
+    public PlayerInfo saveSpectatorInfo(PlayerInfo spectatorInfo, Game game, Player player) {
+        spectatorInfo.setCreator(false);
+        spectatorInfo.setSpectator(true);
+        spectatorInfo.setPlayer(player);
+        spectatorInfo.setGame(game);
+        return repo.save(spectatorInfo);
+    }
 }

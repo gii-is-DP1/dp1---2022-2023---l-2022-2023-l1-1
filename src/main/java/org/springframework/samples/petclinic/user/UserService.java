@@ -15,34 +15,38 @@
  */
 package org.springframework.samples.petclinic.user;
 
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Mostly used as a facade for all Petclinic controllers Also a placeholder
- * for @Transactional and @Cacheable annotations
- *
- * @author Michael Isvy
- */
 @Service
 public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private PlayerService playerService;
 
 	@Autowired
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
+	}
+
+	@Transactional(readOnly = true)
+	public List<User> getAll(){
+		return userRepository.findAll();
+	}
+
+	@Transactional(readOnly = true)
+	public User getUserByUsername(String username) {
+		User user = userRepository.findById(username).get();
+		return user;
+	}
+
+	@Transactional(readOnly = true)
+	public List<User> getUsersWithAuthority(String authority) {
+		return userRepository.findUserWithAuthority(authority);
 	}
 
 	@Transactional
@@ -51,58 +55,4 @@ public class UserService {
         userRepository.save(user);
     }
 
-	@Transactional
-	public User findUser(String username) {
-		Optional<User> u =  userRepository.findById(username);
-		return u.get();
-	}
-
-	@Transactional
-	public Iterable<User> findAll(){
-		return userRepository.findAll();
-	}
-
-	@Transactional
-	public void removeUser(String username){
-		this.userRepository.deleteById(username);
-	}
-
-	@Transactional
-	public Integer matchesPlayedForUser(User user) throws DataAccessException {
-		return playerService.findbyUsernameMatchFinished(user.getUsername()).size();
-
-	}
-
-	/* 
-
-	@Transactional
-    public User saveUser(User user) throws DataAccessException {
-		String username = user.getUsername();
-        List<String> usernameList = new ArrayList<>();
-        for(User u:userRepository.findAll()){
-            usernameList.add(u.getUsername());
-        }
-        user.setEnabled(true);
-        userRepository.save(user);
-		return user;
-    }
-
-
-	public List<User> findAll() {
-		return userRepository.findAll();
-	}
-
-	public Optional<User> findUser(String username) {
-		return userRepository.findById(username);
-	}
-
-	
-
-	@Transactional
-	public User getUser(String username){
-		Optional<User> user = this.userRepository.findById(username);
-		return user.isPresent()? user.get() : null;
-	}
-
-	*/
 }

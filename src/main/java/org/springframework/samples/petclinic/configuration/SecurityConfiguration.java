@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,9 +37,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
-				//.antMatchers("/users/new").hasAnyAuthority("admin")
 				.antMatchers("/decks/**").hasAnyAuthority("player") //esto es provisional
-				.antMatchers("/users/**").permitAll()
+				.antMatchers("/users/**").hasAnyAuthority("admin")
 				.antMatchers("/session/**").permitAll()
 				.antMatchers("/currentuser").permitAll()
 				.antMatchers("/statistics/**").hasAnyAuthority("admin")
@@ -48,8 +49,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/vets/**").authenticated()
 				.antMatchers("/games/history/**", "/games/inProcess/**").hasAnyAuthority("admin")
 				.antMatchers("/games/create", "/games/starting/**", "/games/{id}/**", "/games/playerHistory/**",
-				 "/invitations/**", "/friends/**", "/statistics/**").hasAnyAuthority("player")
-				.antMatchers("/players/**").hasAnyAuthority("admin")
+				 "/invitations/**", "/gameInvitations/**", "/friends/**", "/statistics/**", "/ranking/**").hasAnyAuthority("player")
+				.antMatchers("/players/register").permitAll()
+				.antMatchers("/players/**").hasAnyAuthority("player", "admin")
 				.anyRequest().denyAll()
 				.and()
 				 	.formLogin()
@@ -57,7 +59,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				 	.failureUrl("/login-error")
 				.and()
 					.logout()
-						.logoutSuccessUrl("/"); 
+						.logoutSuccessUrl("/")
+				.and()
+					.sessionManagement()
+					.maximumSessions(1)
+					.sessionRegistry(sessionRegistry()); 
                 // Configuración para que funcione la consola de administración 
                 // de la BD H2 (deshabilitar las cabeceras de protección contra
                 // ataques de tipo csrf y habilitar los framesets si su contenido
@@ -86,6 +92,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		PasswordEncoder encoder =  NoOpPasswordEncoder.getInstance();
 	    return encoder;
 	}
+
+	@Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 	
 }
 

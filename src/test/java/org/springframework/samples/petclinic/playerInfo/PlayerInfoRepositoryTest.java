@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.playerInfo;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -27,19 +28,51 @@ public class PlayerInfoRepositoryTest {
 
     @Test
     public void testFindPlayerInfosByGame() {
-        Game g = gameRepository.findById(2);
-        List<PlayerInfo> ls = playerInfoRepository.findPlayerInfosByGame(g);
-        assertNotNull(ls);
-        assertFalse(ls.isEmpty());
+        Game game = gameRepository.findById(2);
+        List<PlayerInfo> playerInfos = playerInfoRepository.findPlayerInfosByGame(game);
+        assertNotNull(playerInfos);
+        assertFalse(playerInfos.isEmpty());
     }
+/* 
+    @Test
+    public void testFindPlayerInfosByGameWithoutPlayerInfos() {
+        Game game = gameRepository.findById(4);
+        List<PlayerInfo> playerInfos = playerInfoRepository.findPlayerInfosByGame(game);
+        assertNotNull(playerInfos);
+        assertTrue(playerInfos.isEmpty());
+    }*/
 
     @Test
     public void testFindGamesByPlayer() {
-        Player p = playerRepository.getPlayerByUsername("alvgonfri");
-        List<Game> ls = playerInfoRepository.findGamesByPlayer(p);
-        assertNotNull(ls);
-        assertFalse(ls.isEmpty());
+        Player player = playerRepository.findPlayerByUsername("alvgonfri");
+        List<Game> games = playerInfoRepository.findGamesByPlayer(player);
+        assertNotNull(games);
+        assertFalse(games.isEmpty());
     }
+
+    @Test
+    public void testFindGamesByPlayerWithoutGames() {
+        Player player = playerRepository.findPlayerByUsername("player5");
+        List<Game> games = playerInfoRepository.findGamesByPlayer(player);
+        assertNotNull(games);
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    public void testFindPlayersByGame() {
+        Game game = gameRepository.findById(2);
+        List<Player> players = playerInfoRepository.findPlayersByGame(game);
+        assertNotNull(players);
+        assertFalse(players.isEmpty());
+    }
+/* 
+    @Test
+    public void testFindPlayersByGameWithoutPlayers() {
+        Game game = gameRepository.findById(4);
+        List<Player> players = playerInfoRepository.findPlayersByGame(game);
+        assertNotNull(players);
+        assertTrue(players.isEmpty());
+    }*/
 
     
 }
