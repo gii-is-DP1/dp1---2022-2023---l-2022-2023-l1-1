@@ -17,6 +17,9 @@ public interface PlayerInfoRepository extends CrudRepository<PlayerInfo,Long>{
     @Query("SELECT pI FROM PlayerInfo pI WHERE pI.game =?1")
 	public List<PlayerInfo> findPlayerInfosByGame(@Param("game") Game game);
 
+    @Query("SELECT pI FROM PlayerInfo pI WHERE pI.game =?1 AND pI.player =?2")
+	public PlayerInfo findPlayerInfoByGameAndPlayer(@Param("game") Game game, @Param("player") Player player);
+
     @Query("SELECT pI.game FROM PlayerInfo pI WHERE pI.player =?1")
     public List<Game> findGamesByPlayer(@Param("player") Player player);
 
@@ -25,5 +28,8 @@ public interface PlayerInfoRepository extends CrudRepository<PlayerInfo,Long>{
 
     @Query("SELECT pI.player FROM PlayerInfo pI WHERE pI.game =?1 AND pI.spectator=0")
 	public List<Player> findPlayersByGame(@Param("game") Game game);
+
+    @Query("SELECT pI.player FROM PlayerInfo pI WHERE pI.game =?1")
+	public List<Player> findAllUsersByGame(@Param("game") Game game);
 
 }

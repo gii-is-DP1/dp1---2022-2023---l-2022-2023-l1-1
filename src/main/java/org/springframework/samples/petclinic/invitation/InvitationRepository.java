@@ -21,8 +21,11 @@ public interface InvitationRepository extends CrudRepository<Invitation, Integer
     @Query("SELECT i FROM Invitation i WHERE i.invitationType = 'GAME_PLAYER' OR i.invitationType = 'GAME_SPECTATOR'")
     public List<Invitation> findAllGameInvitations();
     
-    @Query("SELECT i FROM Invitation i WHERE i.recipient=:recipient AND i.invitationType=:type")
-    public List<Invitation> findInvitationsReceivedByType(@Param("recipient") Player recipient, @Param("type") InvitationType type);
+    @Query("SELECT i FROM Invitation i WHERE i.recipient=:recipient AND i.invitationType = 'FRIENDSHIP'")
+    public List<Invitation> findFriendshipInvitationsReceived(@Param("recipient") Player recipient);
+
+    @Query("SELECT i FROM Invitation i WHERE i.recipient=:recipient AND i.invitationType=:type AND i.game.state = 'STARTING'")
+    public List<Invitation> findValidGameInvitationsReceivedByType(@Param("recipient") Player recipient, @Param("type") InvitationType type);
 
     @Query("SELECT i FROM Invitation i WHERE i.sender=:sender AND i.invitationType=:type")
     public List<Invitation> findInvitationsSentByType(@Param("sender") Player sender, @Param("type") InvitationType type);

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckService;
@@ -38,7 +39,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +68,8 @@ public class GameController {
 	private static final String PRETOR_SELECTION = "games/pretorCardSelection";
 	private static final String ROLE_DESIGNATION = "games/rolesDesignation";
 
+	private static final Integer MAX_PLAYERS = 8;
+
     @Autowired
     private GameService gameService;
 
@@ -90,6 +95,11 @@ public class GameController {
     public GameController(GameService service) {
         this.gameService = service;
     }
+
+	@InitBinder
+	public void setAllowedFields(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("id");
+	}
 
     @GetMapping(value = "/history/find")
 	public String gamesHistoryForm(Map<String, Object> model) {
@@ -147,6 +157,8 @@ public class GameController {
 		}
 		else {
 			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
+			res.addObject("gamesWinners", gameService.winnersByGame());
+			res.addObject("player", player);
 			res.addObject("returnButton", "/games/playerHistory/find");
             res.addObject("publicGames", publicGames); 
 			res.addObject("privateGames", privateGames);
@@ -237,28 +249,45 @@ public class GameController {
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
 			log.info("Game created");
-
 			model.put("game", game);
         	model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
-        	return "redirect:/games/" + game.getId().toString() + "/lobby";
+			
+        	return "redirect:/games/" + game.getId() + "/lobby";
 		}
 	}
 
     @GetMapping("/{gameId}/lobby")
-    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, HttpServletResponse response){
+    public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
 		response.addHeader("Refresh", "3");
         ModelAndView res=new ModelAndView(GAME_LOBBY);
         Game game=gameService.getGameById(gameId);
+		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		PlayerInfo currentPlayerInfo = playerInfoService.getPlayerInfoByGameAndPlayer(game, currentPlayer);
+		if(game.getState() == State.IN_PROCESS) {
+			log.info("Redirecting players from game " + game.getId());
+			return new ModelAndView("redirect:/games/" + game.getId().toString());
+		}
         res.addObject("game", game);
         res.addObject("playerInfos", playerInfoService.getPlayerInfosByGame(game));
+		res.addObject("currentPlayerInfo", currentPlayerInfo);
         return res;
     }
 
 	@GetMapping("/{gameId}/join")
     public String joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
-		gameService.joinGame(game);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
+		if(playerInfoService.getAllUsersByGame(game).contains(player)) {
+			log.warn("Player was already in the game");
+			model.put("message", "You are already in this game!");
+			return gamesStartingForm(model);
+		}
+		if(game.getNumPlayers() == MAX_PLAYERS) {
+			log.warn("Couldn't join because maximum number of players has been reached");
+			model.put("message", "This game has reached the maximum number of players!");
+			return gamesStartingForm(model);
+		}
+		gameService.joinGame(game);
 		playerInfoService.savePlayerInfo(joinedInfo, game, player);
 		log.info("Player joined");
 		model.put("game", game);
@@ -270,6 +299,11 @@ public class GameController {
     public String spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
+		if(playerInfoService.getAllUsersByGame(game).contains(player)) {
+			log.warn("Player was already in the game");
+			model.put("message", "You are already in this game!");
+			return gamesStartingForm(model);
+		}
 		playerInfoService.saveSpectatorInfo(spectatorInfo, game, player);
 		log.info("Spectator joined");
 		model.put("game", game);
@@ -278,13 +312,13 @@ public class GameController {
     }
  
     @GetMapping("/{gameId}")
-    public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
+    public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response) throws DataAccessException {
         response.addHeader("Refresh", "2");
 		ModelAndView res=new ModelAndView(GAME);
         Game game=gameService.getGameById(gameId);
         SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
-		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
 		Turn currentTurn = gameStarted.getTurn();
 		List<PlayerInfo> gamePlayerInfos = playerInfoService.getPlayerInfosByGame(game);
     	deckService.assingDecksIfNeeded(game);
@@ -306,7 +340,8 @@ public class GameController {
 
 		}
 
-		res.addObject("votesAssigned", deckService.votesAsigned(gamePlayerInfos));
+		res.addObject("activePlayers", gameService.activePlayers(game));
+		res.addObject("votesAssigned", deckService.votesAsigned(game));
 		res.addObject("roleCardNumber", roleCardNumber);
 		res.addObject("turn", currentTurn);
 		res.addObject("currentPlayer", currentPlayer);
@@ -331,12 +366,11 @@ public class GameController {
 	}
 
 	@GetMapping("/{gameId}/forcedVoteChange/{playerId}")
-	public String pretorSelection(@PathVariable("gameId") Integer gameId,@PathVariable("playerId") Integer playerId){
+	public String forcedVoteChange(@PathVariable("gameId") Integer gameId,@PathVariable("playerId") Integer playerId){
 		Game actualGame = gameService.getGameById(gameId);
 		Player voter = playerService.getPlayerById(playerId);
 		
 		voteCardService.forcedVoteChange(actualGame, voter);
-		System.out.println(deckService.getDeckByPlayerAndGame(voter, actualGame) + "esto");
 
 		return "redirect:/games/" + gameId.toString();
 
@@ -401,14 +435,13 @@ public class GameController {
 
         deckService.updateFactionDeck(deck, factionType);
 
-		if (game.getRound() == CurrentRound.FIRST) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
+		if (game.getRound() == CurrentRound.FIRST && game.getTurn().getCurrentTurn() != game.getNumPlayers()) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
 			deckService.deckRotation(game);
 		}
 		
 		else { //si no es primera ronda es que es primer turno de la segunda ronda (no hay eleccion de faccion fuera de esto)
 			deckService.clearEdilVoteCards(game); //borro los votos de los ediles
 			deckService.consulRotation(game); //rota unicamente la carta de consul
-			gameService.changeStage(game, CurrentStage.VOTING);
 		}
 		gameService.changeStage(game, CurrentStage.VOTING);
 		

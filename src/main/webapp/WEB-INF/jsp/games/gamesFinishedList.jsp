@@ -15,11 +15,18 @@
             <th>Started</th>
             <th>Duration</th>
             <th>Winners</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${publicGames}" var="game">
-            <tr>
+            
+            <c:if test = "${gamesWinners[game].contains(player)}">
+                <tr style="background-color:#35c32291">
+            </c:if>
+            <c:if test = "${!gamesWinners[game].contains(player)}">
+                <tr style="background-color:#fe25256e">
+            </c:if>
                 <td>
                     <c:out value="${game.name}"/>
                 </td>
@@ -34,6 +41,9 @@
                 </td>
                 <td>
                     <c:out value="${game.winners}"/>
+                </td>
+                <td>
+                    <a class="btn btn-default" href="/games/${game.id}" height="120">Show game</a>
                 </td>
             </tr>
         </c:forEach>
@@ -49,11 +59,18 @@
             <th>Started</th>
             <th>Duration</th>
             <th>Winners</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${privateGames}" var="game">
-            <tr>
+            <c:if test = "${gamesWinners[game].contains(player)}">
+                <tr style="background-color:#35c32291">
+            </c:if>
+            <c:if test = "${!gamesWinners[game].contains(player)}">
+                <tr style="background-color:#fe25256e">
+            </c:if>
+
                 <td>
                     <c:out value="${game.name}"/>
                 </td>
@@ -68,6 +85,9 @@
                 </td>
                 <td>
                     <c:out value="${game.winners}"/>
+                </td>
+                <td>
+                    <a class="btn btn-default" href="/games/${game.id}" height="120">Show Game</a>
                 </td>
             </tr>
         </c:forEach>

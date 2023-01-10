@@ -2,17 +2,16 @@ package org.springframework.samples.petclinic.deck;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
-import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
@@ -23,7 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DeckService {
 
-    DeckRepository rep;
+    @Autowired
+    private DeckRepository rep;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private PlayerInfoRepository playerInfoRepository;
@@ -44,7 +47,7 @@ public class DeckService {
 
     @Transactional(readOnly = true)
     public Deck getDeckByPlayerAndGame(Player player, Game game) {
-        return rep.findPlayerDecks(player.getId()).stream().filter(x -> x.getGame().getId() == game.getId()).findFirst().get();
+        return rep.findDeckByPlayerAndGame(player, game);
     }
 
     @Transactional
@@ -54,10 +57,13 @@ public class DeckService {
 
     @Transactional
     public void updateFactionDeck (Deck deck, FCType factionCard) {
+        System.out.println("11");
         List<FactionCard> chosenFaction = new ArrayList<>();
         FactionCard cardChosen = factionCardRepository.findById(factionCard).get();
         chosenFaction.add(cardChosen);
+        System.out.println("22");
         Deck deckToUpdate = rep.findById(deck.getId()).get();
+        System.out.println("33");
         deckToUpdate.setFactionCards(chosenFaction);
         rep.save(deckToUpdate);
     }
@@ -132,7 +138,7 @@ public class DeckService {
     @Transactional
     public void assingDecksIfNeeded(Game game) {        //esto esta cambiado
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
-        if(rep.findDecksByPlayerAndGame(players.get(ANY_PLAYER), game) == null) {
+        if(rep.findDeckByPlayerAndGame(players.get(ANY_PLAYER), game) == null) {
             List<FactionCard> factions = getFactionCards(players.size());
             List<VoteCard> votes = getFirstRoundVoteCards();
             Integer consul = (int) (Math.random() * (players.size()-1));
@@ -345,11 +351,20 @@ public class DeckService {
             winnerFactionCard = factionCardRepository.findById(FCType.MERCHANT).get();
         }
 
-        List<Player> winnerPlayers = getDecks().stream() //decks de un game se podria hacer por query (de hecho creo que se deberia)
+        List<Player> winnerPlayers = getDecks().stream()
 			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(winnerFactionCard))
             .map(d -> d.getPlayer()).collect(Collectors.toList());
 
-            return winnerPlayers;
+        if (winnerPlayers.size() == 0) {
+            game.setWinners(Faction.MERCHANTS); //si no hay ganadores ganan merchants y obtengo winner player de merchants
+            gameRepository.save(game);
+            winnerPlayers = getDecks().stream() //decks de un game se podria hacer por query (de hecho creo que se deberia)
+			.filter(d -> d.getGame() == game).filter(d -> d.getFactionCards().contains(factionCardRepository.findById(FCType.MERCHANT).get()))
+            .map(d -> d.getPlayer()).collect(Collectors.toList());
+        }
+
+        return winnerPlayers;
+    
     }
 
     @Transactional
@@ -357,14 +372,13 @@ public class DeckService {
         List<Player> loserPlayers = playerInfoRepository.findPlayersByGame(game);
         winnerPlayers.forEach(p -> loserPlayers.remove(p));
         return loserPlayers;
-
     }
 
+    
     @Transactional
-    public boolean votesAsigned (List<PlayerInfo> playerInfos) {
-        List <Deck> gameDecks= playerInfos.stream().map(x -> getDeckByPlayerAndGame(x.getPlayer(), x.getGame()))
-                                                                                    .collect(Collectors.toList());
-
+    public boolean votesAsigned (Game game) {
+        List<Player> players = playerInfoRepository.findPlayersByGame(game);
+        List<Deck> gameDecks= players.stream().map(x -> getDeckByPlayerAndGame(x, game)).collect(Collectors.toList());
         return gameDecks.stream().anyMatch(x -> x.getVoteCards().size() != 0);
 
     }

@@ -39,7 +39,7 @@ public class SuffragiumCardServiceTest {
         card.setVoteLimit(voteLimit);
         return card;
     }
-
+/* 
     @Test
     @Disabled
     public void testUpdateVotes() {
@@ -51,6 +51,6 @@ public class SuffragiumCardServiceTest {
         } catch (Exception e) {
             fail("no exception should be thrown");
         }
-    }
+    }*/
     
 }

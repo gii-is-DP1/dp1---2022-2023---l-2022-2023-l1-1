@@ -111,7 +111,7 @@ INSERT INTO turns(id,current_turn) VALUES
 
 INSERT INTO games(id,name,public_game,state,num_players,start_date,end_date,round,turn_id,stage,winners,suffragium_card_id) VALUES
 (1,'Mi primera partida', 0, 'STARTING', 5, null, null, 'FIRST', 1, 'VOTING', null, 1),
-(2,'Partida rapida', 1, 'IN_PROCESS', 6, '2022-10-27 10:00:00', null, 'FIRST', 2, 'END_OF_TURN', null, 2),
+(2,'Partida rapida', 1, 'STARTING', 6, '2022-10-27 10:00:00', null, 'FIRST', 2, 'END_OF_TURN', null, 2),
 (3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30 10:00:00', '2022-10-30 11:00:00', 'FIRST', 3, 'VOTING', 'LOYALS', 3),
 (4,'New game', 1, 'FINISHED', 6, '2022-11-15 23:59:58', '2022-11-16 00:25:01', 'FIRST', 4, 'VOTING', 'LOYALS', 4),
 (5,'Testing decks', 1, 'STARTING', 7, null, null, 'FIRST', 5, 'VOTING', null, null);
@@ -197,9 +197,11 @@ INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
 (17, 25.0, 5, 1),
 (18, 50.0, 6, 1);
 
-INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
-('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3),
-('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1),
-('FRIENDSHIP', 'I am player1', FALSE, 5, 1),
-('FRIENDSHIP', 'I am player2', TRUE, 6, 1);
+INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id,game_id) VALUES
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3, null),
+('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1, null),
+('FRIENDSHIP', 'I am player1', FALSE, 5, 1, null),
+('FRIENDSHIP', 'I am player2', TRUE, 6, 1, null),
+('FRIENDSHIP', 'I am alvgonfri', TRUE, 1, 9, null),
+('GAME_PLAYER', 'Join my game!', FALSE, 1, 9, 5);
 

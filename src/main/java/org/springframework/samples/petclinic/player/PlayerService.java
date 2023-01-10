@@ -1,30 +1,17 @@
 package org.springframework.samples.petclinic.player;
 
-import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.hibernate.envers.RevisionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckRepository;
-import org.springframework.samples.petclinic.deck.FactionCard;
-import org.springframework.samples.petclinic.deck.FactionCardRepository;
-import org.springframework.samples.petclinic.enums.Faction;
-import org.springframework.samples.petclinic.game.Game;
 import org.springframework.data.history.Revision;
-import org.springframework.data.history.Revisions;
-import org.springframework.samples.petclinic.deck.DeckRepository;
-import org.springframework.samples.petclinic.game.Game;
-import org.springframework.samples.petclinic.game.GameRepository;
-import org.springframework.samples.petclinic.model.audit.UserRevEntity;
 import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
@@ -152,6 +139,7 @@ public class PlayerService {
 	@Transactional(readOnly = true)
 	public List<String> auditPlayer(Player player) {
 		List<String> res = new ArrayList<>();
+		List<String> updates = new ArrayList<>();
 		List<Revision<Integer, Player>> revs = playerRepository.findRevisions(player.getId()).get().collect(Collectors.toList());
 		for(Revision<Integer, Player> r: revs) {
 			Instant instant = r.getRevisionInstant().get().atZone(ZoneId.systemDefault()).toInstant();
@@ -159,14 +147,15 @@ public class PlayerService {
 				res.add("Player created at " + fromInstantToDate(instant));
 			} 
 			else if(r.getMetadata().getRevisionType() == org.springframework.data.history.RevisionMetadata.RevisionType.UPDATE) {
-				if(player.getPlaying() == true) {
-					res.add("Started playing a game at " + fromInstantToDate(instant));
+				if(updates.size() % 2 == 0) {
+					updates.add("Started playing a game at " + fromInstantToDate(instant));
 				} 
-				else if(player.getPlaying() == false) {
-					res.add("Finished playing a game at " + fromInstantToDate(instant));
+				else {
+					updates.add("Finished playing a game at " + fromInstantToDate(instant));
 				}
 			}
 		}
+		res.addAll(updates);
 		return res;
 	}
 

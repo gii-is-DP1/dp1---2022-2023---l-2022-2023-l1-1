@@ -6,6 +6,7 @@
 
 
 <petclinic:layout pageName="game">
+    
     <h1><c:out value="${game.name}"/></h1>
     <c:if test = "${game.state == 'IN_PROCESS'}">
         <h1>${game.round} ROUND | TURN ${turn.currentTurn} | ${game.stage} STAGE</h1>
@@ -14,16 +15,13 @@
 
     <c:if test = "${game.state == 'FINISHED'}">
         <br>
-        <c:forEach items="${winnerPlayers}" var="winner">
-            <c:if test = "${winner == currentPlayer}">
-            <h1 style="color:rgb(45, 125, 4); font-size:75px;"> WINNER </h1>
-            </c:if>
-        </c:forEach>
-        <c:forEach items="${loserPlayers}" var="loser">
-            <c:if test = "${loser == currentPlayer}">
-                <h1 style="color:red; font-size:75px;"> LOSER </h1>
-            </c:if>
-        </c:forEach>
+        <c:if test = "${winnerPlayers.contains(currentPlayer)}">
+            <h1 style="color:rgb(45, 125, 4); font-size:75px;"> <b>WINNER<b> </h1>
+        </c:if>
+    
+        <c:if test = "${loserPlayers.contains(currentPlayer)}">
+            <h1 style="color:red; font-size:75px;"> <b>LOSER</b> </h1>
+        </c:if>
         <br>
     </c:if>
 
@@ -39,23 +37,29 @@
         <tbody>
             <tr>
                 <td>
-                    <c:out value="${suffragiumCard.loyalsVotes}"/>
+                    <b><c:out value="${suffragiumCard.loyalsVotes}"/></b>
+                    <img src="/resources/images/LoyalCrownIcon.PNG" width="30" height="30"/> 
                 </td>
                 <td>
-                    <c:out value="${suffragiumCard.traitorsVotes}"/>
+                    <b><c:out value="${suffragiumCard.traitorsVotes}"/></b>
+                    <img src="/resources/images/TraitorSwordIcon.jpg" width="30" height="20"/> 
                 </td>
                 <td>
-                    <c:out value="${game.suffragiumLimit}"/>
+                    <b><c:out value="${suffragiumCard.voteLimit}"/></b>
                 </td>
             </tr>   
         </tbody>
     </table>
     <c:if test = "${game.state == 'IN_PROCESS'}">
+        <h1>Waiting for: 
+        <c:forEach items="${activePlayers}" var="activePlayer">
+            <c:out value="${activePlayer} "/>
+        </c:forEach>
+        </h1>
         <c:if test = "${game.stage =='VOTING' && playerDeck.roleCard =='CONSUL' && votesAssigned == false}">
             <a class="btn btn-default" href="/games/${game.id}/rolesDesignation" height="120">Role designation</a>
         </c:if>
         <table id="decks" class="table table-striped">
-            <h4>Decks</h4>
             <thead>
             <tr>
                 <th>Player</th>
@@ -160,44 +164,52 @@
         </table>
     </c:if>
     <c:if test = "${game.state == 'FINISHED'}">
-        <table>
+        <table id="decks" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>WINNER FACTION</th>
+                    <th>WINNERS</th>
+                    <th>LOSERS</th>
+                    
+                </tr>
+                </thead>
+            <body>
+                <td>
+                <h1>${game.winners}</h1><br>
+                <c:if test = "${game.winners == 'LOYALS'}">
+                    <img src="/resources/images/Loyal.PNG" width="200" height="300"/>          
+                </c:if>
+                <c:if test = "${game.winners == 'TRAITORS'}">
+                    <img src="/resources/images/Traitor.PNG" width="200" height="300"/>          
+                </c:if>
+                <c:if test = "${game.winners == 'MERCHANTS'}">
+                    <img src="/resources/images/Merchant.PNG" width="200" height="300"/>          
+                </c:if>
+                </td>
             <td>
-            <h1>WINNER FACTION:<br> ${game.winners}</h1>
-            <c:if test = "${game.winners == 'LOYALS'}">
-                <img src="/resources/images/Loyal.PNG" width="200" height="300"/>          
-            </c:if>
-            <c:if test = "${game.winners == 'TRAITORS'}">
-                <img src="/resources/images/Traitor.PNG" width="200" height="300"/>          
-            </c:if>
-            <c:if test = "${game.winners == 'MERCHANTS'}">
-                <img src="/resources/images/Merchant.PNG" width="200" height="300"/>          
-            </c:if>
+                <c:forEach items="${winnerPlayers}" var="winner">
+                    <b>${winner.user.username}</b> <span class="glyphicon glyphicon-arrow-right"></span> Selected faction: 
+                    <c:forEach items="${winner.decks}" var="deck">
+                        <c:if test = "${deck.game == game}">
+                            <b>${deck.factionCards[0].type}</b><br>
+                        </c:if>
+                    </c:forEach>
+                </c:forEach>
             </td>
-        <td>
-            <h1>WINNERS</h1>
-            <c:forEach items="${winnerPlayers}" var="winner">
-                ${winner.user.username} <span class="glyphicon glyphicon-arrow-right"></span> Selected faction: 
-                <c:forEach items="${winner.decks}" var="deck">
-                    <c:if test = "${deck.game == game}">
-                        ${deck.factionCards[0].type}<br>
-                    </c:if>
+            <td>
+                <c:forEach items="${loserPlayers}" var="loser">
+                    <b>${loser.user.username}</b><span class="glyphicon glyphicon-arrow-right"></span> Selected faction: 
+                    <c:forEach items="${loser.decks}" var="deck">
+                        <c:if test = "${deck.game == game}">
+                            <b>${deck.factionCards[0].type}</b><br>
+                        </c:if>
+                    </c:forEach>
                 </c:forEach>
-            </c:forEach>
-        </td>
-        <td>
-            <h1>LOSERS</h1> 
-            <c:forEach items="${loserPlayers}" var="loser">
-                ${loser.user.username} <span class="glyphicon glyphicon-arrow-right"></span> Selected faction: 
-                <c:forEach items="${loser.decks}" var="deck">
-                    <c:if test = "${deck.game == game}">
-                        ${deck.factionCards[0].type}<br>
-                    </c:if>
-                </c:forEach>
-            </c:forEach>
 
-        </td>
+            </td>
+        </body>
         </table>
         <br>
-        <a class="btn btn-default" href="/">EXIT</a>
+        <a class="btn btn-default" href="/">HOME</a>
     </c:if>
 </petclinic:layout>

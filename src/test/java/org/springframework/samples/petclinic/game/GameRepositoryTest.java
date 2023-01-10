@@ -34,8 +34,36 @@ public class GameRepositoryTest {
     }
 
     @Test
-    public void testFindByNameNotExistingGame() {
+    public void testFindByNameNotExistingGames() {
         List<Game> g = gameRepository.findByName("Not existing game");
+        assertNotNull(g);
+        assertTrue(g.isEmpty());
+    }
+
+    @Test
+    public void testFindPublicGamesByName() {
+        List<Game> g = gameRepository.findPublicGamesByName("Partida rapida");
+        assertNotNull(g);
+        assertFalse(g.isEmpty());
+    }
+
+    @Test
+    public void testFindPublicGamesByNameNotExistingGames() {
+        List<Game> g = gameRepository.findPublicGamesByName("Mi primera partida");
+        assertNotNull(g);
+        assertTrue(g.isEmpty());
+    }
+
+    @Test
+    public void testFindPrivateGamesByName() {
+        List<Game> g = gameRepository.findPrivateGamesByName("Mi primera partida");
+        assertNotNull(g);
+        assertFalse(g.isEmpty());
+    }
+
+    @Test
+    public void testFindPrivateGamesByNameNotExistingGames() {
+        List<Game> g = gameRepository.findPrivateGamesByName("Partida rapida");
         assertNotNull(g);
         assertTrue(g.isEmpty());
     }
