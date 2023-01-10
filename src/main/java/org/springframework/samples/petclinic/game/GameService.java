@@ -8,14 +8,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckRepository;
 import org.springframework.samples.petclinic.deck.DeckService;
-import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
 import org.springframework.samples.petclinic.enums.Faction;
@@ -43,7 +41,6 @@ public class GameService {
     @Autowired
     private DeckRepository deckRepository;
 
-
     @Autowired
     private PlayerInfoRepository playerInfoRepository;
 
@@ -60,6 +57,16 @@ public class GameService {
     @Autowired
     public GameService(GameRepository repo) {
         this.repo = repo;
+    }
+
+    public GameService(GameRepository repo, PlayerInfoRepository playerInfoRepository, PlayerRepository playerRepository, TurnRepository turnRepository, DeckRepository deckRepository, InvitationService invitationService, DeckService deckService) {
+        this.repo = repo;
+        this.playerInfoRepository = playerInfoRepository;
+        this.playerRepository = playerRepository;
+        this.turnRepository = turnRepository;
+        this.deckRepository = deckRepository;
+        this.invitationService = invitationService;
+        this.deckService = deckService;
     }
 
     @Transactional(readOnly = true)
@@ -85,7 +92,7 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<Game> getFriendGamesByNameAndState(String name, State s, Player player) {
         List<Game> res = new ArrayList<>();
-        List<Game> privateGames = repo.findPrivateGamesByName(name).stream().filter(g -> g.getState() == s).collect(Collectors.toList());
+        List<Game> privateGames = getPrivateGamesByNameAndState(name, s);
         List<Player> friends = invitationService.getFriends(player);
         for(Game game: privateGames) {
             for(Player friend: friends) {
@@ -236,7 +243,6 @@ public class GameService {
             else {
                 winner = Faction.LOYALS; //si no, esque ha superado traidor y gana leales
             }
-            //EN ESTE CASO SI NO HAY FACCION RIVAL GANARIA MERCADER A VER COMO SE PONE ESO
         }
 
         else { //idus de marzo
@@ -256,8 +262,8 @@ public class GameService {
         repo.save(game);
     }
 
-    @Transactional
-    Map<Game,List<Player>> winnersByGame () {
+    @Transactional(readOnly = true)
+    public Map<Game,List<Player>> winnersByGame () {
         Map<Game,List<Player>> res = new HashMap<>();
         List<Game> games = repo.findAll();
         games.forEach(g -> {
@@ -271,27 +277,27 @@ public class GameService {
     List<String> activePlayers (Game game) {
         List <String> activePlayers = null;
         if (game.getStage() == CurrentStage.VOTING) {
-            if (!deckService.votesAsigned(playerInfoRepository.findPlayerInfosByGame(game))) {
+            if (!deckService.votesAsigned(game)) {
                 activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
             }
             else {
             activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.EDIL && deckRepository.findDecksByPlayerAndGame(p, game).getVoteCards().size() > 1)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.EDIL && deckRepository.findDeckByPlayerAndGame(p, game).getVoteCards().size() > 1)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
             }
 
         }
         else if (game.getStage() == CurrentStage.VETO) {
              activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.PRETOR)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.PRETOR)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
 
         }
         else if (game.getStage() == CurrentStage.END_OF_TURN) {
             activePlayers = playerInfoRepository.findPlayersByGame(game).stream()
-                .filter(p -> deckRepository.findDecksByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
+                .filter(p -> deckRepository.findDeckByPlayerAndGame(p, game).getRoleCard() == RoleCard.CONSUL)
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
         }
         return activePlayers;

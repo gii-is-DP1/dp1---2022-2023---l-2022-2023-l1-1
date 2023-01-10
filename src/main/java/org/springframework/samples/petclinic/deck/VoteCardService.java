@@ -55,7 +55,7 @@ public class VoteCardService {
 
     @Transactional
     public void forcedVoteChange(Game game, Player voter) {
-        Deck voterDeck = deckRepository.findDecksByPlayerAndGame(voter, game);
+        Deck voterDeck = deckRepository.findDeckByPlayerAndGame(voter, game);
         List<VoteCard> newVotes = new ArrayList<>();
        
         newVotes.add(voteCardRepository.findById(VCType.RED).get());

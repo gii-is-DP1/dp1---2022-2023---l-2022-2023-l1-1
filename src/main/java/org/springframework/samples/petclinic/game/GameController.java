@@ -249,10 +249,10 @@ public class GameController {
 			Player creator = playerService.getPlayerByUsername(user.getUsername());
 			playerInfoService.saveCreatorInfo(creatorInfo, game, creator);
 			log.info("Game created");
-
 			model.put("game", game);
         	model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
-        	return "redirect:/games/" + game.getId().toString() + "/lobby";
+			
+        	return "redirect:/games/" + game.getId() + "/lobby";
 		}
 	}
 
@@ -341,7 +341,7 @@ public class GameController {
 		}
 
 		res.addObject("activePlayers", gameService.activePlayers(game));
-		res.addObject("votesAssigned", deckService.votesAsigned(gamePlayerInfos));
+		res.addObject("votesAssigned", deckService.votesAsigned(game));
 		res.addObject("roleCardNumber", roleCardNumber);
 		res.addObject("turn", currentTurn);
 		res.addObject("currentPlayer", currentPlayer);
@@ -366,11 +366,12 @@ public class GameController {
 	}
 
 	@GetMapping("/{gameId}/forcedVoteChange/{playerId}")
-	public String pretorSelection(@PathVariable("gameId") Integer gameId,@PathVariable("playerId") Integer playerId){
+	public String forcedVoteChange(@PathVariable("gameId") Integer gameId,@PathVariable("playerId") Integer playerId){
 		Game actualGame = gameService.getGameById(gameId);
 		Player voter = playerService.getPlayerById(playerId);
 		
 		voteCardService.forcedVoteChange(actualGame, voter);
+
 		return "redirect:/games/" + gameId.toString();
 
 	}
