@@ -24,6 +24,7 @@ import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
+import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnRepository;
 import org.springframework.stereotype.Service;
@@ -72,6 +73,11 @@ public class GameService {
     @Transactional(readOnly = true)
     public Game getGameById(Integer id){
         return repo.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Game> getGamesByState(State state){
+        return repo.findByState(state);
     }
 
     @Transactional(readOnly = true)
@@ -181,7 +187,7 @@ public class GameService {
         }
         repo.save(game);
     }
-
+    
     private static final Integer TOTAL_VOTES_NUMBER = 2;
 
     @Transactional
@@ -195,7 +201,6 @@ public class GameService {
             repo.save(game);
         }
     }
-
     
     private static final Integer NEW_TURN_INITIAL_VOTES = 0;
 
@@ -301,6 +306,35 @@ public class GameService {
                     .map(p -> p.getUser().getUsername()).collect(Collectors.toList());
         }
         return activePlayers;
+    }
+
+    @Transactional(readOnly = true)
+	public Double getGlobalTimePlaying(List<Game> allFinishedGames) {
+		Double result = 0.;
+		for (Game g:allFinishedGames){
+		    result = result + 1;
+	    }
+		return result;
+	}
+
+    @Transactional(readOnly = true)
+    public Double getGlobalMaxTimePlaying(List<Game> allFinishedGames) {
+        Double result = 0.;
+		for (Game g:allFinishedGames){
+            if (1 > result)
+		    result = 1.;
+	    }
+		return result;
+    }
+
+    @Transactional(readOnly = true)
+    public Double getGlobalMinTimePlaying(List<Game> allFinishedGames) {
+        Double result = 999999999999999999999999999999999999999999999999999.;
+		for (Game g:allFinishedGames){
+            if (1 < result)
+		    result = 1.;
+	    }
+		return result;
     }
     
 }

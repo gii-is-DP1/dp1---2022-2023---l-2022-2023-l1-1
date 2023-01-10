@@ -8,14 +8,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.query.criteria.internal.ValueHandlerFactory.IntegerValueHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.deck.DeckRepository;
-import org.springframework.data.history.Revision;
-import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
+import org.springframework.samples.petclinic.deck.DeckService;
+import org.springframework.samples.petclinic.enums.Faction;
+import org.springframework.samples.petclinic.enums.State;
+import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
+import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.User;
+import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.data.history.Revision;
+import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.samples.petclinic.user.UserRepository;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.core.session.SessionInformation;
@@ -40,6 +47,9 @@ public class PlayerService {
 	private DeckRepository deckRepository;
 
 	@Autowired
+	private GameRepository gameRepository;
+
+	@Autowired
 	private SessionRegistry sessionRegistry;
 
     @Autowired
@@ -47,6 +57,9 @@ public class PlayerService {
 
     @Autowired
 	private AuthoritiesService authoritiesService;
+
+	@Autowired
+	private DeckService deckService;
 
 	@Autowired
 	public PlayerService(PlayerRepository playerRepository) {
@@ -164,5 +177,106 @@ public class PlayerService {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		return formatter.format(date);
 	}
+
+	@Transactional(readOnly = true)
+	public Double getGamesPlayedByPlayer(Player player) {
+		Double res = 0.;
+		List<Game> games = gameRepository.findByState(State.FINISHED);
+		for(Game g: games) {
+			if(playerInfoRepository.findPlayersByGame(g).contains(player)) res++;
+		}
+		return res;
+	}
+
+	@Transactional
+	public Double findWinsByPlayer(Player player, List<Game> allFinishedGames) {
+		Double result = 0.;
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player)){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+
+	@Transactional
+	public Double findUserWinsAsTraitor(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.findPlayerByUsername(user.getUsername());
+		Faction traitor = Faction.TRAITORS;
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player) && g.getWinners() == traitor){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+
+	@Transactional
+	public Double findUserWinsAsLoyal(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.findPlayerByUsername(user.getUsername());
+		Faction loyal = Faction.LOYALS;
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player) && g.getWinners() == loyal){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+
+	@Transactional
+	public Double findUserWinsAsMerchant(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.findPlayerByUsername(user.getUsername());
+		Faction merchant = Faction.MERCHANTS;
+		for (Game g:allFinishedGames){
+			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
+			if (winners.contains(player) && g.getWinners() == merchant){
+				result = result + 1.;
+			}
+		}
+		return result;
+	}
+	@Transactional
+	public Double getTotalTimePlaying(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.findPlayerByUsername(user.getUsername());
+		
+		for (Game g:allFinishedGames){
+			List<Player> players = playerInfoRepository.findPlayersByGame(g);
+			if (players.contains(player)){
+				result = result + 1;
+			}
+		}
+		return result;
+	}
+
+	public Double getMinTimePlaying(User user, List<Game> allFinishedGames) {
+		Double result = 0.;
+		Player player = playerRepository.findPlayerByUsername(user.getUsername());
+		for (Game g:allFinishedGames){
+			List<Player> players = playerInfoRepository.findPlayersByGame(g);
+			if (players.contains(player) && 1 > result){
+				result = 1.;
+			}
+		}
+		return result;
+	}
+
+    public Double getMaxTimePlaying(User user, List<Game> allFinishedGames) {
+        Double result = 999999999999999999999999999999999999999999999999999.;
+		Player player = playerRepository.findPlayerByUsername(user.getUsername());
+		for (Game g:allFinishedGames){
+			List<Player> players = playerInfoRepository.findPlayersByGame(g);
+			if (players.contains(player) && 1 < result){
+				result = 1.;
+			}
+		}
+		return result;
+    }
 
 }
