@@ -1,9 +1,11 @@
 package org.springframework.samples.petclinic.achievements;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -14,8 +16,10 @@ import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.user.User;
+import org.springframework.samples.petclinic.user.UserRepository;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 
@@ -23,45 +27,55 @@ import org.springframework.stereotype.Service;
 public class StatisticsService {
 
     @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
     private PlayerService playerService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private GameService gameService;
+
     @Autowired
 	private DeckService deckService;
 
     @Transactional
-    public Map<User, Double> listRankingUserVictory() throws DataAccessException{
+    public Map<Player, Double> listRankingUserVictory() throws DataAccessException{
 
-        List<User> list =new ArrayList<User>();
-        Map<User,Double> result = new HashMap();
+        List<Player> topPlayers = new ArrayList<>();
+        Map<Player, Double> result = new HashMap<>();
         List<Double> victoryList = new ArrayList<Double>();
         List<Game> allFinishedGames = gameService.getGamesByState(State.FINISHED);
-        List<User> usersList = (List<User>) userService.findAll();
-        for (User u: usersList){
-            Double victory = playerService.findUserWins(u, allFinishedGames);
-            if (victoryList.size() < 10){
-                victoryList.add(victory);
-                list.add(u);
+        List<Player> players = playerRepository.findAll();
+
+        for (Player p: players){
+            Double victories = playerService.findWinsByPlayer(p, allFinishedGames);
+            if (victoryList.size() < 10) {
+                victoryList.add(victories);
+                topPlayers.add(p);
             } else if (victoryList.size() == 10) {
                 int i = 0;
-                for (Double v: victoryList){
-                    if (victory > v){
-                        list.remove(i);
+                for (Double v: victoryList) {
+                    if (victories > v){
+                        topPlayers.remove(i);
                         victoryList.remove(i);
-                        list.add(u);
-                        victoryList.add(victory);
+                        topPlayers.add(p);
+                        victoryList.add(victories);
                     }
                     i += 1;
                 }
             }
         }
-        List<Double> orderedVictoryList = orderedVictories(victoryList);
-        List<User> orderedUsers = orderedUsers(list, victoryList, orderedVictoryList);
+        
+        List<Double> orderedVictoryList = orderedVictories(victoryList); System.out.println(orderedVictoryList +" ))))))))) "+ victoryList);
+        List<Player> orderedPlayers = orderedPlayers(topPlayers, victoryList, orderedVictoryList); 
+        System.out.println(orderedPlayers.stream().map(p->p.getUser().getUsername()).collect(Collectors.toList())+
+        " ((((((((((((( "+topPlayers.stream().map(p->p.getUser().getUsername()).collect(Collectors.toList()));
 
-        for (int i = 0; i < orderedUsers.size() + 1; i++){
-            result.put(orderedUsers.get(i), orderedVictoryList.get(i));
+        for (int i = 0; i < orderedPlayers.size(); i++){
+            result.put(orderedPlayers.get(i), orderedVictoryList.get(i));
         }
         return result;
 
@@ -69,6 +83,7 @@ public class StatisticsService {
     
     @Transactional
     public List<Double> orderedVictories(List<Double> victoryList) throws DataAccessException{
+        /* 
         List<Double> result = new ArrayList<Double>();
         Double x = 0.;
         Integer i = 0;
@@ -81,14 +96,16 @@ public class StatisticsService {
             result.add(x);
             victoryList.remove(victoryList.indexOf(x));
         }
-        return result;
+        return result;*/
+        Collections.sort(victoryList, Collections.reverseOrder());
+        return victoryList;
     }
 
     @Transactional
-    public List<User> orderedUsers(List<User> listUsers, List<Double> victoryList, List<Double> orderedVictories){
-        List<User> result = new ArrayList<User>();
+    public List<Player> orderedPlayers(List<Player> topPlayers, List<Double> victoryList, List<Double> orderedVictories){
+        List<Player> result = new ArrayList<>();
         for (Double v: orderedVictories){
-            result.add(listUsers.get(victoryList.indexOf(v)));
+            result.add(topPlayers.get(victoryList.indexOf(v)));
         }
         return result;
     }
@@ -96,12 +113,14 @@ public class StatisticsService {
     @Transactional
     public List<Double> listStatistics(User user) throws DataAccessException{
         List<Double> list =new ArrayList<Double>();
+
+        Player player = playerRepository.findPlayerByUsername(user.getUsername());
         
-		Double gamesPlayed = (double) userService.matchesPlayedForUser(user);
+		Double gamesPlayed = playerService.getGamesPlayedByPlayer(player);
         
         List<Game> allFinishedGames = gameService.getGamesByState(State.FINISHED);
         
-        Double victory = playerService.findUserWins(user, allFinishedGames);
+        Double victory = playerService.findWinsByPlayer(player, allFinishedGames);
         
         Double loss = gamesPlayed-victory;
         

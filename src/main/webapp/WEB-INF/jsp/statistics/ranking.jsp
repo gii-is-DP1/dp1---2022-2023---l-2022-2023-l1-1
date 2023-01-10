@@ -12,7 +12,7 @@
         <c:forEach items="${rankingMap}" var="entry">
             <tr>
                 <th>Rank </th>
-                <td><c:out value="User: ${entry.key.username}" /></td>
+                <td><c:out value="Player: ${entry.key.user.username}" /></td>
                 <td><c:out value="Victories: ${entry.value}" /></td>
             </tr>
         </c:forEach>
