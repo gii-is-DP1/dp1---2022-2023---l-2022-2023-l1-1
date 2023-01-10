@@ -10,7 +10,7 @@
     <table class="table table-striped">
         <tr>
             <th>Games played</th>
-            <td><b><c:out value="${statistics.get(0)} " /></b></td>
+            <td><c:out value="${statistics.get(0)} " /></td>
         </tr>
         <tr>
             <th>Winned games</th>

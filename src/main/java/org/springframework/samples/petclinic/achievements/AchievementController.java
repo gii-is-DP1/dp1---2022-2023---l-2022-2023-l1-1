@@ -31,7 +31,6 @@ public class AchievementController {
     private final String ACHIEVEMENTS_LISTING_VIEW="/achievements/achievementsList";
     private final String ACHIEVEMENTS_FORM="/achievements/createOrUpdateAchievementForm";
     private final String USER_ACHIEVEMENTS_VIEW="/achievements/playerAchievements";
-    private final String STATISTICS_VIEW="/achievements/statistics";
 
 	private UserService userService;
     private AchievementService achievementService;
@@ -135,12 +134,5 @@ public class AchievementController {
     }
 
 
-    @GetMapping(path="/statistics")
-	public String listadoStatistics(ModelMap modelMap, @AuthenticationPrincipal UserDetails user) {
-		User userp = userService.findUser(user.getUsername());
-		modelMap.addAttribute("statistics", achievementService.listStatistics(userp));
-		modelMap.addAttribute("user", user);
-        
-		return STATISTICS_VIEW;	
-	}
+   
 }
