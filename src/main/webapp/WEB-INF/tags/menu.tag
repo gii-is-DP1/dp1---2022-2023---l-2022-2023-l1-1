@@ -35,6 +35,11 @@
 						title="achievements">										
 						<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 						<span>Achievements</span>	
+					</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'statistics'}" url="/achievements/statistics"
+						title="statistics">										
+						<span class="glyphicon glyphicon-stats-bars" aria-hidden="true"></span>
+						<span>Statistics</span>	
 					</petclinic:menuItem>	
 
 				</sec:authorize>
