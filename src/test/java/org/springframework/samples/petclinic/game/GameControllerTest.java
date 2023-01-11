@@ -135,7 +135,7 @@ public class GameControllerTest {
     public void testProcessGamesHistoryForm() throws Exception {
         mockMvc.perform(get("/games/history"))
         .andExpect(status().isOk())
-        .andExpect(view().name("/games/gamesFinishedList"))
+        .andExpect(view().name("/games/gamesFinishedListAdmin"))
         .andExpect(model().attributeExists("returnButton"))
         .andExpect(model().attributeExists("publicGames"))
         .andExpect(model().attributeExists("privateGames"));

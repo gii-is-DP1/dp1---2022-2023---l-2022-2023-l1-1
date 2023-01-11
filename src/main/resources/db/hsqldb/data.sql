@@ -54,7 +54,8 @@ INSERT INTO turns(id,current_turn) VALUES
 (2, 5),
 (3, 1),
 (4, 1),
-(5, 1);
+(5, 1),
+(6, 2);
 
 INSERT INTO games(id,name,public_game,state,num_players,start_date,end_date,round,turn_id,stage,winners,suffragium_card_id) VALUES
 (1,'Mi primera partida', 0, 'STARTING', 5, null, null, 'FIRST', 1, 'VOTING', null, 1),
@@ -62,7 +63,7 @@ INSERT INTO games(id,name,public_game,state,num_players,start_date,end_date,roun
 (3,'Partida de principiantes', 0, 'FINISHED', 5, '2022-10-30 10:00:00', '2022-10-30 11:00:00', 'FIRST', 3, 'VOTING', 'TRAITORS', 3),
 (4,'New game', 1, 'FINISHED', 6, '2022-11-15 23:59:58', '2022-11-16 00:25:01', 'FIRST', 4, 'VOTING', 'LOYALS', 4),
 (5,'Testing decks', 1, 'STARTING', 7, null, null, 'FIRST', 5, 'VOTING', null, null),
-(6,'Strategic game', 0, 'IN_PROCESS', 5, '2023-01-11 18:24:49', null, 'SECOND', 2, 'VETO', null, null);
+(6,'Strategic game', 0, 'IN_PROCESS', 5, '2023-01-11 18:24:49', null, 'SECOND', 6, 'VETO', null, null);
 
 
 INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES 

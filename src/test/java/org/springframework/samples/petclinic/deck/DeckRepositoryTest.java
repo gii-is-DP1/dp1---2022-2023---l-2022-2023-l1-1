@@ -28,7 +28,7 @@ public class DeckRepositoryTest {
     private GameRepository gameRepository;
 
     private static final Integer PLAYER_WITH_DECKS_ID = 3;
-    private static final Integer PLAYER_WITHOUT_DECKS_ID = 9;
+    private static final Integer PLAYER_WITHOUT_DECKS_ID = 13;
     private static final Integer TEST_GAME_ID = 2;
 
     @Test
