@@ -11,8 +11,9 @@
     <c:if test = "${game.state == 'IN_PROCESS'}">
         <h1>${game.round} ROUND | TURN ${turn.currentTurn} | ${game.stage} STAGE</h1>
     </c:if>
-
-
+    <c:if test = "${game.state == 'IN_PROCESS' && currentPlayerInfo.spectator}">
+        <a class="btn btn-default" href="/games/${game.id}/exit" height="120">Stop watching</a>
+    </c:if>
     <c:if test = "${game.state == 'FINISHED'}">
         <br>
         <c:if test = "${winnerPlayers.contains(currentPlayer)}">

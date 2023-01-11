@@ -24,6 +24,9 @@
     </c:if>
     <p></p>
     <a class="btn btn-default" href="/gameInvitations/${game.id}/send">Invite friend</a>
+    <c:if test="${!currentPlayerInfo.creator}">
+        <a class="btn btn-default" href="/games/${game.id}/exit">Exit game</a>
+    </c:if>
     <table id="creatorTable" class="table table-striped">
         <thead>
         <tr>

@@ -10,9 +10,11 @@ import org.springframework.samples.petclinic.player.Player;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PlayerInfoRepository extends CrudRepository<PlayerInfo,Long>{
+public interface PlayerInfoRepository extends CrudRepository<PlayerInfo,Integer>{
 
     List<PlayerInfo> findAll(); 
+
+    void deleteById(Integer id);
 
     @Query("SELECT pI FROM PlayerInfo pI WHERE pI.game =?1")
 	public List<PlayerInfo> findPlayerInfosByGame(@Param("game") Game game);

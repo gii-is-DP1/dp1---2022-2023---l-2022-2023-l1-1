@@ -8,6 +8,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.achievements.AchievementRepository;
+import org.springframework.samples.petclinic.comment.CommentRepository;
+import org.springframework.samples.petclinic.comment.CommentService;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckRepository;
@@ -53,6 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.stream.events.Comment;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
@@ -485,6 +489,9 @@ public class GameControllerTest {
 	private VoteCardService voteCardService;
 
     @MockBean
+    private CommentService commentService;
+
+    @MockBean
     private GameRepository gameRepository;
 
     @MockBean
@@ -522,5 +529,8 @@ public class GameControllerTest {
 
     @MockBean
     private FactionCardRepository factionCardRepository;
+
+    @MockBean
+    private CommentRepository commentRepository;
 
 }
