@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.comment.Comment;
 import org.springframework.samples.petclinic.comment.CommentService;
@@ -318,6 +319,22 @@ public class GameController {
         model.put("playerInfos", playerInfoService.getPlayerInfosByGame(game));
         return "redirect:/games/" + gameId.toString() + "/lobby";
     }
+
+	@GetMapping("/games/{gameId}/exit")
+    public String exitGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, ModelMap model){
+		Game game = gameService.getGameById(gameId);
+		Player player = playerService.getPlayerByUsername(user.getUsername());
+		PlayerInfo playerInfo = playerInfoService.getPlayerInfoByGameAndPlayer(game, player);
+		try{
+            gameService.exitGame(playerInfo, game);
+            log.info("PlayerInfo deleted");   
+            model.put("message", "You left the game successfully!");     
+        } catch(EmptyResultDataAccessException e) {
+            log.warn("Not existing playerInfo");
+            model.put("message", "You are not in that game");
+        }
+        return "redirect:/";
+    }
  
     @GetMapping("/games/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response) throws DataAccessException {
@@ -332,7 +349,6 @@ public class GameController {
     	deckService.assingDecksIfNeeded(game);
 
 		Integer roleCardNumber = gameService.gameRoleCardNumber(game);
-//cambiar a finished
 
 		if(!playerInfoService.isSpectator(currentPlayer, gameStarted)){
 			Deck playerDeck = deckService.getDeckByPlayerAndGame(currentPlayer, game);
@@ -353,6 +369,7 @@ public class GameController {
 		res.addObject("roleCardNumber", roleCardNumber);
 		res.addObject("turn", currentTurn);
 		res.addObject("currentPlayer", currentPlayer);
+		res.addObject("currentPlayerInfo", playerInfoService.getPlayerInfoByGameAndPlayer(gameStarted, currentPlayer));
         res.addObject("game", gameStarted);
         res.addObject("playerInfos", gamePlayerInfos);
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));

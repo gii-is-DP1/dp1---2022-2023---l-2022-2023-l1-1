@@ -111,7 +111,7 @@ public class InvitationController {
                 invitationService.saveInvitation(invitation, sender);
                 log.info("Invitation created");
                 result = showInvitationsByPlayer(user);
-                result.addObject("message", "Invitation sent succesfully!");
+                result.addObject("message", "Invitation sent successfully!");
             } catch (NullRecipientException e) {
                 log.warn("Recipient not selected");
                 result = new ModelAndView(SEND_INVITATION);
@@ -135,7 +135,7 @@ public class InvitationController {
     public ModelAndView acceptInvitation(@PathVariable Integer id, @AuthenticationPrincipal UserDetails user, ModelMap model) {
         invitationService.acceptInvitationById(id);
         log.info("Invitation accepted"); 
-        model.put("message", "Invitation accepted succesfully!");
+        model.put("message", "Invitation accepted successfully!");
         return showInvitationsByPlayer(user);
     }
 
@@ -144,7 +144,7 @@ public class InvitationController {
         try{
             invitationService.rejectInvitationById(id);
             log.info("Invitation deleted"); 
-            model.put("message", "Invitation rejected succesfully!");     
+            model.put("message", "Invitation rejected successfully!");     
         } catch(EmptyResultDataAccessException e) {
             log.warn("Not existing invitation");
             model.put("message", "Invitation " + id + " does not exist");
@@ -157,7 +157,7 @@ public class InvitationController {
         try{
             invitationService.rejectInvitationById(id);
             log.info("Invitation deleted");   
-            model.put("message", "Friendship cancelled succesfully!");     
+            model.put("message", "Friendship cancelled successfully!");     
         } catch(EmptyResultDataAccessException e) {
             log.warn("Not existing invitation");
             model.put("message", "That's not your friend");
@@ -196,7 +196,7 @@ public class InvitationController {
             try {
                 invitationService.saveGameInvitation(invitation, sender, game);
                 log.info("Invitation created");
-                model.put("message", "Invitation sent succesfully!");
+                model.put("message", "Invitation sent successfully!");
                 return "redirect:/games/" + gameId.toString() + "/lobby";
             } catch (NullRecipientException e) {
                 log.warn("Recipient not selected");

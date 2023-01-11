@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "player_infos")
-public class PlayerInfo extends BaseEntity{
+public class PlayerInfo extends BaseEntity {
 
     private Boolean creator;
     

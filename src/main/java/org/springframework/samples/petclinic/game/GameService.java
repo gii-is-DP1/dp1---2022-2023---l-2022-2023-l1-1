@@ -23,6 +23,7 @@ import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.invitation.InvitationService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.user.User;
@@ -178,6 +179,19 @@ public class GameService {
     public void joinGame(Game game) throws DataAccessException {
         game.setNumPlayers(game.getNumPlayers()+1);
         repo.save(game);
+    }
+
+    
+    @Transactional
+    public void exitGame(PlayerInfo playerInfo, Game game) throws DataAccessException {
+        if(!playerInfo.getSpectator()) {
+            game.setNumPlayers(game.getNumPlayers()-1);
+            repo.save(game);
+        }
+        if(game.getState() == State.STARTING){
+           playerInfoRepository.deleteById(playerInfo.getId()); 
+        }
+        
     }
     
     @Transactional
