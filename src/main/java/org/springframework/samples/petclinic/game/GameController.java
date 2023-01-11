@@ -58,6 +58,7 @@ public class GameController {
 	private static final String GAMES_STARTING_LIST = "/games/gamesStartingList";
 	private static final String GAMES_IN_PROCESS_LIST = "/games/gamesInProcessList";
 	private static final String GAMES_FINISHED_LIST = "/games/gamesFinishedList";
+	private static final String GAMES_FINISHED_LIST_ADMIN = "/games/gamesFinishedListAdmin";
     private static final String FIND_GAMES_HISTORY = "/games/findGamesHistory";
 	private static final String FIND_GAMES_PLAYER_HISTORY = "/games/findGamesPlayerHistory";
     private static final String FIND_GAMES_IN_PROCESS = "/games/findGamesInProcess";
@@ -126,7 +127,7 @@ public class GameController {
 		}
 		else {
 			// games found
-			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST);
+			ModelAndView res = new ModelAndView(GAMES_FINISHED_LIST_ADMIN);
 			res.addObject("returnButton", "/games/history/find");
             res.addObject("publicGames", publicGames); 
 			res.addObject("privateGames", privateGames); 
