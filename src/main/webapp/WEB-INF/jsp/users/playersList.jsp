@@ -49,36 +49,14 @@
         </c:forEach>
         </tbody>
     </table>
-    <div style="display: flex; flex-direction: row; margin: 0 auto; width: fit-content; gap:15px;">
-        <c:if test="${paginaActual != 0}">
-            <a href="/users?page=${paginaActual-1}", style="width: 50px; height: 50px; text-decoration: none;" >
-                <div class="boton-pagina">
-                    <
-                </div>
-            </a>
-        </c:if>
-        <c:forEach items="${paginas}" var="pageNumber">
-
-            <a href="/users?page=${pageNumber}", style="width: 50px; height: 50px; text-decoration: none;" >
-                <c:if test="${paginaActual == pageNumber}">
-                    <div class="boton-pagina-actual">
-                        ${pageNumber}
-                    </div>
-                </c:if>
-
-                <c:if test="${paginaActual != pageNumber}">
-                    <div class="boton-pagina">
-                        ${pageNumber}
-                    </div>
-                </c:if>
-            </a>
-        </c:forEach>
-        <c:if test="${paginaActual != paginas.size() - 1}">
-            <a href="/users?page=${paginaActual+1}", style="width: 50px; height: 50px; text-decoration: none;" >
-                <div class="boton-pagina">
-                    >
-                </div>
-            </a>
-        </c:if>
-    </div>
+    <p>Pages</p>
+    <c:forEach items="${pageNumbers}" var="page">
+            <tr>
+                <td>
+                    <a href="/users/${page+1}">
+                        <c:out value="${page+1}"></c:out>
+                    </a>
+                </td>
+            </tr>
+    </c:forEach>
 </petclinic:layout>

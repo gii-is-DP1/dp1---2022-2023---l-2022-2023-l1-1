@@ -74,9 +74,24 @@ public class PlayerService {
 	}
 
 	@Transactional(readOnly = true)
-    public List<Player> getPlayersPageables(Pageable pageable){
+    public List<Player> getPlayersPageable(Pageable pageable){
         return playerRepository.findAllPageable(pageable);
     }
+
+	@Transactional(readOnly = true)
+	public List<Integer> getPageNumbers() {
+		List<Integer> res = new ArrayList<>();
+		List<Player> players = playerRepository.findAll();
+		Integer i = 0;
+		System.out.println(players.stream().map(x->x.getUser().getUsername()).collect(Collectors.toList()));
+		for(Player p: players) {
+			if(players.indexOf(p) % 5 == 0) {
+				res.add(i);
+				i++;
+			}
+		}
+		return res;
+	}
 
 	@Transactional(readOnly = true)
 	public Player getPlayerById(Integer id) {

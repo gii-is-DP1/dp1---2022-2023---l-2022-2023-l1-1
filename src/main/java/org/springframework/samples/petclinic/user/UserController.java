@@ -61,6 +61,8 @@ public class UserController {
     private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
     private static final String PLAYER_AUDIT = "/users/playerAudit";
 
+    private static final Integer FIRST_PAGE = 1;
+
 	@Autowired
 	private PlayerService playerService;
 
@@ -74,12 +76,13 @@ public class UserController {
 		dataBinder.setValidator(new PlayerValidator());
 	}
 
-	@GetMapping
-    public String listAllUsers(ModelMap model) {
+	@GetMapping("/{page}")
+    public String listAllUsers(@PathVariable Integer page, ModelMap model) {
         playerService.checkOnlineStatus();
-        Pageable pageable = PageRequest.of(0, 5);
-        List<Player> allPlayers = playerService.getPlayersPageables(pageable);
+        Pageable pageable = PageRequest.of(page-1, 5);
+        List<Player> allPlayers = playerService.getPlayersPageable(pageable);
         model.put("players", allPlayers);
+        model.put("pageNumbers", playerService.getPageNumbers());
         return PLAYER_LIST;
     }
 
@@ -167,7 +170,7 @@ public class UserController {
         }
         model.put("message", message);
      	model.put("messageType", "info");
-     	return listAllUsers(model);
+     	return listAllUsers(FIRST_PAGE, model);
     }
 
     @GetMapping("/{username}/audit")
