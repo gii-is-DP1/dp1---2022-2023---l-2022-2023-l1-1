@@ -52,7 +52,7 @@ public class PlayerInfoRepositoryTest {
 
     @Test
     public void testFindGamesByPlayerWithoutGames() {
-        Player player = playerRepository.findPlayerByUsername("player5");
+        Player player = playerRepository.findPlayerByUsername("player9");
         List<Game> games = playerInfoRepository.findGamesByPlayer(player);
         assertNotNull(games);
         assertTrue(games.isEmpty());
