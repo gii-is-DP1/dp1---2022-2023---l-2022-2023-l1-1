@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -51,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,8 +73,7 @@ public class GameController {
 	private static final String GAME = "/games/game";
 	private static final String PRETOR_SELECTION = "games/pretorCardSelection";
 	private static final String ROLE_DESIGNATION = "games/rolesDesignation";
-	private static final String COMMENTS_LIST = "games/chat";
-	private static final String SEND_COMMENT = "games/chat/send";
+	private static final String SEND_COMMENT = "games/sendComment";
 
 	private static final Integer MAX_PLAYERS = 8;
 
@@ -373,6 +375,8 @@ public class GameController {
         res.addObject("game", gameStarted);
         res.addObject("playerInfos", gamePlayerInfos);
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
+		res.addObject("comment", commentService.getCommentsByGame(gameId));
+		System.out.println(commentService.getCommentsByGame(gameId).stream().map(x->x.getMessage()).collect(Collectors.toList())+"daad");
         return res;
 
     }
@@ -503,61 +507,26 @@ public class GameController {
 		
 	}	
 
-	@GetMapping("/games/{gameId}/chat")
-    public ModelAndView showCommentsByGame(@PathVariable("gameId") Integer gameId){
-		ModelAndView result=new ModelAndView(COMMENTS_LIST);
-        List<Comment> comments = commentService.getCommentsByGame(gameId);
-		result.addObject("comments", comments);
-        return result;
-    }
 
-	@GetMapping("/games/{gameId}/chat/send")
+	@GetMapping("/games/{gameId}/chat")
     public ModelAndView sendComment(@PathVariable("gameId") Integer gameId) {
         Comment comment=new Comment();
 		ModelAndView result = new ModelAndView(SEND_COMMENT);
-        result.addObject("message", comment);
+        result.addObject("comment", comment);
         return result;
     }
 
-	@PostMapping("/games/{gameId}/chat/send")
-    public ModelAndView saveComment(@Valid Comment comment, @PathVariable("gameId") Integer gameId, BindingResult br) {
-        ModelAndView result = null;
-        if(br.hasErrors()) {
+	@PostMapping("/games/{gameId}/chat")
+    public ModelAndView saveComment(@Valid Comment comment, @PathVariable("gameId") Integer gameId, BindingResult br, @AuthenticationPrincipal UserDetails user) {
+		Player player = playerService.getPlayerByUsername(user.getUsername());
+		Game game = gameService.getGameById(gameId);
+		PlayerInfo playerInfo = playerInfoService.getPlayerInfoByGameAndPlayer(game, player);
+		if(br.hasErrors()) {
             return new ModelAndView(SEND_COMMENT, br.getModel());
         } else {
-            commentService.saveComment(comment);
-            result = showCommentsByGame(gameId);
+            commentService.saveComment(comment, playerInfo);
         }
-        return result;
-    }
-
-	@GetMapping("/gamesResult/{gameId}")
-    public ModelAndView showGameResult(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user) throws DataAccessException {
-		ModelAndView res=new ModelAndView(GAME);
-        Game game=gameService.getGameById(gameId);
-        SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
-		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
-		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
-		Turn currentTurn = gameStarted.getTurn();
-		List<PlayerInfo> gamePlayerInfos = playerInfoService.getPlayerInfosByGame(game);
-    	deckService.assingDecksIfNeeded(game);
-		Integer roleCardNumber = gameService.gameRoleCardNumber(game);
-		gameService.winnerFaction(game);
-		List<Player> winnerPlayers = deckService.winnerPlayers(game, game.getWinners());
-		List<Player> losePlayers = deckService.loserPlayers(gameStarted, winnerPlayers);
-
-		res.addObject("winnerPlayers", winnerPlayers);
-		res.addObject("loserPlayers", losePlayers);
-		res.addObject("activePlayers", gameService.activePlayers(game));
-		res.addObject("votesAssigned", deckService.votesAsigned(game));
-		res.addObject("roleCardNumber", roleCardNumber);
-		res.addObject("turn", currentTurn);
-		res.addObject("currentPlayer", currentPlayer);
-        res.addObject("game", gameStarted);
-        res.addObject("playerInfos", gamePlayerInfos);
-		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
-        return res;
-
+        return new ModelAndView("redirect:/games/" + gameId.toString());
     }
 
 }
