@@ -21,9 +21,6 @@ import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.invitation.InvitationRepository;
-import org.springframework.samples.petclinic.owner.OwnerRepository;
-import org.springframework.samples.petclinic.pet.PetRepository;
-import org.springframework.samples.petclinic.pet.VisitRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.player.PlayerService;
@@ -39,7 +36,6 @@ import org.springframework.samples.petclinic.turn.TurnRepository;
 import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.samples.petclinic.user.AuthoritiesRepository;
 import org.springframework.samples.petclinic.user.UserRepository;
-import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -527,15 +523,4 @@ public class GameControllerTest {
     @MockBean
     private FactionCardRepository factionCardRepository;
 
-    @MockBean
-    private PetRepository petRepository;
-
-    @MockBean
-    private VetRepository vetRepository;
-
-    @MockBean
-    private OwnerRepository ownerRepository;
-
-    @MockBean
-    private VisitRepository visitRepository;
 }

@@ -36,14 +36,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.samples.petclinic.deck.DeckRepository;
 import org.springframework.samples.petclinic.deck.FactionCardRepository;
 import org.springframework.samples.petclinic.deck.VoteCardRepository;
-import org.springframework.samples.petclinic.owner.OwnerRepository;
-import org.springframework.samples.petclinic.pet.PetRepository;
-import org.springframework.samples.petclinic.pet.VisitRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesRepository;
 import org.springframework.samples.petclinic.user.UserRepository;
-import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCardRepository;
 import org.springframework.samples.petclinic.turn.TurnRepository;
 
@@ -348,15 +344,4 @@ public class InvitationControllerTest {
     @MockBean
     private FactionCardRepository factionCardRepository;
 
-    @MockBean
-    private PetRepository petRepository;
-
-    @MockBean
-    private VetRepository vetRepository;
-
-    @MockBean
-    private OwnerRepository ownerRepository;
-
-    @MockBean
-    private VisitRepository visitRepository;
 }

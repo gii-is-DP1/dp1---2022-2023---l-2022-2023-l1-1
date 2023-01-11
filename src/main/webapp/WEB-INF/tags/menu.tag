@@ -25,12 +25,6 @@
 				
 				<sec:authorize access="hasAnyAuthority('admin')">
 
-					<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
-						title="find owners">
-						<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-						<span>Find owners</span>
-					</petclinic:menuItem>
-
 					<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements"
 						title="achievements">										
 						<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
@@ -38,40 +32,38 @@
 					</petclinic:menuItem>
 
 				</sec:authorize>
-
-
 				
 				<sec:authorize access="hasAnyAuthority('player')">
 
-				<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements/player" 
-					title="achievements">										
-					<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
-					<span>Achievements</span>	
-				</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'achievements'}" url="/achievements/player" 
+						title="achievements">										
+						<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+						<span>Achievements</span>	
+					</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'invitations'}" url="/invitations"
-					title="invitations">
-					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
-					<span>Invitations</span>
-				</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'invitations'}" url="/invitations"
+						title="invitations">
+						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+						<span>Invitations</span>
+					</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'friends'}" url="/friends"
-					title="friends">
-					<span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
-					<span>Friends</span>
-				</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'friends'}" url="/friends"
+						title="friends">
+						<span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+						<span>Friends</span>
+					</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'statistics'}" url="/statistics"
-					title="statistics">										
-					<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
-					<span>Statistics</span>	
-				</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'statistics'}" url="/statistics"
+						title="statistics">										
+						<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+						<span>Statistics</span>	
+					</petclinic:menuItem>
 
-				<petclinic:menuItem active="${name eq 'ranking'}" url="/ranking"
-					title="ranking">										
-					<span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
-					<span>Ranking</span>	
-				</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'ranking'}" url="/ranking"
+						title="ranking">										
+						<span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
+						<span>Ranking</span>	
+					</petclinic:menuItem>
 
 				</sec:authorize>
 
