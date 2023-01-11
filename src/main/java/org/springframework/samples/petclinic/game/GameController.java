@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -50,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,8 +73,7 @@ public class GameController {
 	private static final String GAME = "/games/game";
 	private static final String PRETOR_SELECTION = "games/pretorCardSelection";
 	private static final String ROLE_DESIGNATION = "games/rolesDesignation";
-	private static final String COMMENTS_LIST = "games/chat";
-	private static final String SEND_COMMENT = "games/chat/send";
+	private static final String SEND_COMMENT = "games/sendComment";
 
 	private static final Integer MAX_PLAYERS = 8;
 
@@ -357,6 +359,8 @@ public class GameController {
         res.addObject("game", gameStarted);
         res.addObject("playerInfos", gamePlayerInfos);
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
+		res.addObject("comment", commentService.getCommentsByGame(gameId));
+		System.out.println(commentService.getCommentsByGame(gameId).stream().map(x->x.getMessage()).collect(Collectors.toList())+"daad");
         return res;
 
     }
@@ -488,31 +492,23 @@ public class GameController {
 	}	
 
 	@GetMapping("/{gameId}/chat")
-    public ModelAndView showCommentsByGame(@PathVariable("gameId") Integer gameId){
-		ModelAndView result=new ModelAndView(COMMENTS_LIST);
-        List<Comment> comments = commentService.getCommentsByGame(gameId);
-		result.addObject("comments", comments);
-        return result;
-    }
-
-	@GetMapping("/{gameId}/chat/send")
     public ModelAndView sendComment(@PathVariable("gameId") Integer gameId) {
         Comment comment=new Comment();
 		ModelAndView result = new ModelAndView(SEND_COMMENT);
-        result.addObject("message", comment);
+        result.addObject("comment", comment);
         return result;
     }
 
-	@PostMapping("/{gameId}/chat/send")
-    public ModelAndView saveComment(@Valid Comment comment, @PathVariable("gameId") Integer gameId, BindingResult br) {
-        ModelAndView result = null;
-        if(br.hasErrors()) {
+	@PostMapping("/{gameId}/chat")
+    public ModelAndView saveComment(@Valid Comment comment, @PathVariable("gameId") Integer gameId, BindingResult br, @AuthenticationPrincipal UserDetails user) {
+		Player player = playerService.getPlayerByUsername(user.getUsername());
+		Game game = gameService.getGameById(gameId);
+		PlayerInfo playerInfo = playerInfoService.getPlayerInfoByGameAndPlayer(game, player);
+		if(br.hasErrors()) {
             return new ModelAndView(SEND_COMMENT, br.getModel());
         } else {
-            commentService.saveComment(comment);
-            result = showCommentsByGame(gameId);
+            commentService.saveComment(comment, playerInfo);
         }
-        return result;
+        return new ModelAndView("redirect:/games/" + gameId.toString());
     }
-
 }

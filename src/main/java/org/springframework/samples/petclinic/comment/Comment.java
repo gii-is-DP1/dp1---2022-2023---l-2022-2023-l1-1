@@ -1,5 +1,7 @@
 package org.springframework.samples.petclinic.comment;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -20,6 +22,8 @@ public class Comment extends BaseEntity{
     @NotBlank
 	private String message;
     
+    private Date date;
+
     @ManyToOne
     private PlayerInfo playerInfo;
 }
