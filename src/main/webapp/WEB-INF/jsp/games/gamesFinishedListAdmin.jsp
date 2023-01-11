@@ -36,7 +36,7 @@
                     <c:out value="${game.winners}"/>
                 </td>
                 <td>
-                    <a class="btn btn-default" href="/games/${game.id}" height="120">Show game</a>
+                    <a class="btn btn-default" href="/gamesResult/${game.id}" height="120">Show game</a>
                 </td>
             </tr>
         </c:forEach>
@@ -73,7 +73,7 @@
                     <c:out value="${game.winners}"/>
                 </td>
                 <td>
-                    <a class="btn btn-default" href="/games/${game.id}" height="120">Show Game</a>
+                    <a class="btn btn-default" href="/gamesResult/${game.id}" height="120">Show Game</a>
                 </td>
             </tr>
         </c:forEach>
