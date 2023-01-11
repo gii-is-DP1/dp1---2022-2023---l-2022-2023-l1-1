@@ -54,7 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-@RequestMapping("/games")
 public class GameController {
 
 	private static final String GAMES_STARTING_LIST = "/games/gamesStartingList";
@@ -110,13 +109,13 @@ public class GameController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-    @GetMapping(value = "/history/find")
+    @GetMapping(value = "/games/history/find")
 	public String gamesHistoryForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_HISTORY;
 	}
 
-    @GetMapping(value = "/history")
+    @GetMapping(value = "/games/history")
 	public ModelAndView processGamesHistoryForm(Game game, BindingResult result) {
 
 		// allow parameterless GET request for /games to return all records
@@ -143,13 +142,13 @@ public class GameController {
 		}
 	}
 
-    @GetMapping(value = "/playerHistory/find")
+    @GetMapping(value = "/games/playerHistory/find")
 	public String gamesHistoryByPlayerForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_PLAYER_HISTORY;
 	}
 
-    @GetMapping(value = "/playerHistory")
+    @GetMapping(value = "/games/playerHistory")
 	public ModelAndView processGamesHistoryByPlayerForm(@AuthenticationPrincipal UserDetails user, Game game, BindingResult result) {
 		if (game.getName() == null) {
 			game.setName("");
@@ -175,13 +174,13 @@ public class GameController {
 		}
 	}
 
-    @GetMapping(value = "/inProcess/find")
+    @GetMapping(value = "/games/inProcess/find")
 	public String gamesInProcessForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_IN_PROCESS;
 	}
 
-    @GetMapping(value = "/inProcess")
+    @GetMapping(value = "/games/inProcess")
 	public ModelAndView processGamesInProcessForm(Game game, BindingResult result) {
 		if (game.getName() == null) {
 			game.setName("");
@@ -204,13 +203,13 @@ public class GameController {
 		}
 	}
 
-    @GetMapping(value = "/starting/find")
+    @GetMapping(value = "/games/starting/find")
 	public String gamesStartingForm(Map<String, Object> model) {
 		model.put("game", new Game());
 		return FIND_GAMES_STARTING;
 	}
 
-    @GetMapping(value = "/starting")
+    @GetMapping(value = "/games/starting")
 	public ModelAndView processGamesStartingForm(Game game, BindingResult result, @AuthenticationPrincipal UserDetails user) {
 		if (game.getName() == null) {
 			game.setName("");
@@ -235,7 +234,7 @@ public class GameController {
 		}
 	}
 
-    @GetMapping("/create")
+    @GetMapping("/games/create")
     public ModelAndView createGameForm() {
         ModelAndView res = new ModelAndView(CREATE_GAME);
         Game game = new Game();       
@@ -243,7 +242,7 @@ public class GameController {
         return res;
     }
 
-	@PostMapping("/create")
+	@PostMapping("/games/create")
 	public String createGame(@AuthenticationPrincipal UserDetails user, @Valid PlayerInfo creatorInfo, 
 	@Valid Game game, BindingResult br, ModelMap model) {
 		if(br.hasErrors()) {
@@ -265,7 +264,7 @@ public class GameController {
 		}
 	}
 
-    @GetMapping("/{gameId}/lobby")
+    @GetMapping("/games/{gameId}/lobby")
     public ModelAndView showLobby(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
 		response.addHeader("Refresh", "3");
         ModelAndView res=new ModelAndView(GAME_LOBBY);
@@ -282,7 +281,7 @@ public class GameController {
         return res;
     }
 
-	@GetMapping("/{gameId}/join")
+	@GetMapping("/games/{gameId}/join")
     public String joinGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo joinedInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
@@ -304,7 +303,7 @@ public class GameController {
         return "redirect:/games/" + gameId.toString() + "/lobby";
     }
 
-	@GetMapping("/{gameId}/spectate")
+	@GetMapping("/games/{gameId}/spectate")
     public String spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
@@ -320,7 +319,7 @@ public class GameController {
         return "redirect:/games/" + gameId.toString() + "/lobby";
     }
  
-    @GetMapping("/{gameId}")
+    @GetMapping("/games/{gameId}")
     public ModelAndView showGame(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response) throws DataAccessException {
         response.addHeader("Refresh", "2");
 		ModelAndView res=new ModelAndView(GAME);
@@ -361,7 +360,7 @@ public class GameController {
 
     }
 
-	@GetMapping("/{gameId}/pretorSelection/{voteType}")
+	@GetMapping("/games/{gameId}/pretorSelection/{voteType}")
 	public ModelAndView pretorSelection(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType) {
 		ModelAndView res = new ModelAndView(PRETOR_SELECTION);
 		VoteCard selectedCard = voteCardService.getById(voteType);
@@ -374,7 +373,7 @@ public class GameController {
 		return res;
 	}
 
-	@GetMapping("/{gameId}/forcedVoteChange/{playerId}")
+	@GetMapping("/games/{gameId}/forcedVoteChange/{playerId}")
 	public String forcedVoteChange(@PathVariable("gameId") Integer gameId,@PathVariable("playerId") Integer playerId){
 		Game actualGame = gameService.getGameById(gameId);
 		Player voter = playerService.getPlayerById(playerId);
@@ -385,7 +384,7 @@ public class GameController {
 
 	}
 
-	@GetMapping("/{gameId}/pretorSelection/{voteType}/{changedVoteType}")
+	@GetMapping("/games/{gameId}/pretorSelection/{voteType}/{changedVoteType}")
 	public String pretorChange(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType, 
 				@PathVariable("changedVoteType") VCType changedVoteType) {
 		Game game = gameService.getGameById(gameId);
@@ -396,7 +395,7 @@ public class GameController {
 		
 	}
 
-	@GetMapping("/{gameId}/updateSuffragium")
+	@GetMapping("/games/{gameId}/updateSuffragium")
 	public String updateSuffragiumCard(@PathVariable("gameId") Integer gameId) {
 		Game currentGame = gameService.getGameById(gameId);
 		Turn currentTurn = currentGame.getTurn();
@@ -420,7 +419,7 @@ public class GameController {
 		return "redirect:/games/" + gameId.toString();
 	}
 
-	@GetMapping("/{gameId}/updateVotes/{voteType}")
+	@GetMapping("/games/{gameId}/updateVotes/{voteType}")
 	public String updateTurnVotes(@PathVariable("gameId") Integer gameId, @PathVariable("voteType") VCType voteType, @AuthenticationPrincipal UserDetails user) {
 		Game currentGame = gameService.getGameById(gameId);
 		Turn currentTurn = currentGame.getTurn();
@@ -436,7 +435,7 @@ public class GameController {
 		return "redirect:/games/" + gameId.toString();
 	}
 
-    @GetMapping("/{gameId}/edit/{factionType}")
+    @GetMapping("/games/{gameId}/edit/{factionType}")
     public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") FCType factionType, @AuthenticationPrincipal UserDetails user){
         Game game = gameService.getGameById(gameId);
 		Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
@@ -457,7 +456,7 @@ public class GameController {
         return "redirect:/games/" + gameId.toString();
     }
 
-	@GetMapping("/{gameId}/rolesDesignation")
+	@GetMapping("/games/{gameId}/rolesDesignation")
     public ModelAndView rolesDesignation(@PathVariable("gameId") Integer gameId) {
 		ModelAndView res = new ModelAndView(ROLE_DESIGNATION);
 		List<Player> pretorCandidates = deckService.pretorCandidates(gameService.getGameById(gameId));
@@ -474,7 +473,7 @@ public class GameController {
 		return res;
 	}
 
-	@GetMapping("/{gameId}/rolesDesignation/{pretorId}/{edil1Id}/{edil2Id}")
+	@GetMapping("/games/{gameId}/rolesDesignation/{pretorId}/{edil1Id}/{edil2Id}")
     public String finalRolesDesignation(@PathVariable("gameId") Integer gameId, @PathVariable("pretorId") Integer pretorId,
 											@PathVariable("edil1Id") Integer edil1Id, @PathVariable("edil2Id") Integer edil2Id) {
 		
@@ -487,7 +486,7 @@ public class GameController {
 		
 	}	
 
-	@GetMapping("/{gameId}/chat")
+	@GetMapping("/games/{gameId}/chat")
     public ModelAndView showCommentsByGame(@PathVariable("gameId") Integer gameId){
 		ModelAndView result=new ModelAndView(COMMENTS_LIST);
         List<Comment> comments = commentService.getCommentsByGame(gameId);
@@ -495,7 +494,7 @@ public class GameController {
         return result;
     }
 
-	@GetMapping("/{gameId}/chat/send")
+	@GetMapping("/games/{gameId}/chat/send")
     public ModelAndView sendComment(@PathVariable("gameId") Integer gameId) {
         Comment comment=new Comment();
 		ModelAndView result = new ModelAndView(SEND_COMMENT);
@@ -503,7 +502,7 @@ public class GameController {
         return result;
     }
 
-	@PostMapping("/{gameId}/chat/send")
+	@PostMapping("/games/{gameId}/chat/send")
     public ModelAndView saveComment(@Valid Comment comment, @PathVariable("gameId") Integer gameId, BindingResult br) {
         ModelAndView result = null;
         if(br.hasErrors()) {
@@ -513,6 +512,35 @@ public class GameController {
             result = showCommentsByGame(gameId);
         }
         return result;
+    }
+
+	@GetMapping("/gamesResult/{gameId}")
+    public ModelAndView showGameResult(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user) throws DataAccessException {
+		ModelAndView res=new ModelAndView(GAME);
+        Game game=gameService.getGameById(gameId);
+        SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
+		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
+		Turn currentTurn = gameStarted.getTurn();
+		List<PlayerInfo> gamePlayerInfos = playerInfoService.getPlayerInfosByGame(game);
+    	deckService.assingDecksIfNeeded(game);
+		Integer roleCardNumber = gameService.gameRoleCardNumber(game);
+		gameService.winnerFaction(game);
+		List<Player> winnerPlayers = deckService.winnerPlayers(game, game.getWinners());
+		List<Player> losePlayers = deckService.loserPlayers(gameStarted, winnerPlayers);
+
+		res.addObject("winnerPlayers", winnerPlayers);
+		res.addObject("loserPlayers", losePlayers);
+		res.addObject("activePlayers", gameService.activePlayers(game));
+		res.addObject("votesAssigned", deckService.votesAsigned(game));
+		res.addObject("roleCardNumber", roleCardNumber);
+		res.addObject("turn", currentTurn);
+		res.addObject("currentPlayer", currentPlayer);
+        res.addObject("game", gameStarted);
+        res.addObject("playerInfos", gamePlayerInfos);
+		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
+        return res;
+
     }
 
 }

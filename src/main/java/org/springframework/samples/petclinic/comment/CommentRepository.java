@@ -13,7 +13,7 @@ public interface CommentRepository extends CrudRepository<Comment, Integer>{
 
     List<Comment> findAll();
 
-    @Query("SELECT c FROM Comment c WHERE c.playerInfo.gameId=:gameId")
+    @Query("SELECT c FROM Comment c WHERE c.playerInfo.game.id=:gameId")
     public List<Comment> findCommentsByGame(@Param("gameId") Integer gameId);
 
 }
