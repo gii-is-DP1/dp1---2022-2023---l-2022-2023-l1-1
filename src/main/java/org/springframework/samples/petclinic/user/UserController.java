@@ -86,6 +86,15 @@ public class UserController {
         return PLAYER_LIST;
     }
 
+    @GetMapping("users?page={page}")
+    public String pagingUsers(ModelMap model,@PathVariable("page")Integer page) {
+        playerService.checkOnlineStatus();
+        Pageable pageable = PageRequest.of(page, 5);
+        List<Player> allPlayers = playerService.getPlayersPageable(pageable);
+        model.put("players", allPlayers);
+        return PLAYER_LIST;
+    }
+
 	@GetMapping("/new")
     public ModelAndView createPlayerForm() {
         ModelAndView res = new ModelAndView(CREATE_PLAYER);

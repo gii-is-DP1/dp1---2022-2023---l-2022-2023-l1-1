@@ -188,3 +188,9 @@ INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id,
 ('FRIENDSHIP', 'I am alvgonfri', TRUE, 1, 9, null),
 ('GAME_PLAYER', 'Join my game!', FALSE, 1, 9, 5);
 
+INSERT INTO comments(id,message, date, player_info_id) VALUES
+(1,'GG', '2022-10-27 10:01:00',1),
+(2,'GG', '2022-10-27 10:02:00',2),
+(3,'GG', '2022-10-27 10:03:00',3),
+(4,'GG', '2022-10-27 10:04:00',5);
+

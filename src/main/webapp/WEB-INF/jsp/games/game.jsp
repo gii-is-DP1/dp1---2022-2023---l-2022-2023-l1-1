@@ -213,4 +213,31 @@
         <br>
         <a class="btn btn-default" href="/">HOME</a>
     </c:if>
+    <a class="btn btn-default" href="/games/${game.id}/chat">Send message</a>
+    <table id="commentsTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Message</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach items="${comment}" var="comment">  
+                <c:if test="${true}">
+                    <tr>
+                        <td>
+                            <c:out value="${comment.playerInfo.player.user.username}"/>
+                        </td>
+                        <td>
+                            <c:out value="${comment.message}"/>
+                        </td>
+                        <td>
+                            <c:out value="${comment.date}"/>
+                        </td>
+                    </tr>
+                </c:if>
+            </c:forEach>
+        </tbody>
+    </table>
 </petclinic:layout>
