@@ -376,7 +376,6 @@ public class GameController {
         res.addObject("playerInfos", gamePlayerInfos);
 		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
 		res.addObject("comment", commentService.getCommentsByGame(gameId));
-		System.out.println(commentService.getCommentsByGame(gameId).stream().map(x->x.getMessage()).collect(Collectors.toList())+"daad");
         return res;
 
     }
