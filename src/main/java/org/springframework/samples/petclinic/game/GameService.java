@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.game;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +54,9 @@ public class GameService {
 
     @Autowired
     private DeckService deckService;
+
+    @Autowired
+    private GameRepository gameRepository;
 
 
     @Autowired
@@ -309,32 +313,21 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-	public Double getGlobalTimePlaying(List<Game> allFinishedGames) {
-		Double result = 0.;
-		for (Game g:allFinishedGames){
-		    result = result + 1;
-	    }
-		return result;
+	public Integer getGlobalTimePlaying() {
+		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
+		return allFinishedGames.stream().map(x -> x.getDuration()).mapToInt(Integer::intValue).sum();
 	}
 
     @Transactional(readOnly = true)
-    public Double getGlobalMaxTimePlaying(List<Game> allFinishedGames) {
-        Double result = 0.;
-		for (Game g:allFinishedGames){
-            if (1 > result)
-		    result = 1.;
-	    }
-		return result;
+    public Integer getGlobalMaxTimePlaying() {
+        List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
+		return allFinishedGames.stream().map(x -> x.getDuration()).sorted(Comparator.reverseOrder()).findFirst().get();
     }
 
     @Transactional(readOnly = true)
-    public Double getGlobalMinTimePlaying(List<Game> allFinishedGames) {
-        Double result = 999999999999999999999999999999999999999999999999999.;
-		for (Game g:allFinishedGames){
-            if (1 < result)
-		    result = 1.;
-	    }
-		return result;
+    public Integer getGlobalMinTimePlaying() {
+        List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
+		return allFinishedGames.stream().map(x -> x.getDuration()).sorted().findFirst().get();
     }
     
 }

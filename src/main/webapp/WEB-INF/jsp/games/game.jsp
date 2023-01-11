@@ -70,7 +70,6 @@
             </thead>
             <tbody>
                 <c:forEach items="${playerInfos}" var="playerInfo">
-                    <c:if test="${playerInfo.spectator==false}">
                         <tr>
                             <td>
                                 <c:out value="${playerInfo.player.user.username}"/><br>
@@ -85,7 +84,6 @@
                                 </c:forEach>
                                 
                             </td>
-                            
                             <td>
                                 <c:forEach var="deck" items="${playerInfo.player.decks}">
                                     <c:if test="${deck.game.id == game.id}">
@@ -104,7 +102,12 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <c:forEach var="factions" items="${deck.factionCards}">
-                                                    <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>                               
+                                                    <c:if test="${currentPlayerInfo.spectator==false}"> 
+                                                        <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>  
+                                                    </c:if>
+                                                    <c:if test="${currentPlayerInfo.spectator==true}"> 
+                                                        <img src="${factions.card}" width="80" height="120"/>  
+                                                    </c:if>                            
                                                 </c:forEach>
                                             </c:otherwise>
                                         </c:choose>
@@ -149,7 +152,12 @@
                                                         </c:choose>
                                                     </c:if>
                                                     <c:if test="${playerDeck.roleCard !='PRETOR' || game.stage !='VETO'}">
-                                                        <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>
+                                                        <c:if test="${currentPlayerInfo.spectator==false}"> 
+                                                            <img src="/resources/images/reverse_card.PNG" width="80" height="120"/>  
+                                                        </c:if>
+                                                        <c:if test="${currentPlayerInfo.spectator==true}"> 
+                                                            <img src="${votes.card}" width="80" height="120"/>  
+                                                        </c:if>
                                                     </c:if>                          
                                                 </c:forEach>
                                             </c:otherwise>
@@ -158,7 +166,7 @@
                                 </c:forEach>
                             </td>
                         </tr>
-                    </c:if>
+                    
                 </c:forEach>
             </tbody>
         </table>

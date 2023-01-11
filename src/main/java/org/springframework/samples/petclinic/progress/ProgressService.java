@@ -18,6 +18,7 @@ import org.springframework.samples.petclinic.enums.AchievementType;
 import org.springframework.samples.petclinic.invitation.InvitationService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,6 +32,8 @@ public class ProgressService {
     AchievementRepository achievementRepository;
     @Autowired
     InvitationService invitationService;
+    @Autowired
+    PlayerService playerService;
 
     @Autowired
     public ProgressService(ProgressRepository progressRepository) {
@@ -82,12 +85,56 @@ public class ProgressService {
         List<Pair<Achievement,Double>> res = new ArrayList<>();
         progress.forEach(x -> {
         Double completedPercentage;
-        if (x.getAchievement().getType() == AchievementType.FRIENDSHIP) {
+        if (x.getAchievement().getType() == AchievementType.FRIENDS) {
             List<Player> friends = invitationService.getFriendsInvitations(x.getPlayer())
                                 .stream().map(y -> y.getFirst()).collect(Collectors.toList());
             completedPercentage = friends.size()/x.getAchievement().getThreshold()*100;
             completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
             res.add(Pair.of(x.getAchievement(), completedPercentage));
+        }
+        else if (x.getAchievement().getType() == AchievementType.TIME) {
+           Integer totalTimePlayed = playerService.getTotalTimePlaying(x.getPlayer().getUser());
+            completedPercentage = totalTimePlayed/x.getAchievement().getThreshold()*100;
+            completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
+            res.add(Pair.of(x.getAchievement(), completedPercentage));
+
+        }
+
+        else if (x.getAchievement().getType() == AchievementType.GAMES) {
+            Double gamesNumber = playerService.getGamesPlayedByPlayer(x.getPlayer());
+            completedPercentage = gamesNumber/x.getAchievement().getThreshold()*100;
+            completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
+            res.add(Pair.of(x.getAchievement(), completedPercentage));
+
+
+        }
+        else if (x.getAchievement().getType() == AchievementType.VICTORY && x.getAchievement().getDescription().toUpperCase().contains("MERCHANT")) {
+            Double winsNumber = playerService.findUserWinsAsMerchant(x.getPlayer().getUser());
+            completedPercentage = winsNumber/x.getAchievement().getThreshold()*100;
+            completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
+            res.add(Pair.of(x.getAchievement(), completedPercentage));
+
+        }
+        else if (x.getAchievement().getType() == AchievementType.VICTORY && x.getAchievement().getDescription().toUpperCase().contains("LOYAL")) {
+            Double winsNumber = playerService.findUserWinsAsLoyal(x.getPlayer().getUser());
+            completedPercentage = winsNumber/x.getAchievement().getThreshold()*100;
+            completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
+            res.add(Pair.of(x.getAchievement(), completedPercentage));
+
+        }
+        else if (x.getAchievement().getType() == AchievementType.VICTORY && x.getAchievement().getDescription().toUpperCase().contains("TRAITOR")) {
+            Double winsNumber = playerService.findUserWinsAsTraitor(x.getPlayer().getUser());
+            completedPercentage = winsNumber/x.getAchievement().getThreshold()*100;
+            completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
+            res.add(Pair.of(x.getAchievement(), completedPercentage));
+
+        }
+        else if (x.getAchievement().getType() == AchievementType.VICTORY) {
+            Double winsNumber = playerService.findWinsByPlayer(x.getPlayer());
+            completedPercentage = winsNumber/x.getAchievement().getThreshold()*100;
+            completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
+            res.add(Pair.of(x.getAchievement(), completedPercentage));
+
         }
         else {
             res.add(Pair.of(x.getAchievement(), 0.0));

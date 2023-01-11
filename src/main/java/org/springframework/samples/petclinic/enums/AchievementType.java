@@ -1,5 +1,5 @@
 package org.springframework.samples.petclinic.enums;
 
 public enum AchievementType {
-    FRIENDSHIP, VICTORY, GAMES;
+    FRIENDS, VICTORY, GAMES, TIME;
 }
