@@ -90,7 +90,7 @@ public class UserController {
     public String pagingUsers(ModelMap model,@PathVariable("page")Integer page) {
         playerService.checkOnlineStatus();
         Pageable pageable = PageRequest.of(page, 5);
-        List<Player> allPlayers = playerService.getPlayersPageables(pageable);
+        List<Player> allPlayers = playerService.getPlayersPageable(pageable);
         model.put("players", allPlayers);
         return PLAYER_LIST;
     }
