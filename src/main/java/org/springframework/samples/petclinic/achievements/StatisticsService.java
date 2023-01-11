@@ -120,7 +120,7 @@ public class StatisticsService {
         if (winsAsLoyal == 0.0){
             perWinsAsLoyal = 0.0;
         } else {
-            perWinsAsLoyal = winsAsTraitor*100/victory;
+            perWinsAsLoyal = winsAsLoyal*100/victory;
         }if (winsAsMerchant == 0.0){
             perWinsAsMerchant = 0.0;
         } else {
