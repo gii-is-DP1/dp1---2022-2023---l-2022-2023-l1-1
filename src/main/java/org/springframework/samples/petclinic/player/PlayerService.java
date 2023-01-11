@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -201,11 +202,12 @@ public class PlayerService {
 	}
 
 	@Transactional
-	public Double findUserWinsAsTraitor(User user, List<Game> allFinishedGames) {
+	public Double findUserWinsAsTraitor(User user) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
 		Double result = 0.;
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		Faction traitor = Faction.TRAITORS;
-		for (Game g:allFinishedGames){
+		for (Game g:games){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == traitor){
 				result = result + 1.;
@@ -215,11 +217,12 @@ public class PlayerService {
 	}
 
 	@Transactional
-	public Double findUserWinsAsLoyal(User user, List<Game> allFinishedGames) {
+	public Double findUserWinsAsLoyal(User user) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
 		Double result = 0.;
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		Faction loyal = Faction.LOYALS;
-		for (Game g:allFinishedGames){
+		for (Game g:games){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == loyal){
 				result = result + 1.;
@@ -229,11 +232,12 @@ public class PlayerService {
 	}
 
 	@Transactional
-	public Double findUserWinsAsMerchant(User user, List<Game> allFinishedGames) {
+	public Double findUserWinsAsMerchant(User user) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
 		Double result = 0.;
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		Faction merchant = Faction.MERCHANTS;
-		for (Game g:allFinishedGames){
+		for (Game g:games){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == merchant){
 				result = result + 1.;
@@ -255,6 +259,7 @@ public class PlayerService {
 		return result;
 	}
 
+	@Transactional
 	public Double getMinTimePlaying(User user, List<Game> allFinishedGames) {
 		Double result = 0.;
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
@@ -267,6 +272,7 @@ public class PlayerService {
 		return result;
 	}
 
+	@Transactional
     public Double getMaxTimePlaying(User user, List<Game> allFinishedGames) {
         Double result = 999999999999999999999999999999999999999999999999999.;
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
@@ -278,5 +284,46 @@ public class PlayerService {
 		}
 		return result;
     }
+
+	@Transactional(readOnly = true)
+	public Double getAvgNumPlayersByPlayer(Player player) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
+		Double a = 0.;
+		Double b = 0.;
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			if(playersInGame.contains(player)) {
+				a += playersInGame.size();
+				b ++;
+			}
+		}
+		return a/b;
+	}
+
+	@Transactional(readOnly = true)
+	public Double getMinNumPlayersByPlayer(Player player) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			if(playersInGame.contains(player)) {
+				numsPlayers.add((double) playersInGame.size());
+			}
+		}
+		return Collections.min(numsPlayers);
+	}
+
+	@Transactional(readOnly = true)
+	public Double getMaxNumPlayersByPlayer(Player player) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			if(playersInGame.contains(player)) {
+				numsPlayers.add((double) playersInGame.size());
+			}
+		}
+		return Collections.max(numsPlayers);
+	}
 
 }

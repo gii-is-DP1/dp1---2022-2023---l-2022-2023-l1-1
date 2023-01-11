@@ -36,10 +36,9 @@ public class StatisticsController {
 
     @GetMapping(path="/statistics")
 	public String StatisticsList(ModelMap modelMap, @AuthenticationPrincipal UserDetails user) {
-		User userp = userService.getUserByUsername(user.getUsername());
-		modelMap.addAttribute("statistics", statisticsService.listStatistics(userp));
-		//modelMap.addAttribute("user", user);
-        
+		User u = userService.getUserByUsername(user.getUsername());
+        modelMap.addAttribute("user", u);
+		modelMap.addAttribute("statistics", statisticsService.listStatistics(u));
 		return STATISTICS_VIEW;	
 	}
 

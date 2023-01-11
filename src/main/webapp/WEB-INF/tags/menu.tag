@@ -36,11 +36,6 @@
 						<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
 						<span>Achievements</span>	
 					</petclinic:menuItem>
-					<petclinic:menuItem active="${name eq 'statistics'}" url="/achievements/statistics"
-						title="statistics">										
-						<span class="glyphicon glyphicon-stats-bars" aria-hidden="true"></span>
-						<span>Statistics</span>	
-					</petclinic:menuItem>	
 
 				</sec:authorize>
 
@@ -66,6 +61,17 @@
 					<span>Friends</span>
 				</petclinic:menuItem>
 
+				<petclinic:menuItem active="${name eq 'statistics'}" url="/statistics"
+					title="statistics">										
+					<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+					<span>Statistics</span>	
+				</petclinic:menuItem>
+
+				<petclinic:menuItem active="${name eq 'ranking'}" url="/ranking"
+					title="ranking">										
+					<span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
+					<span>Ranking</span>	
+				</petclinic:menuItem>
 
 				</sec:authorize>
 

@@ -13,6 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
@@ -30,16 +31,13 @@ public class StatisticsService {
     private PlayerRepository playerRepository;
 
     @Autowired
+    private GameRepository gameRepository;
+
+    @Autowired
     private PlayerService playerService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private GameService gameService;
-
-    @Autowired
-	private DeckService deckService;
 
     @Transactional
     public Map<Player, Integer> listRankingUserVictory() throws DataAccessException {
@@ -57,8 +55,6 @@ public class StatisticsService {
         .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-        System.out.println("============="+sortedMap);
-
         int count = 0;
         for (Map.Entry<Player, Integer> entry : sortedMap.entrySet()) {
             if (count == 10) {
@@ -67,7 +63,6 @@ public class StatisticsService {
                 result.put(entry.getKey(), entry.getValue());
                 count++;
             }   
-            System.out.println("======== " + result);
         return result;
     }
     
@@ -104,12 +99,19 @@ public class StatisticsService {
         Double globalAverageTimePlaying = globalTimePlaying/allFinishedGames.size();
         Double globalMaxTimePlaying = gameService.getGlobalMaxTimePlaying(allFinishedGames);
         Double globalMinTimePlaying = gameService.getGlobalMinTimePlaying(allFinishedGames);
-        Double winsAsTraitor = playerService.findUserWinsAsTraitor(user, allFinishedGames);
+        Double winsAsTraitor = playerService.findUserWinsAsTraitor(user);
         Double perWinsAsTraitor;
-        Double winsAsLoyal = playerService.findUserWinsAsLoyal(user, allFinishedGames);
+        Double winsAsLoyal = playerService.findUserWinsAsLoyal(user);
         Double perWinsAsLoyal;
-        Double winsAsMerchant = playerService.findUserWinsAsMerchant(user, allFinishedGames);
+        Double winsAsMerchant = playerService.findUserWinsAsMerchant(user);
         Double perWinsAsMerchant;
+        Double avgNumPlayers = playerService.getAvgNumPlayersByPlayer(player);
+        Double minNumPlayers = playerService.getMinNumPlayersByPlayer(player);
+        Double maxNumPlayers = playerService.getMaxNumPlayersByPlayer(player);
+        Double globalAvgNumPlayers = gameService.getGlobalAvgNumPlayers();
+        Double globalMinNumPlayers = gameService.getGlobalMinNumPlayers();
+        Double globalMaxNumPlayers = gameService.getGlobalMaxNumPlayers();
+        Integer totalGamesPlayed =  gameRepository.findByState(State.FINISHED).size();
         if (winsAsTraitor == 0.0){
             perWinsAsTraitor = 0.0;
         } else {
@@ -143,6 +145,13 @@ public class StatisticsService {
         list.add(perWinsAsMerchant);
         list.add(winsAsTraitor);
         list.add(perWinsAsTraitor);
+        list.add(avgNumPlayers);
+        list.add(minNumPlayers);
+        list.add(maxNumPlayers);
+        list.add(globalAvgNumPlayers);
+        list.add(globalMinNumPlayers);
+        list.add(globalMaxNumPlayers);
+        list.add((double) totalGamesPlayed);
 		return list;
     }
 

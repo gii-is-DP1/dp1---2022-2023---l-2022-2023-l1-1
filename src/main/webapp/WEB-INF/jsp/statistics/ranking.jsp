@@ -7,8 +7,8 @@
 <%! int x = 5; %>
 
 <petclinic:layout pageName="ranking">
-    <h1>Ranking</h1>
-    <h3>Top 10 players by number of victories</h3>
+    <h2>Ranking</h2>
+    <h4>Top 10 players by number of victories</h4>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -17,7 +17,6 @@
             </tr>
         </thead>
         <tbody>
-            
             <c:forEach items="${rankingMap}" var="entry">
                 <tr>
                     <td>
