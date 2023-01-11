@@ -21,6 +21,14 @@ INSERT INTO users(username,password,enabled) VALUES ('player4','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (11,'player4','player');
 INSERT INTO users(username,password,enabled) VALUES ('player5','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (12,'player5','player');
+INSERT INTO users(username,password,enabled) VALUES ('player6','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (13,'player6','player');
+INSERT INTO users(username,password,enabled) VALUES ('player7','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (14,'player7','player');
+INSERT INTO users(username,password,enabled) VALUES ('player8','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (15,'player8','player');
+INSERT INTO users(username,password,enabled) VALUES ('player9','1234',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (16,'player9','player');
 
 -- One vet user, named vet1 with passwor v3t
 INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
@@ -93,13 +101,17 @@ INSERT INTO players(id,online,playing,username) VALUES
 (6, FALSE, FALSE , 'player2'),
 (7, FALSE, FALSE , 'player3'),
 (8, FALSE, FALSE , 'player4'),
-(9, FALSE, FALSE , 'player5');
+(9, FALSE, FALSE , 'player5'),
+(10, FALSE, FALSE , 'player6'),
+(11, FALSE, FALSE , 'player7'),
+(12, FALSE, FALSE , 'player8'),
+(13, FALSE, FALSE , 'player9');
 
 INSERT INTO suffragium_cards(id,loyals_votes,traitors_votes,vote_limit) VALUES
 (1,2,3,8),
 (2,0,0,12),
-(3,5,3,12),
-(4,6,6,13),
+(3,8,10,12),
+(4,9,6,13),
 (5,0,0,13);
 
 INSERT INTO turns(id,current_turn) VALUES 
@@ -112,7 +124,7 @@ INSERT INTO turns(id,current_turn) VALUES
 INSERT INTO games(id,name,public_game,state,num_players,start_date,end_date,round,turn_id,stage,winners,suffragium_card_id) VALUES
 (1,'Mi primera partida', 0, 'STARTING', 5, null, null, 'FIRST', 1, 'VOTING', null, 1),
 (2,'Partida rapida', 1, 'STARTING', 6, '2022-10-27 10:00:00', null, 'FIRST', 2, 'END_OF_TURN', null, 2),
-(3,'Partida de principiantes', 0, 'FINISHED', 6, '2022-10-30 10:00:00', '2022-10-30 11:00:00', 'FIRST', 3, 'VOTING', 'LOYALS', 3),
+(3,'Partida de principiantes', 0, 'FINISHED', 5, '2022-10-30 10:00:00', '2022-10-30 11:00:00', 'FIRST', 3, 'VOTING', 'TRAITORS', 3),
 (4,'New game', 1, 'FINISHED', 6, '2022-11-15 23:59:58', '2022-11-16 00:25:01', 'FIRST', 4, 'VOTING', 'LOYALS', 4),
 (5,'Testing decks', 1, 'STARTING', 7, null, null, 'FIRST', 5, 'VOTING', null, null);
 
@@ -129,8 +141,16 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 
 (30,false,false,3,1),
 (31,false,false,3,5),
+(32,false,false,3,8),
+(33,false,false,3,10),
+(34,false,false,3,11),
 
 (40,true,false,4,1),
+(41,false,false,4,5),
+(42,false,false,4,6),
+(43,false,false,4,7),
+(44,false,false,4,8),
+(45,false,false,4,9),
 
 (50,true,false,5,1),
 (51,false,false,5,2),
@@ -161,7 +181,20 @@ INSERT INTO decks(id, role_cards,player_id,game_id) VALUES
 (4, 'EDIL',3,2),
 (5, 'NO_ROL',6,2),
 (6, 'NO_ROL',7,2),
-(7, 'EDIL', 3, 1);
+(7, 'EDIL', 3, 1),
+
+(30, 'NO_ROL', 1, 3),
+(31, 'CONSUL', 5, 3),
+(32, 'PRETOR', 8, 3),
+(33, 'EDIL', 10, 3),
+(34, 'EDIL', 11, 3),
+
+(40, 'NO_ROL', 1, 4),
+(41, 'CONSUL', 5, 4),
+(42, 'PRETOR', 6, 4),
+(43, 'NO_ROL', 7, 4),
+(44, 'EDIL', 8, 4),
+(45, 'EDIL', 9, 4);
 
 INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES 
 (1, 'LOYAL'),
@@ -169,7 +202,20 @@ INSERT INTO decks_faction_cards(deck_id, faction_cards_type) VALUES
 (3,'MERCHANT'),
 (4,'MERCHANT'),
 (5,'TRAITOR'),
-(6,'LOYAL');
+(6,'LOYAL'),
+
+(30,'TRAITOR'),
+(31,'LOYAL'),
+(32,'MERCHANT'),
+(33,'TRAITOR'),
+(34,'LOYAL'),
+
+(40,'LOYAL'),
+(41,'LOYAL'),
+(42,'MERCHANT'),
+(43,'TRAITOR'),
+(44,'LOYAL'),
+(45,'TRAITOR');
 
 INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES 
 (3, 'YELLOW'),

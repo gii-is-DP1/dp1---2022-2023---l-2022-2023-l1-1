@@ -3,17 +3,17 @@ package org.springframework.samples.petclinic.achievements;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
@@ -22,6 +22,7 @@ import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserRepository;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StatisticsService {
@@ -30,83 +31,38 @@ public class StatisticsService {
     private PlayerRepository playerRepository;
 
     @Autowired
-    private PlayerService playerService;
+    private GameRepository gameRepository;
 
     @Autowired
-    private UserService userService;
+    private PlayerService playerService;
 
     @Autowired
     private GameService gameService;
 
-    @Autowired
-	private DeckService deckService;
-
     @Transactional
-    public Map<Player, Double> listRankingUserVictory() throws DataAccessException{
-
-        List<Player> topPlayers = new ArrayList<>();
-        Map<Player, Double> result = new HashMap<>();
-        List<Double> victoryList = new ArrayList<Double>();
+    public Map<Player, Integer> listRankingUserVictory() throws DataAccessException {
+        Map<Player, Integer> result = new LinkedHashMap<>();
+        Map<Player, Integer> allPlayersAndVictories = new LinkedHashMap<>();
         List<Game> allFinishedGames = gameService.getGamesByState(State.FINISHED);
         List<Player> players = playerRepository.findAll();
 
         for (Player p: players){
-            Double victories = playerService.findWinsByPlayer(p, allFinishedGames);
-            if (victoryList.size() < 10) {
-                victoryList.add(victories);
-                topPlayers.add(p);
-            } else if (victoryList.size() == 10) {
-                int i = 0;
-                for (Double v: victoryList) {
-                    if (victories > v){
-                        topPlayers.remove(i);
-                        victoryList.remove(i);
-                        topPlayers.add(p);
-                        victoryList.add(victories);
-                    }
-                    i += 1;
-                }
+            Integer victories = playerService.findWinsByPlayer(p, allFinishedGames);
+            allPlayersAndVictories.put(p, victories);
+        }
+
+        Map<Player, Integer> sortedMap = allPlayersAndVictories.entrySet().stream()
+        .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        int count = 0;
+        for (Map.Entry<Player, Integer> entry : sortedMap.entrySet()) {
+            if (count == 10) {
+                break;
             }
-        }
-        
-        List<Double> orderedVictoryList = orderedVictories(victoryList); System.out.println(orderedVictoryList +" ))))))))) "+ victoryList);
-        List<Player> orderedPlayers = orderedPlayers(topPlayers, victoryList, orderedVictoryList); 
-        System.out.println(orderedPlayers.stream().map(p->p.getUser().getUsername()).collect(Collectors.toList())+
-        " ((((((((((((( "+topPlayers.stream().map(p->p.getUser().getUsername()).collect(Collectors.toList()));
-
-        for (int i = 0; i < orderedPlayers.size(); i++){
-            result.put(orderedPlayers.get(i), orderedVictoryList.get(i));
-        }
-        return result;
-
-    }
-    
-    @Transactional
-    public List<Double> orderedVictories(List<Double> victoryList) throws DataAccessException{
-        /* 
-        List<Double> result = new ArrayList<Double>();
-        Double x = 0.;
-        Integer i = 0;
-        while (i < victoryList.size() + 1){
-            for (Double v: victoryList){
-                if (v > x){
-                    x = v;
-                }
-            }
-            result.add(x);
-            victoryList.remove(victoryList.indexOf(x));
-        }
-        return result;*/
-        Collections.sort(victoryList, Collections.reverseOrder());
-        return victoryList;
-    }
-
-    @Transactional
-    public List<Player> orderedPlayers(List<Player> topPlayers, List<Double> victoryList, List<Double> orderedVictories){
-        List<Player> result = new ArrayList<>();
-        for (Double v: orderedVictories){
-            result.add(topPlayers.get(victoryList.indexOf(v)));
-        }
+                result.put(entry.getKey(), entry.getValue());
+                count++;
+            }   
         return result;
     }
     
@@ -120,7 +76,7 @@ public class StatisticsService {
         
         List<Game> allFinishedGames = gameService.getGamesByState(State.FINISHED);
         
-        Double victory = playerService.findWinsByPlayer(player, allFinishedGames);
+        Integer victory = playerService.findWinsByPlayer(player, allFinishedGames);
         
         Double loss = gamesPlayed-victory;
         
@@ -143,12 +99,19 @@ public class StatisticsService {
         Double globalAverageTimePlaying = globalTimePlaying/allFinishedGames.size();
         Double globalMaxTimePlaying = gameService.getGlobalMaxTimePlaying(allFinishedGames);
         Double globalMinTimePlaying = gameService.getGlobalMinTimePlaying(allFinishedGames);
-        Double winsAsTraitor = playerService.findUserWinsAsTraitor(user, allFinishedGames);
+        Double winsAsTraitor = playerService.findUserWinsAsTraitor(user);
         Double perWinsAsTraitor;
-        Double winsAsLoyal = playerService.findUserWinsAsLoyal(user, allFinishedGames);
+        Double winsAsLoyal = playerService.findUserWinsAsLoyal(user);
         Double perWinsAsLoyal;
-        Double winsAsMerchant = playerService.findUserWinsAsMerchant(user, allFinishedGames);
+        Double winsAsMerchant = playerService.findUserWinsAsMerchant(user);
         Double perWinsAsMerchant;
+        Double avgNumPlayers = playerService.getAvgNumPlayersByPlayer(player);
+        Double minNumPlayers = playerService.getMinNumPlayersByPlayer(player);
+        Double maxNumPlayers = playerService.getMaxNumPlayersByPlayer(player);
+        Double globalAvgNumPlayers = gameService.getGlobalAvgNumPlayers();
+        Double globalMinNumPlayers = gameService.getGlobalMinNumPlayers();
+        Double globalMaxNumPlayers = gameService.getGlobalMaxNumPlayers();
+        Integer totalGamesPlayed =  gameRepository.findByState(State.FINISHED).size();
         if (winsAsTraitor == 0.0){
             perWinsAsTraitor = 0.0;
         } else {
@@ -164,7 +127,7 @@ public class StatisticsService {
             perWinsAsMerchant = winsAsMerchant*100/victory;
         }
 		list.add(gamesPlayed);
-		list.add(victory);
+		list.add((double) victory);
         list.add(loss);
 		list.add(PerWin);
         list.add(PerLos);
@@ -182,6 +145,13 @@ public class StatisticsService {
         list.add(perWinsAsMerchant);
         list.add(winsAsTraitor);
         list.add(perWinsAsTraitor);
+        list.add(avgNumPlayers);
+        list.add(minNumPlayers);
+        list.add(maxNumPlayers);
+        list.add(globalAvgNumPlayers);
+        list.add(globalMinNumPlayers);
+        list.add(globalMaxNumPlayers);
+        list.add((double) totalGamesPlayed);
 		return list;
     }
 

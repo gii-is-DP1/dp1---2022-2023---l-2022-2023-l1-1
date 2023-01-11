@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.game;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -336,5 +337,39 @@ public class GameService {
 	    }
 		return result;
     }
+
+    @Transactional(readOnly = true)
+	public Double getGlobalAvgNumPlayers() {
+		List<Game> games = repo.findByState(State.FINISHED);
+		Double a = 0.;
+		Double b = 0.;
+		for(Game g: games) {
+			a += playerInfoRepository.findPlayersByGame(g).size();
+			b ++;
+		}
+		return a/b;
+	}
+
+    @Transactional(readOnly = true)
+	public Double getGlobalMinNumPlayers() {
+		List<Game> games = repo.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			numsPlayers.add((double) playersInGame.size());
+		}
+		return Collections.min(numsPlayers);
+	}
+
+    @Transactional(readOnly = true)
+	public Double getGlobalMaxNumPlayers() {
+		List<Game> games = repo.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			numsPlayers.add((double) playersInGame.size());
+		}
+		return Collections.max(numsPlayers);
+	}
     
 }
