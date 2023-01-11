@@ -224,19 +224,17 @@
         </thead>
         <tbody>
             <c:forEach items="${comment}" var="comment">  
-                <c:if test="${true}">
-                    <tr>
-                        <td>
-                            <c:out value="${comment.playerInfo.player.user.username}"/>
-                        </td>
-                        <td>
-                            <c:out value="${comment.message}"/>
-                        </td>
-                        <td>
-                            <c:out value="${comment.date}"/>
-                        </td>
-                    </tr>
-                </c:if>
+                <tr>
+                    <td>
+                        <c:out value="${comment.playerInfo.player.user.username}"/>
+                    </td>
+                    <td>
+                        <c:out value="${comment.message}"/>
+                    </td>
+                    <td>
+                        <c:out value="${comment.date}"/>
+                    </td>
+                </tr>
             </c:forEach>
         </tbody>
     </table>
