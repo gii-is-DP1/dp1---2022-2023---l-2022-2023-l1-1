@@ -22,6 +22,7 @@ import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.history.Revision;
 import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.samples.petclinic.user.UserRepository;
@@ -71,6 +72,11 @@ public class PlayerService {
 	public List<Player> getAll(){
 		return playerRepository.findAll();
 	}
+
+	@Transactional(readOnly = true)
+    public List<Player> getPlayersPageables(Pageable pageable){
+        return playerRepository.findAllPageable(pageable);
+    }
 
 	@Transactional(readOnly = true)
 	public Player getPlayerById(Integer id) {

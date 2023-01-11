@@ -15,6 +15,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.samples.petclinic.comment.Comment;
+import org.springframework.samples.petclinic.comment.CommentService;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.deck.VoteCard;
@@ -68,6 +70,8 @@ public class GameController {
 	private static final String GAME = "/games/game";
 	private static final String PRETOR_SELECTION = "games/pretorCardSelection";
 	private static final String ROLE_DESIGNATION = "games/rolesDesignation";
+	private static final String COMMENTS_LIST = "games/chat";
+	private static final String SEND_COMMENT = "games/chat/send";
 
 	private static final Integer MAX_PLAYERS = 8;
 
@@ -91,6 +95,10 @@ public class GameController {
 
 	@Autowired
 	private VoteCardService voteCardService;
+
+	@Autowired
+    private CommentService commentService;
+
 
     @Autowired
     public GameController(GameService service) {
@@ -479,5 +487,32 @@ public class GameController {
 		
 	}	
 
+	@GetMapping("/{gameId}/chat")
+    public ModelAndView showCommentsByGame(@PathVariable("gameId") Integer gameId){
+		ModelAndView result=new ModelAndView(COMMENTS_LIST);
+        List<Comment> comments = commentService.getCommentsByGame(gameId);
+		result.addObject("comments", comments);
+        return result;
+    }
+
+	@GetMapping("/{gameId}/chat/send")
+    public ModelAndView sendComment(@PathVariable("gameId") Integer gameId) {
+        Comment comment=new Comment();
+		ModelAndView result = new ModelAndView(SEND_COMMENT);
+        result.addObject("message", comment);
+        return result;
+    }
+
+	@PostMapping("/{gameId}/chat/send")
+    public ModelAndView saveComment(@Valid Comment comment, @PathVariable("gameId") Integer gameId, BindingResult br) {
+        ModelAndView result = null;
+        if(br.hasErrors()) {
+            return new ModelAndView(SEND_COMMENT, br.getModel());
+        } else {
+            commentService.saveComment(comment);
+            result = showCommentsByGame(gameId);
+        }
+        return result;
+    }
 
 }

@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.player;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.history.RevisionRepository;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Repository;
 public interface PlayerRepository extends CrudRepository<Player, Integer>, RevisionRepository<Player, Integer, Integer> {
 
     List<Player> findAll(); 
+
+    @Query("SELECT p FROM Player p")
+    public List<Player> findAllPageable(Pageable pageable);
 
     Optional<Player> findById(Integer id);
 

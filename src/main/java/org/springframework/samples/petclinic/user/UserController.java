@@ -25,6 +25,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.player.PlayerValidator;
@@ -75,7 +77,8 @@ public class UserController {
 	@GetMapping
     public String listAllUsers(ModelMap model) {
         playerService.checkOnlineStatus();
-        List<Player> allPlayers = playerService.getAll();
+        Pageable pageable = PageRequest.of(0, 5);
+        List<Player> allPlayers = playerService.getPlayersPageables(pageable);
         model.put("players", allPlayers);
         return PLAYER_LIST;
     }
