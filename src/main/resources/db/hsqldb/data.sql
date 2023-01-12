@@ -172,11 +172,13 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
 (4,'GREEN'),
 (4,'RED');
 
-INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
-('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3),
-('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1),
-('FRIENDSHIP', 'I am player1', FALSE, 5, 1),
-('FRIENDSHIP', 'I am player2', TRUE, 6, 1);
+INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id,game_id) VALUES
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3, null),
+('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1, null),
+('FRIENDSHIP', 'I am player1', FALSE, 5, 1, null),
+('FRIENDSHIP', 'I am player2', TRUE, 6, 1, null),
+('FRIENDSHIP', 'I am alvgonfri', TRUE, 1, 9, null),
+('GAME_PLAYER', 'Join my game!', FALSE, 1, 9, 5);
 
 INSERT INTO comments(id,message, date, player_info_id) VALUES
 (1,'GG', '2022-10-27 10:01:00',1),
