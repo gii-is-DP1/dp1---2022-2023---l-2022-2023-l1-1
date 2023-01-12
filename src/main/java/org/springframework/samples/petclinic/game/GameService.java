@@ -191,7 +191,6 @@ public class GameService {
         if(game.getState() == State.STARTING){
            playerInfoRepository.deleteById(playerInfo.getId()); 
         }
-        
     }
     
     @Transactional

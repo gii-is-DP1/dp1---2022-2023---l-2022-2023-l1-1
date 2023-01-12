@@ -511,17 +511,21 @@ public class GameController {
     public ModelAndView sendComment(@PathVariable("gameId") Integer gameId) {
         Comment comment=new Comment();
 		ModelAndView result = new ModelAndView(SEND_COMMENT);
+		result.addObject("gameId", gameId);
         result.addObject("comment", comment);
         return result;
     }
 
 	@PostMapping("/games/{gameId}/chat")
-    public ModelAndView saveComment(@Valid Comment comment, @PathVariable("gameId") Integer gameId, BindingResult br, @AuthenticationPrincipal UserDetails user) {
+    public ModelAndView saveComment(@PathVariable("gameId") Integer gameId, @Valid Comment comment, BindingResult br, @AuthenticationPrincipal UserDetails user) {
 		Player player = playerService.getPlayerByUsername(user.getUsername());
 		Game game = gameService.getGameById(gameId);
 		PlayerInfo playerInfo = playerInfoService.getPlayerInfoByGameAndPlayer(game, player);
 		if(br.hasErrors()) {
-            return new ModelAndView(SEND_COMMENT, br.getModel());
+			ModelAndView res = new ModelAndView(SEND_COMMENT, br.getModel());
+			res.addObject("gameId", gameId);
+			res.addObject("comment", comment);
+            return res;
         } else {
             commentService.saveComment(comment, playerInfo);
         }
