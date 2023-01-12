@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collector;
@@ -23,6 +24,7 @@ import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.deck.DeckRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.history.Revision;
 import org.springframework.samples.petclinic.player.exceptions.DuplicatedUsernameException;
 import org.springframework.samples.petclinic.user.UserRepository;
@@ -71,6 +73,26 @@ public class PlayerService {
 	@Transactional
 	public List<Player> getAll(){
 		return playerRepository.findAll();
+	}
+
+	@Transactional(readOnly = true)
+    public List<Player> getPlayersPageable(Pageable pageable){
+        return playerRepository.findAllPageable(pageable);
+    }
+
+	@Transactional(readOnly = true)
+	public List<Integer> getPageNumbers() {
+		List<Integer> res = new ArrayList<>();
+		List<Player> players = playerRepository.findAll();
+		Integer i = 0;
+		System.out.println(players.stream().map(x->x.getUser().getUsername()).collect(Collectors.toList()));
+		for(Player p: players) {
+			if(players.indexOf(p) % 5 == 0) {
+				res.add(i);
+				i++;
+			}
+		}
+		return res;
 	}
 
 	@Transactional(readOnly = true)
@@ -197,7 +219,7 @@ public class PlayerService {
 		for (Game g:allFinishedGames){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player)){
-				result = result + 1.;
+				result = result + 1;
 			}
 		}
 		return result;
@@ -209,7 +231,7 @@ public class PlayerService {
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		Faction traitor = Faction.TRAITORS;
-		for (Game g:allFinishedGames){
+		for (Game g:games){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == traitor){
 				result = result + 1.;
@@ -224,7 +246,7 @@ public class PlayerService {
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		Faction loyal = Faction.LOYALS;
-		for (Game g:allFinishedGames){
+		for (Game g:games){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == loyal){
 				result = result + 1.;
@@ -239,7 +261,7 @@ public class PlayerService {
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		Faction merchant = Faction.MERCHANTS;
-		for (Game g:allFinishedGames){
+		for (Game g:games){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == merchant){
 				result = result + 1.;
@@ -256,18 +278,61 @@ public class PlayerService {
 		return  playerFinishedGames.size() == 0 ? 0 : playerFinishedGames.stream().map(x -> x.getDuration()).mapToInt(Integer::intValue).sum();
 	}
 
-	public Integer getMinTimePlaying(User user) {
+@Transactional
+	public Integer getMinTimePlaying(User user) {	
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		List<Game> playerFinishedGames = allFinishedGames.stream().filter(g -> playerInfoRepository.findPlayersByGame(g).contains(player)).collect(Collectors.toList());
 		return playerFinishedGames.size() == 0 ? 0 : playerFinishedGames.stream().map(x -> x.getDuration()).sorted().findFirst().get();
 	}
 
+	@Transactional
     public Integer getMaxTimePlaying(User user) {
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		List<Game> playerFinishedGames = allFinishedGames.stream().filter(g -> playerInfoRepository.findPlayersByGame(g).contains(player)).collect(Collectors.toList());
 		return playerFinishedGames.size() == 0 ? 0 : playerFinishedGames.stream().map(x -> x.getDuration()).sorted(Comparator.reverseOrder()).findFirst().get();
     }
+
+	@Transactional(readOnly = true)
+	public Double getAvgNumPlayersByPlayer(Player player) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
+		Double a = 0.;
+		Double b = 0.;
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			if(playersInGame.contains(player)) {
+				a += playersInGame.size();
+				b ++;
+			}
+		}
+		return a/b;
+	}
+
+	@Transactional(readOnly = true)
+	public Double getMinNumPlayersByPlayer(Player player) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			if(playersInGame.contains(player)) {
+				numsPlayers.add((double) playersInGame.size());
+			}
+		}
+		return Collections.min(numsPlayers);
+	}
+
+	@Transactional(readOnly = true)
+	public Double getMaxNumPlayersByPlayer(Player player) {
+		List<Game> games = gameRepository.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			if(playersInGame.contains(player)) {
+				numsPlayers.add((double) playersInGame.size());
+			}
+		}
+		return Collections.max(numsPlayers);
+	}
 
 }

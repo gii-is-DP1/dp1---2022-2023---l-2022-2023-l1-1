@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.achievements.AchievementRepository;
+import org.springframework.samples.petclinic.comment.CommentRepository;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameRepository;
@@ -36,14 +38,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.samples.petclinic.deck.DeckRepository;
 import org.springframework.samples.petclinic.deck.FactionCardRepository;
 import org.springframework.samples.petclinic.deck.VoteCardRepository;
-import org.springframework.samples.petclinic.owner.OwnerRepository;
-import org.springframework.samples.petclinic.pet.PetRepository;
-import org.springframework.samples.petclinic.pet.VisitRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesRepository;
 import org.springframework.samples.petclinic.user.UserRepository;
-import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCardRepository;
 import org.springframework.samples.petclinic.turn.TurnRepository;
 
@@ -349,14 +347,6 @@ public class InvitationControllerTest {
     private FactionCardRepository factionCardRepository;
 
     @MockBean
-    private PetRepository petRepository;
+    private CommentRepository commentRepository;
 
-    @MockBean
-    private VetRepository vetRepository;
-
-    @MockBean
-    private OwnerRepository ownerRepository;
-
-    @MockBean
-    private VisitRepository visitRepository;
 }

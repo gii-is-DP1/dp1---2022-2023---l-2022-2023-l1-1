@@ -11,8 +11,9 @@
     <c:if test = "${game.state == 'IN_PROCESS'}">
         <h1>${game.round} ROUND | TURN ${turn.currentTurn} | ${game.stage} STAGE</h1>
     </c:if>
-
-
+    <c:if test = "${game.state == 'IN_PROCESS' && currentPlayerInfo.spectator}">
+        <a class="btn btn-default" href="/games/${game.id}/exit" height="120">Stop watching</a>
+    </c:if>
     <c:if test = "${game.state == 'FINISHED'}">
         <br>
         <c:if test = "${winnerPlayers.contains(currentPlayer)}">
@@ -220,4 +221,30 @@
         <br>
         <a class="btn btn-default" href="/">HOME</a>
     </c:if>
+    <h4>Chat</h4>
+    <a class="btn btn-default" href="/games/${game.id}/chat">Send message</a>
+    <table id="commentsTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Message</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach items="${comment}" var="comment">  
+                <tr>
+                    <td>
+                        <c:out value="${comment.playerInfo.player.user.username}"/>
+                    </td>
+                    <td>
+                        <c:out value="${comment.message}"/>
+                    </td>
+                    <td>
+                        <c:out value="${comment.date}"/>
+                    </td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
 </petclinic:layout>

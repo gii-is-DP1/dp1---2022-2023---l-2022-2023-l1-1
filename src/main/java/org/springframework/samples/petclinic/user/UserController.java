@@ -25,6 +25,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.player.PlayerValidator;
@@ -59,6 +61,8 @@ public class UserController {
     private static final String UPDATE_PLAYER_PASSWORD = "/users/updatePlayerPassword";
     private static final String PLAYER_AUDIT = "/users/playerAudit";
 
+    private static final Integer FIRST_PAGE = 1;
+
 	@Autowired
 	private PlayerService playerService;
 
@@ -72,10 +76,21 @@ public class UserController {
 		dataBinder.setValidator(new PlayerValidator());
 	}
 
-	@GetMapping
-    public String listAllUsers(ModelMap model) {
+	@GetMapping("/{page}")
+    public String listAllUsers(@PathVariable Integer page, ModelMap model) {
         playerService.checkOnlineStatus();
-        List<Player> allPlayers = playerService.getAll();
+        Pageable pageable = PageRequest.of(page-1, 5);
+        List<Player> allPlayers = playerService.getPlayersPageable(pageable);
+        model.put("players", allPlayers);
+        model.put("pageNumbers", playerService.getPageNumbers());
+        return PLAYER_LIST;
+    }
+
+    @GetMapping("users?page={page}")
+    public String pagingUsers(ModelMap model,@PathVariable("page")Integer page) {
+        playerService.checkOnlineStatus();
+        Pageable pageable = PageRequest.of(page, 5);
+        List<Player> allPlayers = playerService.getPlayersPageable(pageable);
         model.put("players", allPlayers);
         return PLAYER_LIST;
     }
@@ -155,7 +170,7 @@ public class UserController {
         }
         model.put("message", message);
      	model.put("messageType", "info");
-     	return listAllUsers(model);
+     	return listAllUsers(FIRST_PAGE, model);
     }
 
     @GetMapping("/{username}/audit")

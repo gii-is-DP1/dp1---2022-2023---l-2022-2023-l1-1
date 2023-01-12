@@ -49,4 +49,14 @@
         </c:forEach>
         </tbody>
     </table>
+    <p>Pages</p>
+    <c:forEach items="${pageNumbers}" var="page">
+            <tr>
+                <td>
+                    <a href="/users/${page+1}">
+                        <c:out value="${page+1}"></c:out>
+                    </a>
+                </td>
+            </tr>
+    </c:forEach>
 </petclinic:layout>

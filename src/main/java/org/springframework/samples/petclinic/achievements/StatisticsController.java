@@ -36,20 +36,16 @@ public class StatisticsController {
 
     @GetMapping(path="/statistics")
 	public String StatisticsList(ModelMap modelMap, @AuthenticationPrincipal UserDetails user) {
-		User userp = userService.getUserByUsername(user.getUsername());
-		modelMap.addAttribute("statistics", statisticsService.listStatistics(userp));
-		//modelMap.addAttribute("user", user);
-        
+		User u = userService.getUserByUsername(user.getUsername());
+        modelMap.addAttribute("user", u);
+		modelMap.addAttribute("statistics", statisticsService.listStatistics(u));
 		return STATISTICS_VIEW;	
 	}
 
     @GetMapping(path="/ranking")
 	public String RankingList(ModelMap modelMap) {
-        Map<Player, Double> ranking = statisticsService.listRankingUserVictory();
-        List<Integer> positions = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        Map<Player, Integer> ranking = statisticsService.listRankingUserVictory();
 		modelMap.addAttribute("rankingMap", ranking);
-        System.out.println(ranking);
-		modelMap.addAttribute("rankingNumbers", positions);
 		return RANKING_VIEW;	
 	}
 }

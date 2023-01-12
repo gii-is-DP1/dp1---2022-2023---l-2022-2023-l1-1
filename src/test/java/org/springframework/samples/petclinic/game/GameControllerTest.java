@@ -8,6 +8,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.achievements.AchievementRepository;
+import org.springframework.samples.petclinic.comment.CommentRepository;
+import org.springframework.samples.petclinic.comment.CommentService;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.deck.Deck;
 import org.springframework.samples.petclinic.deck.DeckRepository;
@@ -21,9 +23,6 @@ import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.invitation.InvitationRepository;
-import org.springframework.samples.petclinic.owner.OwnerRepository;
-import org.springframework.samples.petclinic.pet.PetRepository;
-import org.springframework.samples.petclinic.pet.VisitRepository;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.player.PlayerService;
@@ -39,7 +38,6 @@ import org.springframework.samples.petclinic.turn.TurnRepository;
 import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.samples.petclinic.user.AuthoritiesRepository;
 import org.springframework.samples.petclinic.user.UserRepository;
-import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -139,7 +137,7 @@ public class GameControllerTest {
     public void testProcessGamesHistoryForm() throws Exception {
         mockMvc.perform(get("/games/history"))
         .andExpect(status().isOk())
-        .andExpect(view().name("/games/gamesFinishedList"))
+        .andExpect(view().name("/games/gamesFinishedListAdmin"))
         .andExpect(model().attributeExists("returnButton"))
         .andExpect(model().attributeExists("publicGames"))
         .andExpect(model().attributeExists("privateGames"));
@@ -348,6 +346,14 @@ public class GameControllerTest {
 
     @WithMockUser
     @Test
+    public void testExitGame() throws Exception {
+        mockMvc.perform(get("/games/{gameId}/exit", TEST_GAME_ID))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(view().name("redirect:/"));
+    }
+
+    @WithMockUser
+    @Test
     public void testShowGameForSpectator() throws Exception {
         mockMvc.perform(get("/games/{gameId}", TEST_GAME_ID))
         .andExpect(status().isOk())
@@ -470,6 +476,36 @@ public class GameControllerTest {
         .andExpect(view().name("redirect:/games/"+TEST_GAME_ID));
     }
 
+    @WithMockUser
+    @Test
+    public void testSendComment() throws Exception {
+        mockMvc.perform(get("/games/{gameId}/chat", TEST_GAME_ID))
+        .andExpect(status().isOk())
+        .andExpect(view().name("games/sendComment"))
+        .andExpect(model().attributeExists("comment"))
+        .andExpect(model().attributeExists("gameId"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testSaveComment() throws Exception {
+        mockMvc.perform(post("/games/{gameId}/chat", TEST_GAME_ID)
+        .with(csrf())
+        .param("message", "Hello"))
+        .andExpect(status().is3xxRedirection());
+    }
+
+    @WithMockUser
+    @Test
+    public void testSaveCommentUnsuccessfulDueToBlankMessage() throws Exception {
+        mockMvc.perform(post("/games/{gameId}/chat", TEST_GAME_ID)
+        .with(csrf())
+        .param("message", ""))
+        .andExpect(view().name("games/sendComment"))
+        .andExpect(model().attributeExists("comment"))
+        .andExpect(model().attributeExists("gameId"));
+    }
+
     /* 
     The following MockBeans are necessary to make controller tests work correctly, since we're using the annotation
     "@EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)" in "PetclinicApplication.java".
@@ -487,6 +523,9 @@ public class GameControllerTest {
 
 	@MockBean
 	private VoteCardService voteCardService;
+
+    @MockBean
+    private CommentService commentService;
 
     @MockBean
     private GameRepository gameRepository;
@@ -528,14 +567,6 @@ public class GameControllerTest {
     private FactionCardRepository factionCardRepository;
 
     @MockBean
-    private PetRepository petRepository;
+    private CommentRepository commentRepository;
 
-    @MockBean
-    private VetRepository vetRepository;
-
-    @MockBean
-    private OwnerRepository ownerRepository;
-
-    @MockBean
-    private VisitRepository visitRepository;
 }

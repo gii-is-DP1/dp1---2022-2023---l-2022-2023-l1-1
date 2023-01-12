@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.game;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,7 @@ import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.invitation.InvitationService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.turn.Turn;
@@ -273,6 +275,17 @@ public class GameServiceTest {
         GameService service = new GameService(gameRepository);
         service.joinGame(game);
         assertTrue(game.getNumPlayers()==2);        
+    }
+
+    @Test
+    public void testExitGame() {
+        GameService service = new GameService(gameRepository, playerInfoRepository, playerRepository, turnRepository, deckRepository, invitationService, deckService);
+        PlayerInfo playerInfo = new PlayerInfo();
+        playerInfo.setId(1);
+        playerInfo.setSpectator(false);
+        game.setNumPlayers(4);
+        service.exitGame(playerInfo, game);
+        assertTrue(game.getNumPlayers()==3);        
     }
 
     @Test

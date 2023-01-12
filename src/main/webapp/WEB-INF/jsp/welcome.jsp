@@ -21,6 +21,6 @@
     <sec:authorize access="hasAuthority('admin')">
         <a class="btn btn-default" href="/games/history/find">Games history</a>
         <a class="btn btn-default" href="/games/inProcess/find">Games in process</a>
-        <a class="btn btn-default" href="/users">Manage players</a>
+        <a class="btn btn-default" href="/users/1">Manage players</a>
     </sec:authorize>
 </petclinic:layout>

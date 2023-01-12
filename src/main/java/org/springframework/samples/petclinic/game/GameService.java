@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.game;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.invitation.InvitationService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
 import org.springframework.samples.petclinic.user.User;
@@ -182,6 +184,18 @@ public class GameService {
         game.setNumPlayers(game.getNumPlayers()+1);
         repo.save(game);
     }
+
+    
+    @Transactional
+    public void exitGame(PlayerInfo playerInfo, Game game) throws DataAccessException {
+        if(!playerInfo.getSpectator()) {
+            game.setNumPlayers(game.getNumPlayers()-1);
+            repo.save(game);
+        }
+        if(game.getState() == State.STARTING){
+           playerInfoRepository.deleteById(playerInfo.getId()); 
+        }
+    }
     
     @Transactional
     public void changeStage(Game game, CurrentStage stage) {
@@ -329,5 +343,39 @@ public class GameService {
         List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		return allFinishedGames.stream().map(x -> x.getDuration()).sorted().findFirst().get();
     }
+
+    @Transactional(readOnly = true)
+	public Double getGlobalAvgNumPlayers() {
+		List<Game> games = repo.findByState(State.FINISHED);
+		Double a = 0.;
+		Double b = 0.;
+		for(Game g: games) {
+			a += playerInfoRepository.findPlayersByGame(g).size();
+			b ++;
+		}
+		return a/b;
+	}
+
+    @Transactional(readOnly = true)
+	public Double getGlobalMinNumPlayers() {
+		List<Game> games = repo.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			numsPlayers.add((double) playersInGame.size());
+		}
+		return Collections.min(numsPlayers);
+	}
+
+    @Transactional(readOnly = true)
+	public Double getGlobalMaxNumPlayers() {
+		List<Game> games = repo.findByState(State.FINISHED);
+		List<Double> numsPlayers = new ArrayList<>();
+		for(Game g: games) {
+			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
+			numsPlayers.add((double) playersInGame.size());
+		}
+		return Collections.max(numsPlayers);
+	}
     
 }
