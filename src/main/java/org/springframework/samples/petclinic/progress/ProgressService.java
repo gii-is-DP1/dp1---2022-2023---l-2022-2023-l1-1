@@ -64,15 +64,6 @@ public class ProgressService {
         return progressRepository.findProgressByPlayer(player);
     }
 
-    /*public List<Progress> addNewAchievement(Achievement achievement) { //CREO QUE NO HACE FALTA
-        List<Progress> progressCreated = new ArrayList<>();
-        for (Player player :  playerRepository.findAll()){
-            Progress progress = new Progress(0.0, achievement, player);
-            progressCreated.add(progress);
-        }
-        return progressCreated;
-    } */
-
     public void addAchievementPlayer (Achievement achievement, Player player) {
         progressRepository.save(new Progress(achievement, player));
     }
