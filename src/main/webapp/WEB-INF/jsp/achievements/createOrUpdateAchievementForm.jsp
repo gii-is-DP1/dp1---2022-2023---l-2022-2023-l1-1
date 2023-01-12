@@ -14,6 +14,7 @@
             <input type="hidden" name="id" value="${achievement.id}"/>
             <div class="form-group has-feedback">                
                 <petclinic:inputField label="Name" name="name"/>
+                <petclinic:selectField label="Type" name="type" names="${types}" size="5"/>
                 <petclinic:inputField label="Description" name="description"/>
                 <petclinic:inputField label="Threshold" name="threshold"/>
             </div>

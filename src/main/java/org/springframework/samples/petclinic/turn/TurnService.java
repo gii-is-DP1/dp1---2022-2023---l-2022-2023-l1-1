@@ -1,7 +1,6 @@
 package org.springframework.samples.petclinic.turn;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.deck.DeckService;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.game.Game;
@@ -19,13 +18,9 @@ public class TurnService {
     GameRepository gameRepository;
 
     @Autowired
-    DeckService deckService;
-
-    @Autowired
-    public TurnService (TurnRepository turnRepository, GameRepository gameRepository, DeckService deckService) {
+    public TurnService (TurnRepository turnRepository, GameRepository gameRepository) {
         this.turnRepository = turnRepository;
         this.gameRepository = gameRepository;
-        this.deckService = deckService;
     }
 
     @Transactional

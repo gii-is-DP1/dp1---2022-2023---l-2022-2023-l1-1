@@ -347,7 +347,7 @@ public class GameController {
 		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
 		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
 		Turn currentTurn = gameStarted.getTurn();
-		List<PlayerInfo> gamePlayerInfos = playerInfoService.getPlayerInfosByGame(game);
+		List<PlayerInfo> gamePlayerInfos = playerInfoService.getActivePlayersPlayerInfosByGame(game);
     	deckService.assingDecksIfNeeded(game);
 
 		Integer roleCardNumber = gameService.gameRoleCardNumber(game);
@@ -366,6 +366,7 @@ public class GameController {
 
 		}
 
+		res.addObject("currentPlayerInfo", playerInfoService.getPlayerInfoByGameAndPlayer(game, currentPlayer));
 		res.addObject("activePlayers", gameService.activePlayers(game));
 		res.addObject("votesAssigned", deckService.votesAsigned(game));
 		res.addObject("roleCardNumber", roleCardNumber);
@@ -399,7 +400,6 @@ public class GameController {
 		Player voter = playerService.getPlayerById(playerId);
 		
 		voteCardService.forcedVoteChange(actualGame, voter);
-
 		return "redirect:/games/" + gameId.toString();
 
 	}

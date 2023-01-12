@@ -49,6 +49,7 @@ public class StatisticsService {
         for (Player p: players){
             Integer victories = playerService.findWinsByPlayer(p, allFinishedGames);
             allPlayersAndVictories.put(p, victories);
+
         }
 
         Map<Player, Integer> sortedMap = allPlayersAndVictories.entrySet().stream()
@@ -76,11 +77,13 @@ public class StatisticsService {
         
         List<Game> allFinishedGames = gameService.getGamesByState(State.FINISHED);
         
-        Integer victory = playerService.findWinsByPlayer(player, allFinishedGames);
+
+        Double victory = playerService.findWinsByPlayer(player);
+
         
         Double loss = gamesPlayed-victory;
         
-        Double timePlaying = playerService.getTotalTimePlaying(user, allFinishedGames);
+        Double timePlaying = Double.valueOf(playerService.getTotalTimePlaying(user));
         
         Double PerWin;
         Double PerLos;
@@ -92,13 +95,13 @@ public class StatisticsService {
             PerWin = victory*100/gamesPlayed;
             PerLos = loss*100/gamesPlayed;
         }
-        Double averageTimePlaying = timePlaying/gamesPlayed;
-        Double maxTimePlaying = playerService.getMaxTimePlaying(user, allFinishedGames);
-        Double minTimePlaying = playerService.getMinTimePlaying(user, allFinishedGames);
-        Double globalTimePlaying = gameService.getGlobalTimePlaying(allFinishedGames);
+        Double averageTimePlaying = playerService.getTotalTimePlaying(user) == 0 ? 0.0 : timePlaying/gamesPlayed;
+        Double maxTimePlaying = Double.valueOf(playerService.getMaxTimePlaying(user));
+        Double minTimePlaying = Double.valueOf(playerService.getMinTimePlaying(user));
+        Double globalTimePlaying = Double.valueOf(gameService.getGlobalTimePlaying());
         Double globalAverageTimePlaying = globalTimePlaying/allFinishedGames.size();
-        Double globalMaxTimePlaying = gameService.getGlobalMaxTimePlaying(allFinishedGames);
-        Double globalMinTimePlaying = gameService.getGlobalMinTimePlaying(allFinishedGames);
+        Double globalMaxTimePlaying = Double.valueOf(gameService.getGlobalMaxTimePlaying());
+        Double globalMinTimePlaying = Double.valueOf(gameService.getGlobalMinTimePlaying());
         Double winsAsTraitor = playerService.findUserWinsAsTraitor(user);
         Double perWinsAsTraitor;
         Double winsAsLoyal = playerService.findUserWinsAsLoyal(user);

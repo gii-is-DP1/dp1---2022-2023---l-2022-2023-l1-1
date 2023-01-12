@@ -6,6 +6,9 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.enums.AchievementType;
+import org.springframework.samples.petclinic.invitation.InvitationRepository;
+import org.springframework.samples.petclinic.invitation.InvitationService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.game.Game;
@@ -19,6 +22,8 @@ import org.springframework.stereotype.Service;
 public class AchievementService {
     
     AchievementRepository achievementRepository;
+
+   
 
     @Autowired
     private PlayerService playerService;
@@ -48,6 +53,8 @@ public class AchievementService {
         achievementRepository.save(achievement);
     }
 
-    
+    public List<AchievementType> getAllTypes () {
+        return List.of(AchievementType.values());
+    }
 
 }

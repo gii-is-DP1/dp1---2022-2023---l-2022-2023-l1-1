@@ -97,13 +97,23 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (55,false,false,5,7),
 (56,false,false,5,8);
 
-INSERT INTO achievements(id,name,description,threshold) VALUES 
-(1,'Jugador Novato','Has jugado mas de <THRESHOLD> partidas',10.0),
-(2,'Jugador Avanzado','Has jugado mas de <THRESHOLD> partidas',50.0),
-(3,'Jugador Experto','Has jugado mas de <THRESHOLD> partidas',100.00),
-(4,'Ganador Novato','Has ganado mas de <THRESHOLD> partidas',5.0),
-(5,'Ganador Avanzado','Has Jugado mas de <THRESHOLD> partidas',25.0),
-(6,'Ganador Experto','Has Jugado mas de <THRESHOLD> partidas',50.00);
+INSERT INTO achievements(id,name,type,description,threshold) VALUES 
+(1,'Casual player','GAMES','You have played <THRESHOLD> games.',10.0),
+(2,'Advanced player','GAMES','You have played <THRESHOLD> games.',50.0),
+(3,'Addicted player','GAMES','You have played <THRESHOLD> games.',100.00),
+(4,'Win basic','VICTORY','You have won <THRESHOLD> games.',5.0),
+(5,'Win medium','VICTORY','You have won <THRESHOLD> games.',25.0),
+(6,'Invincible','VICTORY','You have won <THRESHOLD> games.',50.00),
+(7,'win loyal basic','VICTORY','You have won <THRESHOLD> games as loyal.',10.00),
+(8,'win loyal medium','VICTORY','You have won <THRESHOLD> games as loyal.',20.0),
+(9,'win merchant basic','VICTORY','You have won <THRESHOLD> games as merchant.',10.0),
+(10,'win merchant medium','VICTORY','You have won <THRESHOLD> games as merchant.',20.00),
+(11,'win traitor basic','VICTORY','You have won <THRESHOLD> games as traitor.',10.0),
+(12,'win traitor medium','VICTORY','You have won <THRESHOLD> games as traitor.',20.0),
+(13,'Meeting new players','FRIENDS','You have <THRESHOLD> friends.',1.00),
+(14,'friends medium','FRIENDS','You have <THRESHOLD> friends.',10.00),
+(15,'friends advanced','FRIENDS','You have <THRESHOLD> friends.',50.00),
+(16,'time prueba','TIME','You have played <THRESHOLD> minutes.',50.00);
 
 INSERT INTO faction_cards(type) VALUES 
 ('LOYAL'), ('TRAITOR'), ('MERCHANT');
@@ -160,33 +170,11 @@ INSERT INTO decks_vote_cards(deck_id, vote_cards_type) VALUES
 (4,'GREEN'),
 (4,'RED');
 
-INSERT INTO progress(id, completed_percentage, achievement_id, player_id) VALUES
-(1, 100.0, 1, 3),
-(2, 20.0, 2, 3),
-(3, 10.0, 3, 3),
-(4, 100.0, 1, 2),
-(5, 100.0, 2, 2),
-(6, 50.0, 3, 2),
-(7, 100.0, 4, 3),
-(8, 25.0, 5, 3),
-(9, 50.0, 6, 3),
-(10, 100.0, 4, 2),
-(11, 80.0, 5, 2),
-(12, 20.0, 6, 2),
-(13, 100.0, 1, 1),
-(14, 20.0, 2, 1),
-(15, 10.0, 3, 1),
-(16, 100.0, 4, 1),
-(17, 25.0, 5, 1),
-(18, 50.0, 6, 1);
-
-INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id,game_id) VALUES
-('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3, null),
-('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1, null),
-('FRIENDSHIP', 'I am player1', FALSE, 5, 1, null),
-('FRIENDSHIP', 'I am player2', TRUE, 6, 1, null),
-('FRIENDSHIP', 'I am alvgonfri', TRUE, 1, 9, null),
-('GAME_PLAYER', 'Join my game!', FALSE, 1, 9, 5);
+INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id) VALUES
+('FRIENDSHIP', 'Hi, could we be friends?', FALSE, 1, 3),
+('FRIENDSHIP', 'Hi, could we start a friendship?', FALSE, 2, 1),
+('FRIENDSHIP', 'I am player1', FALSE, 5, 1),
+('FRIENDSHIP', 'I am player2', TRUE, 6, 1);
 
 INSERT INTO comments(id,message, date, player_info_id) VALUES
 (1,'GG', '2022-10-27 10:01:00',1),

@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.playerInfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -27,6 +28,11 @@ public class PlayerInfoService {
     @Transactional(readOnly = true)
     public List<PlayerInfo> getPlayerInfosByGame(Game game) {
         return repo.findPlayerInfosByGame(game);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlayerInfo> getActivePlayersPlayerInfosByGame(Game game) {
+        return repo.findPlayerInfosByGame(game).stream().filter(p -> p.getSpectator() == false).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

@@ -20,11 +20,6 @@ import lombok.Setter;
 @Setter
 @Table(name="progress")
 public class Progress extends BaseEntity {
-    
-    @Column (name = "completed_percentage")
-    @Min(0)
-    @Max(100)
-    private double completedPercentage;
 
     @ManyToOne
     @JoinColumn(name = "achievement_id")
@@ -34,17 +29,7 @@ public class Progress extends BaseEntity {
     @JoinColumn (name = "player_id")    
     private Player player;
 
-    public boolean getCompleted() {
-        if (completedPercentage == 100.00) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    public Progress (Double completedPercentage, Achievement achievement, Player player) {
-        this.completedPercentage = completedPercentage;
+    public Progress (Achievement achievement, Player player) {
         this.achievement = achievement;
         this.player = player;
     }
