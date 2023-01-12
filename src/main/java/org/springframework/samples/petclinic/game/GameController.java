@@ -532,4 +532,33 @@ public class GameController {
         return new ModelAndView("redirect:/games/" + gameId.toString());
     }
 
+	@GetMapping("/gamesResult/{gameId}")
+    public ModelAndView showGameResult(@PathVariable("gameId") Integer gameId, @AuthenticationPrincipal UserDetails user) throws DataAccessException {
+		ModelAndView res=new ModelAndView(GAME);
+        Game game=gameService.getGameById(gameId);
+        SuffragiumCard suffragiumCard = suffragiumCardService.createSuffragiumCardIfNeeded(game);
+		Player currentPlayer = playerService.getPlayerByUsername(user.getUsername());
+		Game gameStarted = gameService.startGameIfNeeded(game, suffragiumCard);
+		Turn currentTurn = gameStarted.getTurn();
+		List<PlayerInfo> gamePlayerInfos = playerInfoService.getPlayerInfosByGame(game);
+    	deckService.assingDecksIfNeeded(game);
+		Integer roleCardNumber = gameService.gameRoleCardNumber(game);
+		gameService.winnerFaction(game);
+		List<Player> winnerPlayers = deckService.winnerPlayers(game, game.getWinners());
+		List<Player> losePlayers = deckService.loserPlayers(gameStarted, winnerPlayers);
+
+		res.addObject("winnerPlayers", winnerPlayers);
+		res.addObject("loserPlayers", losePlayers);
+		res.addObject("activePlayers", gameService.activePlayers(game));
+		res.addObject("votesAssigned", deckService.votesAsigned(game));
+		res.addObject("roleCardNumber", roleCardNumber);
+		res.addObject("turn", currentTurn);
+		res.addObject("currentPlayer", currentPlayer);
+        res.addObject("game", gameStarted);
+        res.addObject("playerInfos", gamePlayerInfos);
+		res.addObject("suffragiumCard", suffragiumCardService.getSuffragiumCardByGame(gameId));
+        return res;
+
+    }
+
 }
