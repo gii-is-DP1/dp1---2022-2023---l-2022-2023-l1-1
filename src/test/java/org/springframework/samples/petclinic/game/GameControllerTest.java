@@ -56,8 +56,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.events.Comment;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @WebMvcTest(controllers = GameController.class, 
@@ -348,6 +346,14 @@ public class GameControllerTest {
 
     @WithMockUser
     @Test
+    public void testExitGame() throws Exception {
+        mockMvc.perform(get("/games/{gameId}/exit", TEST_GAME_ID))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(view().name("redirect:/"));
+    }
+
+    @WithMockUser
+    @Test
     public void testShowGameForSpectator() throws Exception {
         mockMvc.perform(get("/games/{gameId}", TEST_GAME_ID))
         .andExpect(status().isOk())
@@ -468,6 +474,36 @@ public class GameControllerTest {
         mockMvc.perform(get("/games/{gameId}/rolesDesignation/{pretorId}/{edil1Id}/{edil2Id}", TEST_GAME_ID, TEST_PLAYER_ID, TEST_PLAYER_ID, TEST_PLAYER_ID))
         .andExpect(status().is3xxRedirection())
         .andExpect(view().name("redirect:/games/"+TEST_GAME_ID));
+    }
+
+    @WithMockUser
+    @Test
+    public void testSendComment() throws Exception {
+        mockMvc.perform(get("/games/{gameId}/chat", TEST_GAME_ID))
+        .andExpect(status().isOk())
+        .andExpect(view().name("games/sendComment"))
+        .andExpect(model().attributeExists("comment"))
+        .andExpect(model().attributeExists("gameId"));
+    }
+
+    @WithMockUser
+    @Test
+    public void testSaveComment() throws Exception {
+        mockMvc.perform(post("/games/{gameId}/chat", TEST_GAME_ID)
+        .with(csrf())
+        .param("message", "Hello"))
+        .andExpect(status().is3xxRedirection());
+    }
+
+    @WithMockUser
+    @Test
+    public void testSaveCommentUnsuccessfulDueToBlankMessage() throws Exception {
+        mockMvc.perform(post("/games/{gameId}/chat", TEST_GAME_ID)
+        .with(csrf())
+        .param("message", ""))
+        .andExpect(view().name("games/sendComment"))
+        .andExpect(model().attributeExists("comment"))
+        .andExpect(model().attributeExists("gameId"));
     }
 
     /* 

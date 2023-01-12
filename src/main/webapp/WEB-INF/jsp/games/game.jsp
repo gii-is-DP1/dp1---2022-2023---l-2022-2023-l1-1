@@ -213,6 +213,7 @@
         <br>
         <a class="btn btn-default" href="/">HOME</a>
     </c:if>
+    <h4>Chat</h4>
     <a class="btn btn-default" href="/games/${game.id}/chat">Send message</a>
     <table id="commentsTable" class="table table-striped">
         <thead>
