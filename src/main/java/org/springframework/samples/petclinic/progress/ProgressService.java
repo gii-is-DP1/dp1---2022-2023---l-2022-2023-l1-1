@@ -121,7 +121,7 @@ public class ProgressService {
 
         }
         else if (x.getAchievement().getType() == AchievementType.VICTORY) {
-            Double winsNumber = playerService.findWinsByPlayer(x.getPlayer());
+            Double winsNumber = (double) playerService.findWinsByPlayer(x.getPlayer());
             completedPercentage = winsNumber/x.getAchievement().getThreshold()*100;
             completedPercentage = completedPercentage > 100.0 ? 100.0 : completedPercentage;
             res.add(Pair.of(x.getAchievement(), completedPercentage));

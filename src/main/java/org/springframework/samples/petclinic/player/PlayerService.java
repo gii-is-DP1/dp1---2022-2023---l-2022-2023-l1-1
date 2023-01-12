@@ -213,8 +213,8 @@ public class PlayerService {
 	}
 
 	@Transactional
-	public Double findWinsByPlayer(Player player) {
-		Double result = 0.;
+	public Integer findWinsByPlayer(Player player) {
+		Integer result = 0;
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		for (Game g:allFinishedGames){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
@@ -231,7 +231,7 @@ public class PlayerService {
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		Faction traitor = Faction.TRAITORS;
-		for (Game g:games){
+		for (Game g:allFinishedGames){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == traitor){
 				result = result + 1.;
@@ -246,7 +246,7 @@ public class PlayerService {
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		Faction loyal = Faction.LOYALS;
-		for (Game g:games){
+		for (Game g:allFinishedGames){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == loyal){
 				result = result + 1.;
@@ -261,7 +261,7 @@ public class PlayerService {
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
 		Faction merchant = Faction.MERCHANTS;
-		for (Game g:games){
+		for (Game g:allFinishedGames){
 			List<Player> winners = deckService.winnerPlayers(g, g.getWinners());
 			if (winners.contains(player) && g.getWinners() == merchant){
 				result = result + 1.;

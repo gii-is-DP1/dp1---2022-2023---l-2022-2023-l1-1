@@ -47,7 +47,7 @@ public class StatisticsService {
         List<Player> players = playerRepository.findAll();
 
         for (Player p: players){
-            Integer victories = playerService.findWinsByPlayer(p, allFinishedGames);
+            Integer victories = playerService.findWinsByPlayer(p);
             allPlayersAndVictories.put(p, victories);
 
         }
@@ -78,7 +78,7 @@ public class StatisticsService {
         List<Game> allFinishedGames = gameService.getGamesByState(State.FINISHED);
         
 
-        Double victory = playerService.findWinsByPlayer(player);
+        Double victory = (double) playerService.findWinsByPlayer(player);
 
         
         Double loss = gamesPlayed-victory;

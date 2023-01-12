@@ -101,19 +101,21 @@ INSERT INTO achievements(id,name,type,description,threshold) VALUES
 (1,'Casual player','GAMES','You have played <THRESHOLD> games.',10.0),
 (2,'Advanced player','GAMES','You have played <THRESHOLD> games.',50.0),
 (3,'Addicted player','GAMES','You have played <THRESHOLD> games.',100.00),
-(4,'Win basic','VICTORY','You have won <THRESHOLD> games.',5.0),
-(5,'Win medium','VICTORY','You have won <THRESHOLD> games.',25.0),
+(4,'Understanding the rules','VICTORY','You have won <THRESHOLD> games.',5.0),
+(5,'You are improving!','VICTORY','You have won <THRESHOLD> games.',25.0),
 (6,'Invincible','VICTORY','You have won <THRESHOLD> games.',50.00),
-(7,'win loyal basic','VICTORY','You have won <THRESHOLD> games as loyal.',10.00),
-(8,'win loyal medium','VICTORY','You have won <THRESHOLD> games as loyal.',20.0),
-(9,'win merchant basic','VICTORY','You have won <THRESHOLD> games as merchant.',10.0),
-(10,'win merchant medium','VICTORY','You have won <THRESHOLD> games as merchant.',20.00),
-(11,'win traitor basic','VICTORY','You have won <THRESHOLD> games as traitor.',10.0),
-(12,'win traitor medium','VICTORY','You have won <THRESHOLD> games as traitor.',20.0),
+(7,'A good loyal','VICTORY','You have won <THRESHOLD> games as loyal.',10.00),
+(8,'The best loyal','VICTORY','You have won <THRESHOLD> games as loyal.',20.0),
+(9,'A good merchant','VICTORY','You have won <THRESHOLD> games as merchant.',10.0),
+(10,'The best merchant','VICTORY','You have won <THRESHOLD> games as merchant.',20.00),
+(11,'A good traitor','VICTORY','You have won <THRESHOLD> games as traitor.',10.0),
+(12,'The best traitor','VICTORY','You have won <THRESHOLD> games as traitor.',20.0),
 (13,'Meeting new players','FRIENDS','You have <THRESHOLD> friends.',1.00),
-(14,'friends medium','FRIENDS','You have <THRESHOLD> friends.',10.00),
-(15,'friends advanced','FRIENDS','You have <THRESHOLD> friends.',50.00),
-(16,'time prueba','TIME','You have played <THRESHOLD> minutes.',50.00);
+(14,'Your new family','FRIENDS','You have <THRESHOLD> friends.',10.00),
+(15,'Networking king','FRIENDS','You have <THRESHOLD> friends.',50.00),
+(16,'Trying the game','TIME','You have played <THRESHOLD> minutes.',10.00),
+(17,'You love the game','TIME','You have played <THRESHOLD> minutes.',50.00),
+(18,'You are hooked!','TIME','You have played <THRESHOLD> minutes.',200.00);
 
 INSERT INTO faction_cards(type) VALUES 
 ('LOYAL'), ('TRAITOR'), ('MERCHANT');
