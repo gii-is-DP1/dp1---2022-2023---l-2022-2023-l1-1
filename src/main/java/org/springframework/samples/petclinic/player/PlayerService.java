@@ -306,6 +306,7 @@ public class PlayerService {
 				b ++;
 			}
 		}
+		if(b==0) return 0.;
 		return a/b;
 	}
 
@@ -319,6 +320,7 @@ public class PlayerService {
 				numsPlayers.add((double) playersInGame.size());
 			}
 		}
+		if(numsPlayers.isEmpty()) return 0.;
 		return Collections.min(numsPlayers);
 	}
 
@@ -332,6 +334,7 @@ public class PlayerService {
 				numsPlayers.add((double) playersInGame.size());
 			}
 		}
+		if(numsPlayers.isEmpty()) return 0.;
 		return Collections.max(numsPlayers);
 	}
 
