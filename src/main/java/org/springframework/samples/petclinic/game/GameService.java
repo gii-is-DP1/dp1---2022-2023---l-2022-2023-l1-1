@@ -27,7 +27,6 @@ import org.springframework.samples.petclinic.player.PlayerRepository;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.suffragiumCard.SuffragiumCard;
-import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnRepository;
 import org.springframework.stereotype.Service;
@@ -56,10 +55,6 @@ public class GameService {
 
     @Autowired
     private DeckService deckService;
-
-    @Autowired
-    private GameRepository gameRepository;
-
 
     @Autowired
     public GameService(GameRepository repo) {
@@ -328,19 +323,19 @@ public class GameService {
 
     @Transactional(readOnly = true)
 	public Integer getGlobalTimePlaying() {
-		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
+		List<Game> allFinishedGames = repo.findByState(State.FINISHED);
 		return allFinishedGames.stream().map(x -> x.getDuration()).mapToInt(Integer::intValue).sum();
 	}
 
     @Transactional(readOnly = true)
     public Integer getGlobalMaxTimePlaying() {
-        List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
+        List<Game> allFinishedGames = repo.findByState(State.FINISHED);
 		return allFinishedGames.stream().map(x -> x.getDuration()).sorted(Comparator.reverseOrder()).findFirst().get();
     }
 
     @Transactional(readOnly = true)
     public Integer getGlobalMinTimePlaying() {
-        List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
+        List<Game> allFinishedGames = repo.findByState(State.FINISHED);
 		return allFinishedGames.stream().map(x -> x.getDuration()).sorted().findFirst().get();
     }
 
@@ -350,9 +345,10 @@ public class GameService {
 		Double a = 0.;
 		Double b = 0.;
 		for(Game g: games) {
-			a += playerInfoRepository.findPlayersByGame(g).size();
+			a += g.getNumPlayers();
 			b ++;
 		}
+        if(b==0) return 0.;
 		return a/b;
 	}
 
@@ -361,9 +357,9 @@ public class GameService {
 		List<Game> games = repo.findByState(State.FINISHED);
 		List<Double> numsPlayers = new ArrayList<>();
 		for(Game g: games) {
-			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
-			numsPlayers.add((double) playersInGame.size());
+			numsPlayers.add((double) g.getNumPlayers());
 		}
+        if(numsPlayers.isEmpty()) return 0.;
 		return Collections.min(numsPlayers);
 	}
 
@@ -372,9 +368,9 @@ public class GameService {
 		List<Game> games = repo.findByState(State.FINISHED);
 		List<Double> numsPlayers = new ArrayList<>();
 		for(Game g: games) {
-			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
-			numsPlayers.add((double) playersInGame.size());
+			numsPlayers.add((double) g.getNumPlayers());
 		}
+        if(numsPlayers.isEmpty()) return 0.;
 		return Collections.max(numsPlayers);
 	}
     

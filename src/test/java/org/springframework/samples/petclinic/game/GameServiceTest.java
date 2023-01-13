@@ -3,8 +3,6 @@ package org.springframework.samples.petclinic.game;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -17,6 +15,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -111,6 +110,9 @@ public class GameServiceTest {
         gameInProcess.setState(State.IN_PROCESS);
         gameFinished = createGame("Test game finished", true);
         gameFinished.setState(State.FINISHED);
+        gameFinished.setStartDate(Date.from(Instant.parse("2023-01-11T18:00:00.00Z")));
+        gameFinished.setEndDate(Date.from(Instant.parse("2023-01-11T18:25:00.00Z")));
+        gameFinished.setNumPlayers(6);
         List<Game> games = new ArrayList<>();
         List<Game> gamesInProcess = new ArrayList<>();
         List<Game> gamesFinished = new ArrayList<>();
@@ -121,6 +123,7 @@ public class GameServiceTest {
         when(gameRepository.findPublicGamesByName(anyString())).thenReturn(games).thenReturn(new ArrayList<>());
         when(gameRepository.findPrivateGamesByName(anyString())).thenReturn(games).thenReturn(new ArrayList<>());
         when(gameRepository.findAll()).thenReturn(games);
+        when(gameRepository.findByState(any(State.class))).thenReturn(gamesFinished);
 
         p1 = new Player();
         User u1 = new User();
@@ -456,5 +459,51 @@ public class GameServiceTest {
         List<String> usernames = service.activePlayers(game);
         assertTrue(usernames.contains("player2"));        
     }
+
+    @Test
+    public void testGetGlobalTimePlaying() {
+        GameService service = new GameService(gameRepository);
+        Integer time = service.getGlobalTimePlaying();
+        assertEquals(time, 25);;        
+    }
+
+    @Test
+    public void testGetGlobalMaxTimePlaying() {
+        GameService service = new GameService(gameRepository);
+        Integer time = service.getGlobalMaxTimePlaying();
+        assertEquals(time, 25);;        
+    }
+
+    @Test
+    public void testGetGlobalMinTimePlaying() {
+        GameService service = new GameService(gameRepository);
+        Integer time = service.getGlobalMinTimePlaying();
+        assertEquals(time, 25);;        
+    }
+
+    @Test
+    public void testGetGlobalAvgNumPlayers() {
+        GameService service = new GameService(gameRepository);
+        Double res = service.getGlobalAvgNumPlayers();
+        assertEquals(res, 6);;        
+    }
+
+    @Test
+    public void testGetGlobalMinNumPlayers() {
+        GameService service = new GameService(gameRepository);
+        Double res = service.getGlobalMinNumPlayers();
+        assertEquals(res, 6);;        
+    }
+
+    @Test
+    public void testGetGlobalMaxNumPlayers() {
+        GameService service = new GameService(gameRepository);
+        Double res = service.getGlobalMaxNumPlayers();
+        assertEquals(res, 6);;        
+    }
+
+
+
+
 
 }
