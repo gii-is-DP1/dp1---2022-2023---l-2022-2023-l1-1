@@ -1,15 +1,7 @@
 package org.springframework.samples.petclinic.game;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -17,7 +9,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.comment.Comment;
 import org.springframework.samples.petclinic.comment.CommentService;
 import org.springframework.samples.petclinic.deck.Deck;
@@ -28,8 +19,6 @@ import org.springframework.samples.petclinic.deck.FactionCard.FCType;
 import org.springframework.samples.petclinic.deck.VoteCard.VCType;
 import org.springframework.samples.petclinic.enums.CurrentRound;
 import org.springframework.samples.petclinic.enums.CurrentStage;
-import org.springframework.samples.petclinic.enums.Faction;
-import org.springframework.samples.petclinic.enums.RoleCard;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
@@ -49,11 +38,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -427,7 +413,6 @@ public class GameController {
 		}
 
 		else if (currentTurn.getCurrentTurn() != 1 && currentGame.getRound() == CurrentRound.SECOND) {
-			//si es cualquier turno de la segunda ronda distinto a 1, solo se rota el consul y se pasa a votacion
 			deckService.clearEdilVoteCards(currentGame);
 			deckService.consulRotation(currentGame);
 			gameService.changeStage(currentGame, CurrentStage.VOTING);
@@ -435,7 +420,6 @@ public class GameController {
 		else {
 			gameService.changeStage(currentGame, CurrentStage.END_OF_TURN);
 		}
-		//si se hace change stage a voting y la partida esta en round 2 el estado deberia pasar a finished y ver fin de partida en el redirect a showgames
 		return "redirect:/games/" + gameId.toString();
 	}
 
@@ -450,7 +434,7 @@ public class GameController {
 		gameService.changeStageIfVotesCompleted(currentGame);
 		deckService.updateVotesDeck(deck, voteType);
 		if (currentGame.getStage() == CurrentStage.SCORING) {
-			updateSuffragiumCard(gameId); //como se cambia el stage arriba, si se cambiase a scoring pasamos diractamente a actualizar el sufragium
+			updateSuffragiumCard(gameId);
 		}
 		return "redirect:/games/" + gameId.toString();
 	}
@@ -458,18 +442,18 @@ public class GameController {
     @GetMapping("/games/{gameId}/edit/{factionType}")
     public String selectFaction (@PathVariable("gameId") Integer gameId, @PathVariable("factionType") FCType factionType, @AuthenticationPrincipal UserDetails user){
         Game game = gameService.getGameById(gameId);
-		Player player = playerService.getPlayerByUsername(user.getUsername()); //cojo al player que esta loggeado (es el que esta eligiendo su faccion)
-        Deck deck = deckService.getDeckByPlayerAndGame(player, game); //cojo el mazo de este 
+		Player player = playerService.getPlayerByUsername(user.getUsername());
+        Deck deck = deckService.getDeckByPlayerAndGame(player, game);
 
         deckService.updateFactionDeck(deck, factionType);
 
-		if (game.getRound() == CurrentRound.FIRST && game.getTurn().getCurrentTurn() != game.getNumPlayers()) { //despues de elegir faccion si es primera ronda, pasa a votacion y rotan mazos
+		if (game.getRound() == CurrentRound.FIRST && game.getTurn().getCurrentTurn() != game.getNumPlayers()) {
 			deckService.deckRotation(game);
 		}
 		
-		else { //si no es primera ronda es que es primer turno de la segunda ronda (no hay eleccion de faccion fuera de esto)
-			deckService.clearEdilVoteCards(game); //borro los votos de los ediles
-			deckService.consulRotation(game); //rota unicamente la carta de consul
+		else {
+			deckService.clearEdilVoteCards(game);
+			deckService.consulRotation(game);
 		}
 		gameService.changeStage(game, CurrentStage.VOTING);
 		
