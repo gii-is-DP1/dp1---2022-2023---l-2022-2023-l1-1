@@ -136,7 +136,7 @@ public class DeckService {
     private static final Integer ANY_PLAYER = 0;
 
     @Transactional
-    public void assingDecksIfNeeded(Game game) {        //esto esta cambiado
+    public void assingDecksIfNeeded(Game game) {
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
         if(rep.findDeckByPlayerAndGame(players.get(ANY_PLAYER), game) == null) {
             List<FactionCard> factions = getFactionCards(players.size());

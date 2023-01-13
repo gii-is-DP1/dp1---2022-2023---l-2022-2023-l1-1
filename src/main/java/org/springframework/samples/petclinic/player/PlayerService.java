@@ -8,10 +8,8 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.hibernate.query.criteria.internal.ValueHandlerFactory.IntegerValueHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckService;
@@ -19,7 +17,6 @@ import org.springframework.samples.petclinic.enums.Faction;
 import org.springframework.samples.petclinic.enums.State;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameRepository;
-import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfoRepository;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.User;
@@ -70,6 +67,18 @@ public class PlayerService {
 		this.playerRepository = playerRepository;
 	}
 
+	public PlayerService(PlayerRepository playerRepository, UserRepository userRepository, PlayerInfoRepository playerInfoRepository, DeckRepository deckRepository, GameRepository gameRepository, SessionRegistry sessionRegistry, UserService userService, AuthoritiesService authoritiesService, DeckService deckService) {
+		this.playerRepository = playerRepository;
+		this.userRepository = userRepository;
+		this.playerInfoRepository = playerInfoRepository;
+		this.deckRepository = deckRepository;
+		this.gameRepository = gameRepository;
+		this.sessionRegistry = sessionRegistry;
+		this.userService = userService;
+		this.authoritiesService = authoritiesService;
+		this.deckService = deckService;
+	}
+
 	@Transactional
 	public List<Player> getAll(){
 		return playerRepository.findAll();
@@ -85,7 +94,6 @@ public class PlayerService {
 		List<Integer> res = new ArrayList<>();
 		List<Player> players = playerRepository.findAll();
 		Integer i = 0;
-		System.out.println(players.stream().map(x->x.getUser().getUsername()).collect(Collectors.toList()));
 		for(Player p: players) {
 			if(players.indexOf(p) % 5 == 0) {
 				res.add(i);
@@ -111,7 +119,7 @@ public class PlayerService {
 	}
 
 	@Transactional(readOnly = true)
-	private Boolean duplicatedUsername(String username) {
+	public Boolean duplicatedUsername(String username) {
         List<String> usernames = playerRepository.findAllUsernames();
         return usernames.contains(username);
     }
@@ -121,6 +129,7 @@ public class PlayerService {
 		if(duplicatedUsername(player.getUser().getUsername())){
 			throw new DuplicatedUsernameException();
 		} else {
+			System.out.println("3333333333333");
 			userService.saveUser(player.getUser());
 			authoritiesService.saveAuthorities(player.getUser().getUsername(), "player");
 			player.setOnline(false);
@@ -147,7 +156,7 @@ public class PlayerService {
 	@Transactional(readOnly = true)
 	public Boolean hasGamesPlayed(Player player) {
 		Boolean res = false;
-		if(!playerInfoRepository.findGamesByPlayer(player).isEmpty() || !deckRepository.findPlayerDecks(null).isEmpty()) {
+		if(!playerInfoRepository.findGamesByPlayer(player).isEmpty() || !deckRepository.findPlayerDecks(player.getId()).isEmpty()) {
 			res = true;
 		}
 		return res;
@@ -161,9 +170,11 @@ public class PlayerService {
 			UserDetails userDetails = (UserDetails) o;
 			User user = userRepository.findById(userDetails.getUsername()).get();
 			List<User> playerUsers = userRepository.findUserWithAuthority("player");
+			System.out.println(playerUsers+"99999"+user);
 			if(playerUsers.contains(user)) {
 				Player player = playerRepository.findPlayerByUsername(userDetails.getUsername());
 				if(!activeSessions.isEmpty()) {
+					System.out.println("11111");
 					player.setOnline(true);
 				} else {
 					player.setOnline(false);
@@ -177,6 +188,7 @@ public class PlayerService {
 	public List<String> auditPlayer(Player player) {
 		List<String> res = new ArrayList<>();
 		List<String> updates = new ArrayList<>();
+		System.out.println(playerRepository.findRevisions(player.getId()));
 		List<Revision<Integer, Player>> revs = playerRepository.findRevisions(player.getId()).get().collect(Collectors.toList());
 		for(Revision<Integer, Player> r: revs) {
 			Instant instant = r.getRevisionInstant().get().atZone(ZoneId.systemDefault()).toInstant();
@@ -278,7 +290,7 @@ public class PlayerService {
 		return  playerFinishedGames.size() == 0 ? 0 : playerFinishedGames.stream().map(x -> x.getDuration()).mapToInt(Integer::intValue).sum();
 	}
 
-@Transactional
+	@Transactional
 	public Integer getMinTimePlaying(User user) {	
 		Player player = playerRepository.findPlayerByUsername(user.getUsername());
 		List<Game> allFinishedGames = gameRepository.findByState(State.FINISHED);
@@ -302,7 +314,7 @@ public class PlayerService {
 		for(Game g: games) {
 			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
 			if(playersInGame.contains(player)) {
-				a += playersInGame.size();
+				a += g.getNumPlayers();
 				b ++;
 			}
 		}
@@ -317,7 +329,7 @@ public class PlayerService {
 		for(Game g: games) {
 			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
 			if(playersInGame.contains(player)) {
-				numsPlayers.add((double) playersInGame.size());
+				numsPlayers.add((double) g.getNumPlayers());
 			}
 		}
 		if(numsPlayers.isEmpty()) return 0.;
@@ -331,7 +343,7 @@ public class PlayerService {
 		for(Game g: games) {
 			List<Player> playersInGame = playerInfoRepository.findPlayersByGame(g);
 			if(playersInGame.contains(player)) {
-				numsPlayers.add((double) playersInGame.size());
+				numsPlayers.add((double) g.getNumPlayers());
 			}
 		}
 		if(numsPlayers.isEmpty()) return 0.;
