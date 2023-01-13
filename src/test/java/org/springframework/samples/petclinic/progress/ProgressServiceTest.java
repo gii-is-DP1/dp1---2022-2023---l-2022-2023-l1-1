@@ -46,6 +46,7 @@ public class ProgressServiceTest {
     Achievement a3;
     Progress p1;
     Progress p2;
+    Progress p3;
     List<Achievement> allAchievements;
     List<Progress> actualProgress;
 
@@ -80,8 +81,10 @@ public class ProgressServiceTest {
         a1 = createAchievement("Achievement 1", "Type duration threshold is 50", AchievementType.TIME);
         a2 = createAchievement("Achievement 2", "Type games threshold is 50", AchievementType.GAMES);
 
+
         p1 = createProgress(a1, player);
         p2 = createProgress(a2, player);
+        p3 = createProgress(a3, player);
 
         allAchievements = new ArrayList<>();
         allAchievements.add(a1);
@@ -91,16 +94,20 @@ public class ProgressServiceTest {
         actualProgress.add(p1);
         actualProgress.add(p2);
 
-        when(achievementRepository.findAll()).thenReturn(allAchievements);
-        when(progressRepository.findProgressByPlayer(any(Player.class))).thenReturn(actualProgress);
-        when(playerService.getTotalTimePlaying(player.getUser())).thenReturn(10);
-        //when(progressRepository.save(any(Progress.class)));
+        List<Progress> updatedProgresses = new ArrayList<>();
+        updatedProgresses.add(p1);
+        updatedProgresses.add(p2);
+        updatedProgresses.add(p3);
 
+        when(achievementRepository.findAll()).thenReturn(allAchievements);
+        when(progressRepository.findProgressByPlayer(any(Player.class))).thenReturn(actualProgress).thenReturn(updatedProgresses);
+        when(playerService.getTotalTimePlaying(player.getUser())).thenReturn(10);
+        when(playerService.getGamesPlayedByPlayer(any(Player.class))).thenReturn(10.0);
     }
 
     @Test
     public void testSaveTurnSuccessful() {
-        ProgressService progressService = new ProgressService(progressRepository);
+        ProgressService progressService = new ProgressService(progressRepository, achievementRepository);
         try {
             progressService.saveProgress(p1);;
         } catch (Exception e) {
@@ -110,7 +117,7 @@ public class ProgressServiceTest {
 
     @Test
     public void testAddAchievementPlayer() { 
-        ProgressService progressService = new ProgressService(progressRepository);
+        ProgressService progressService = new ProgressService(progressRepository, achievementRepository);
         try {
             progressService.addAchievementPlayer(a1, player);;
         } catch (Exception e) {
@@ -118,11 +125,24 @@ public class ProgressServiceTest {
         }
 
     }
-/*/
+
+    @Test
+    public void testGetPlayerProgress() {
+        ProgressService progressService = new ProgressService(progressRepository, achievementRepository);
+        assertTrue(actualProgress.size() == 2);
+        assertFalse(actualProgress.contains(p3));
+        assertTrue(progressService.getPlayerProgress(player).size() == 3);
+        assertTrue(progressService.getPlayerProgress(player).contains(p3));
+
+        
+    }/*/
     @Test
     public void testAchievementProgress() {
-        ProgressService progressService = new ProgressService(progressRepository);
-        List<Pair<Achievement,Double>> achievementProgress = progressService.achievementProgress(actualProgress);
+        ProgressService progressService = new ProgressService(progressRepository, achievementRepository);
+        assertTrue(actualProgress.get(0).getPlayer() != null);
+        assertTrue(actualProgress.get(1).getPlayer() != null);
+        assertTrue(playerService.getTotalTimePlaying(player.getUser()) == 10);
+        //List<Pair<Achievement,Double>> achievementProgress = progressService.achievementProgress(actualProgress);
         
     }*/
 

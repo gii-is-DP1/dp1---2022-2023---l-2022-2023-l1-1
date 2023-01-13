@@ -36,8 +36,9 @@ public class ProgressService {
     PlayerService playerService;
 
     @Autowired
-    public ProgressService(ProgressRepository progressRepository) {
+    public ProgressService(ProgressRepository progressRepository, AchievementRepository achievementRepository) {
         this.progressRepository = progressRepository;
+        this.achievementRepository = achievementRepository;
     }
 
     public List<Progress> getProgress() {
