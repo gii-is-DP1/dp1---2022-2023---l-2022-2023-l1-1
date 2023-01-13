@@ -2,11 +2,13 @@ package org.springframework.samples.petclinic.playerInfo;
 
 import java.util.List;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.samples.petclinic.comment.Comment;
 import org.springframework.samples.petclinic.game.Game;
@@ -20,7 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "player_infos")
-public class PlayerInfo extends BaseEntity{
+public class PlayerInfo extends BaseEntity {
 
     private Boolean creator;
     
@@ -32,6 +34,6 @@ public class PlayerInfo extends BaseEntity{
     @ManyToOne (optional = false)
     private Game game;
 
-    @OneToMany
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "playerInfo")
     private List<Comment> comments;
 }

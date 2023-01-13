@@ -15,58 +15,44 @@
  */
 package org.springframework.samples.petclinic.user;
 
-
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Mostly used as a facade for all Petclinic controllers Also a placeholder
- * for @Transactional and @Cacheable annotations
- *
- * @author Michael Isvy
- */
 @Service
 public class UserService {
 
-	private UserRepository userRepository;
-
 	@Autowired
-	private PlayerService playerService;
+	private UserRepository userRepository;
 
 	@Autowired
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
-	@Transactional
-	public User saveUser(User user) throws DataAccessException {
-		user.setEnabled(true);
-		userRepository.save(user);
-		return user;
-	}
-
-	public List<User> getAll() {
+	@Transactional(readOnly = true)
+	public List<User> getAll(){
 		return userRepository.findAll();
 	}
 
-	public Optional<User> findUser(String username) {
-		return userRepository.findById(username);
+	@Transactional(readOnly = true)
+	public User getUserByUsername(String username) {
+		User user = userRepository.findById(username).get();
+		return user;
+	}
+
+	@Transactional(readOnly = true)
+	public List<User> getUsersWithAuthority(String authority) {
+		return userRepository.findUserWithAuthority(authority);
 	}
 
 	@Transactional
-	public void removeUser(String username){
-		this.userRepository.deleteById(username);
-	}
+    public void saveUser(User user) throws DataAccessException {
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 
-	@Transactional
-	public User getUser(String username){
-		Optional<User> user = this.userRepository.findById(username);
-		return user.isPresent()? user.get() : null;
-	}
 }

@@ -1,17 +1,18 @@
 package org.springframework.samples.petclinic.player;
+
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.samples.petclinic.deck.Deck;
-import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.invitation.Invitation;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.progress.Progress;
 import org.springframework.samples.petclinic.user.User;
@@ -19,25 +20,36 @@ import org.springframework.samples.petclinic.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @Table(name="players")
+@Audited
 public class Player extends BaseEntity {
 
-    @NotNull
+    @NotAudited
     private Boolean online;
 
-    @NotNull
     private Boolean playing;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "username", referencedColumnName = "username")
+    @NotAudited
 	private User user;
 
-    @OneToMany (mappedBy = "player")
-    private List<Deck> decks;
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @NotAudited
+    private List<Progress> progress;
 
     @OneToMany (mappedBy = "player")
-    private List<Progress> progress;
+    @NotAudited
+    private List<Deck> decks;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    @NotAudited
+    private List<Invitation> invitationsSent;
+
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
+    @NotAudited
+    private List<Invitation> invitationsReceived;
 }

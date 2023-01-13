@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.achievements;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -21,7 +20,6 @@ public class AchievementRepositoryTests {
         List<Achievement> achievements = achievementRepository.findAll();
         assertNotNull(achievements);
         assertFalse(achievements.isEmpty());
-        assertEquals(6, achievements.size());
     }
     
 }

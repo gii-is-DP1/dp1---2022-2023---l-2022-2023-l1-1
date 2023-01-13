@@ -1,12 +1,15 @@
 package org.springframework.samples.petclinic.comment;
 
+import java.sql.Date;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentService {
@@ -19,25 +22,28 @@ public class CommentService {
         this.commentRepository=commentRepository;
     }
 
-    List<Comment> getComments(){
+    @Transactional(readOnly = true)
+    public List<Comment> getComments(){
         return commentRepository.findAll();
     }
     
-    public Optional<Comment> getCommentById(Integer id){
-        return commentRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Comment getCommentById(Integer id){
+        return commentRepository.findById(id).get();
     }
     
-    public List<Comment> getCommentsByLobby(PlayerInfo playerInfo){
-        return commentRepository.findCommentsByLobby(playerInfo);
+    @Transactional(readOnly = true)
+    public List<Comment> getCommentsByGame(Integer gameId){
+        List<Comment> list = commentRepository.findCommentsByGame(gameId);
+        list.sort(Comparator.comparing(Comment::getDate));
+        Collections.reverse(list);
+        return list;
     }
 
-    public void deleteCommentById(int id){
-    	commentRepository.deleteById(id);
-    }
-
-    public Comment save(Comment comment, Player player){
-    	comment.setSender(player.getUser().getUsername());
-        comment.setMessage(null);
-        return commentRepository.save(comment);
+    @Transactional
+    public void saveComment(Comment comment, PlayerInfo playerInfo){
+        comment.setDate(Date.from(Instant.now()));
+        comment.setPlayerInfo(playerInfo);
+        commentRepository.save(comment);
     }
 }

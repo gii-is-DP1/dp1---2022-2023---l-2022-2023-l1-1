@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.progress;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -14,5 +13,5 @@ public interface ProgressRepository extends CrudRepository<Progress, Integer> {
     List<Progress> findAll();
 
     @Query("SELECT p FROM Progress p where p.player LIKE :player")
-    List<Progress> findByPlayer(@Param("player") Player player);
+    List<Progress> findProgressByPlayer(@Param("player") Player player);
 }
