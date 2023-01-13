@@ -1,12 +1,8 @@
 package org.springframework.samples.petclinic.comment;
 
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -22,14 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.util.Pair;
-import org.springframework.samples.petclinic.enums.InvitationType;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameRepository;
-import org.springframework.samples.petclinic.invitation.exceptions.DuplicatedInvitationException;
-import org.springframework.samples.petclinic.invitation.exceptions.NullInvitationTypeException;
-import org.springframework.samples.petclinic.invitation.exceptions.NullRecipientException;
-import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.playerInfo.PlayerInfo;
 
 @ExtendWith(MockitoExtension.class)
