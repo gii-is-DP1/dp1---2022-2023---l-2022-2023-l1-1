@@ -82,17 +82,6 @@ public class InvitationService {
         return res;
     }
 
-    /* FUNCIÓN PARA SACAR LOGICA DE NEGOCIO DEL CONTROLADOR (/invitations/send), PERO DA NullPointerException.
-    @Transactional(readOnly = true)
-    public List<Player> getPlayersToInvite(Player sender) {
-        List<Player> players = playerRepository.findAll();
-        List<Player> senderFriends = getFriends(sender);
-        players.remove(sender);
-        players.removeAll(senderFriends);
-        return players;
-    }
-    */
-
     @Transactional(readOnly = true) 
     public Boolean invitationIsDuplicated(Invitation invitation, Player sender) {
         Boolean res = false;
