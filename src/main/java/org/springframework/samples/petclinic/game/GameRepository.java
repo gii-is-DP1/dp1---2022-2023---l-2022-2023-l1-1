@@ -2,7 +2,6 @@ package org.springframework.samples.petclinic.game;
 
 import java.util.List;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -28,8 +27,5 @@ public interface GameRepository extends CrudRepository<Game, Long>{
 
     @Query("SELECT DISTINCT g FROM Game g WHERE g.publicGame = 0 AND g.name LIKE :name%")
 	public List<Game> findPrivateGamesByName(@Param("name") String name);
-
-    @Query("SELECT DISTINCT g FROM Game g NATURAL JOIN PlayerInfo pI WHERE pI.g.id LIKE :id")
-    public List<PlayerInfo> findPlayerInfosInGameById(@Param("id") Integer id);
 
 }

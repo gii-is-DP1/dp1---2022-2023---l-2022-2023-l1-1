@@ -34,6 +34,4 @@ public interface PlayerInfoRepository extends CrudRepository<PlayerInfo,Integer>
     @Query("SELECT pI.player FROM PlayerInfo pI WHERE pI.game =?1")
 	public List<Player> findAllUsersByGame(@Param("game") Game game);
 
-    @Query("SELECT DISTINCT pI FROM PlayerInfo pI WHERE pI.id = ?1")
-	public Game findById(@Param("id") Integer id);
 }

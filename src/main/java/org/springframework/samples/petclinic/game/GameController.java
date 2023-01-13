@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -296,8 +295,6 @@ public class GameController {
 	@GetMapping("/games/{gameId}/spectate")
     public String spectateGame(@AuthenticationPrincipal UserDetails user, @PathVariable("gameId") Integer gameId, @Valid PlayerInfo spectatorInfo, ModelMap model){
 		Game game=gameService.getGameById(gameId);
-		Player spectator=spectatorInfo.getPlayer();
-		gameService.joinGame(game, spectator);
 		Player player=playerService.getPlayerByUsername(user.getUsername());
 		if(playerInfoService.getAllUsersByGame(game).contains(player)) {
 			log.warn("Player was already in the game");

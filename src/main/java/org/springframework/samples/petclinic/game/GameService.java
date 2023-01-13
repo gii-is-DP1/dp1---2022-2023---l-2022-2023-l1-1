@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.deck.DeckRepository;
 import org.springframework.samples.petclinic.deck.DeckService;
@@ -40,7 +39,6 @@ public class GameService {
     private GameRepository repo;
 
     @Autowired
-    private PlayerInfoRepository pIRepo;
     private TurnRepository turnRepository;
 
     @Autowired
@@ -177,14 +175,6 @@ public class GameService {
 	}
 
     @Transactional
-    public void joinGame(Game game, Player p) throws DataAccessException {
-        List<PlayerInfo> playersInLobby = pIRepo.findPlayerInfosByGame(game);
-        for(PlayerInfo pI : playersInLobby){
-            if(pI.getPlayer().getId()!=p.getId()){
-                game.setNumPlayers(game.getNumPlayers()+1);
-            }
-        }
-        repo.save(game);
     public void joinGame(Game game) throws DataAccessException {
         game.setNumPlayers(game.getNumPlayers()+1);
         repo.save(game);
