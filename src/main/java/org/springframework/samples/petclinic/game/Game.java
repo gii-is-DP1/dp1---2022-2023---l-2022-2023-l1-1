@@ -8,7 +8,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.EnumType;
@@ -78,9 +77,6 @@ public class Game extends NamedEntity {
         }
         else if (players == 8) {
          res = 20;
-        }
-        else { //esto se borra, es para probar cosas
-            res = 2;
         }
         return res;
      }

@@ -33,14 +33,16 @@ public class PlayerInfoRepositoryTest {
         assertNotNull(playerInfos);
         assertFalse(playerInfos.isEmpty());
     }
-/* 
+
     @Test
-    public void testFindPlayerInfosByGameWithoutPlayerInfos() {
+    public void testPlayerInfoByGameAndPlayer() {
         Game game = gameRepository.findById(4);
-        List<PlayerInfo> playerInfos = playerInfoRepository.findPlayerInfosByGame(game);
-        assertNotNull(playerInfos);
-        assertTrue(playerInfos.isEmpty());
-    }*/
+        Player player = playerRepository.findPlayerByUsername("alvgonfri");
+        PlayerInfo playerInfo = playerInfoRepository.findPlayerInfoByGameAndPlayer(game, player);
+        assertNotNull(playerInfo);
+        assertTrue(playerInfo.getGame() == game);
+        assertTrue(playerInfo.getPlayer() == player);
+    }
 
     @Test
     public void testFindGamesByPlayer() {
@@ -59,20 +61,27 @@ public class PlayerInfoRepositoryTest {
     }
 
     @Test
+    public void testFindGamesInProcessByPlayer() {
+        Player player = playerRepository.findPlayerByUsername("alvgonfri");
+        List<Game> games = playerInfoRepository.findGamesInProcessByPlayer(player);
+        assertNotNull(games);
+        assertFalse(games.isEmpty());
+    }
+
+    @Test
     public void testFindPlayersByGame() {
         Game game = gameRepository.findById(2);
         List<Player> players = playerInfoRepository.findPlayersByGame(game);
         assertNotNull(players);
         assertFalse(players.isEmpty());
     }
-/* 
-    @Test
-    public void testFindPlayersByGameWithoutPlayers() {
-        Game game = gameRepository.findById(4);
-        List<Player> players = playerInfoRepository.findPlayersByGame(game);
-        assertNotNull(players);
-        assertTrue(players.isEmpty());
-    }*/
 
+    @Test
+    public void testFindAllUsersByGame() {
+        Game game = gameRepository.findById(2);
+        List<Player> players = playerInfoRepository.findAllUsersByGame(game);
+        assertNotNull(players);
+        assertFalse(players.isEmpty());
+    }
     
 }

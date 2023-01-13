@@ -14,8 +14,6 @@ public class AchievementTests {
         achievement.setThreshold(10.0);
 
         assertEquals(achievement.getActualDescription(), "The threshold of this achievement is 10.0");
-
-
     }
     
 }

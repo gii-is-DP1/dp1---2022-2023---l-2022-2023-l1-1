@@ -95,7 +95,9 @@ INSERT INTO player_infos(id,creator,spectator,game_id,player_id) VALUES
 (53,false,false,5,5),
 (54,false,false,5,6),
 (55,false,false,5,7),
-(56,false,false,5,8);
+(56,false,false,5,8),
+
+(60,false,false,6,1);
 
 INSERT INTO achievements(id,name,type,description,threshold) VALUES 
 (1,'Casual player','GAMES','You have played <THRESHOLD> games.',10.0),
@@ -180,7 +182,7 @@ INSERT INTO invitations(invitation_type,message,accepted,sender_id,recipient_id,
 ('FRIENDSHIP', 'I am alvgonfri', TRUE, 1, 9, null),
 ('GAME_PLAYER', 'Join my game!', FALSE, 1, 9, 5);
 
-INSERT INTO comments(id,message, date, player_info_id) VALUES
+INSERT INTO comments(id,message,date,player_info_id) VALUES
 (1,'GG', '2022-10-27 10:01:00',1),
 (2,'GG', '2022-10-27 10:02:00',2),
 (3,'GG', '2022-10-27 10:03:00',3),
