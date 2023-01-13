@@ -1,6 +1,14 @@
 package org.springframework.samples.petclinic.playerInfo;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +23,7 @@ public class PlayerInfoServiceTest {
     @Mock
     PlayerInfoRepository repo;
 
-    private PlayerInfo createCreatorInfo(Boolean creator, Boolean spectator, Game game, Player player) {
+    private PlayerInfo createPlayerInfo(Boolean creator, Boolean spectator, Game game, Player player) {
         PlayerInfo creatorInfo = new PlayerInfo();
         creatorInfo.setCreator(creator);
         creatorInfo.setSpectator(spectator);
@@ -36,13 +44,59 @@ public class PlayerInfoServiceTest {
     }
 
     @Test
-    public void testSaveCreatorInfoSuccessful() {
+    public void testGetActivePlayersPlayerInfosByGame() {
+        Game game = createGame("Test game", true);
+        PlayerInfo playerInfo = createPlayerInfo(false, false, game, null);
+        List<PlayerInfo> playerInfos = new ArrayList<>();
+        playerInfos.add(playerInfo);
+        when(repo.findPlayerInfosByGame(any(Game.class))).thenReturn(playerInfos);
+        PlayerInfoService service = new PlayerInfoService(repo);
+        List<PlayerInfo> res = service.getActivePlayersPlayerInfosByGame(game);
+        assertNotNull(res);
+        assertFalse(res.isEmpty());
+    }
+
+    @Test
+    public void testIsSpectator() {
         Game game = createGame("Test game", true);
         Player player = createPlayer();
-        PlayerInfo creatorInfo = createCreatorInfo(true, false, game, player);
+        when(repo.findPlayersByGame(game)).thenReturn(new ArrayList<>());
+        PlayerInfoService service = new PlayerInfoService(repo);
+        Boolean res = service.isSpectator(player, game);
+        assertTrue(res);
+    }
+
+    @Test
+    public void testSaveCreatorInfo() {
+        Game game = createGame("Test game", true);
+        Player player = createPlayer();
         PlayerInfoService service = new PlayerInfoService(repo);
         try {
-            service.saveCreatorInfo(creatorInfo, game, player);
+            service.saveCreatorInfo(new PlayerInfo(), game, player);
+        } catch (Exception e) {
+            fail("no exception should be thrown");
+        }
+    }
+
+    @Test
+    public void testSavePlayerInfo() {
+        Game game = createGame("Test game", true);
+        Player player = createPlayer();
+        PlayerInfoService service = new PlayerInfoService(repo);
+        try {
+            service.savePlayerInfo(new PlayerInfo(), game, player);
+        } catch (Exception e) {
+            fail("no exception should be thrown");
+        }
+    }
+
+    @Test
+    public void testSaveSpectatorInfo() {
+        Game game = createGame("Test game", true);
+        Player player = createPlayer();
+        PlayerInfoService service = new PlayerInfoService(repo);
+        try {
+            service.saveSpectatorInfo(new PlayerInfo(), game, player);
         } catch (Exception e) {
             fail("no exception should be thrown");
         }
