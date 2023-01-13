@@ -41,8 +41,10 @@ public class DeckService {
     private VoteCardRepository voteCardRepository;
 
     @Autowired
-    public DeckService(DeckRepository rep) {
+    public DeckService(DeckRepository rep, FactionCardRepository factionCardRepository, VoteCardRepository voteCardRepository) {
         this.rep = rep;
+        this.factionCardRepository = factionCardRepository;
+        this.voteCardRepository = voteCardRepository;
     }
 
     @Transactional(readOnly = true)
@@ -57,13 +59,10 @@ public class DeckService {
 
     @Transactional
     public void updateFactionDeck (Deck deck, FCType factionCard) {
-        System.out.println("11");
         List<FactionCard> chosenFaction = new ArrayList<>();
         FactionCard cardChosen = factionCardRepository.findById(factionCard).get();
         chosenFaction.add(cardChosen);
-        System.out.println("22");
         Deck deckToUpdate = rep.findById(deck.getId()).get();
-        System.out.println("33");
         deckToUpdate.setFactionCards(chosenFaction);
         rep.save(deckToUpdate);
     }
