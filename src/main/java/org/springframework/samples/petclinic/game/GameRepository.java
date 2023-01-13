@@ -30,7 +30,4 @@ public interface GameRepository extends CrudRepository<Game, Long>{
     @Query("SELECT DISTINCT g FROM Game g WHERE g.publicGame = 0 AND g.name LIKE :name%")
 	public List<Game> findPrivateGamesByName(@Param("name") String name);
 
-    @Query("SELECT DISTINCT g FROM Game g NATURAL JOIN PlayerInfo pI WHERE pI.g.id LIKE :id")
-    public List<PlayerInfo> findPlayerInfosInGameById(@Param("id") Integer id);
-
 }
